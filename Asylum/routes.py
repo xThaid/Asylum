@@ -9,23 +9,29 @@ def init_routes(app):
     @app.route('/', methods=['GET'])
     @app.route('/home', methods=['GET'])
     def home():
-        return render_template('home.html')
-
-    @app.route('/getConsumption', methods=['GET'])
-    def get_consumption():
-        res = requests.get('http://192.168.1.102').json()
-        return jsonify(res)
+        model={
+            'pageName': 'Strona Główna'
+        }
+        return render_template('home.html', model=model)
 
     @app.route('/energy', methods=['GET'])
     def energy():
         powerProduction = models.EnergyProduction.query.order_by(models.EnergyProduction.id.desc()).first();
-        print(powerProduction)
-        return render_template('energy.html')
+        model={
+            'pageName': 'Energia'
+        }
+        return render_template('energy.html', model=model)
 
     @app.route('/blinds', methods=['GET'])
     def blinds():
-        return render_template('blinds.html')
+        model={
+            'pageName': 'Rolety'
+        }
+        return render_template('blinds.html', model=model)
 
     @app.route('/locks', methods=['GET'])
     def locks():
-        return render_template('locks.html')
+        model={
+            'pageName': 'Zamki'
+        }
+        return render_template('locks.html', model=model)
