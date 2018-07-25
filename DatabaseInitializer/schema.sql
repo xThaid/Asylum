@@ -1,0 +1,32 @@
+BEGIN TRANSACTION;
+
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS Production;
+DROP TABLE IF EXISTS Consumption;
+
+CREATE TABLE user (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL
+);
+
+CREATE TABLE energy_production(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  power INTEGER NOT NULL,
+  energy INTEGER NOT NULL,
+
+  CONSTRAINT time_unique UNIQUE (time)
+
+);
+CREATE TABLE energy_consumption(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  power INTEGER NOT NULL,
+  energy INTEGER NOT NULL,
+
+  CONSTRAINT time_unique UNIQUE (time)
+
+);
+
+COMMIT;
