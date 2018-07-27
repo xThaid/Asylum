@@ -32,7 +32,7 @@
                             <div class="col-md-5">
                                 <div class="card-content">
                                     <canvas id="productionPowerChart">{{ model['currentPower'] }}/4000</canvas>
-                                    <span><b>{% print((model['currentPower']/40)|int) %}%</b></span>
+                                    <span><b>{% print((model['currentPower']/40)|int) %} %</b></span>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -50,7 +50,7 @@
                             <div class="col-md-5">
                                 <div class="card-content">
                                     <canvas id="productionPowerChart2">{% for e in model['energy'][:-1] %}{{ e }}, {% endfor %}{{ model['energy'][-1] }}</canvas>
-                                    <span><b>{{ ((((model['energy'][-1] / model['energy'][-2])) - 1) * 100)|int}}%</b></span>
+                                    <span><b>{{ '{0:+} %'.format(((((model['energy'][-1] / model['energy'][-2])) - 1) * 100)|int)}}</b></span>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -68,7 +68,7 @@
                             <div class="col-md-5">
                                 <div class="card-content">
                                     <canvas id="productionPowerChart3">{{ model['maxPower'] }}/4000</canvas>
-                                    <span><b>{% print((model['maxPower']/40)|int) %}%</b></span>
+                                    <span><b>{% print((model['maxPower']/40)|int) %} %</b></span>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -85,14 +85,14 @@
                         <div class="row no-gutters">
                             <div class="col-md-5">
                                 <div class="card-content">
-                                    <canvas id="productionPowerChart4">{{ model['currentPower'] }}/4000</canvas>
-                                    <span><b>{% print((model['currentPower']/40)|int) %}%</b></span>
+                                    <canvas id="productionPowerChart4">{{ (model['energy'][-1] * 1000) / 24  }}/4000</canvas>
+                                    <span><b>{% print((((model['energy'][-1] * 1000) / 24)/40)|int) %} %</b></span>
                                 </div>
                             </div>
                             <div class="col-md-7">
                                 <div class="card-title">
-                                    <h3>{{ model['currentPower'] }} W</h3>
-                                    <h4>Bieżąca produkcja</h4>
+                                    <h3>{{ ((model['energy'][-1] * 1000) / 24)|int  }} W</h3>
+                                    <h4>Średnia moc</h4>
                                 </div>
                             </div>
                         </div>

@@ -1,3 +1,6 @@
+html, body{
+  height:100%;
+}
 body{
     margin: 0;
     font-family: "Nunito Sans", sans-serif;
@@ -11,11 +14,11 @@ body{
     -moz-osx-font-smoothing: grayscale;
 }
 #main-wrapper{
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 #page-wrapper{
-    height: calc(100vh - 64px);
+    height: calc(100% - 64px);
     width: calc(100vw - 250px);
     margin-left: 250px;
 }
@@ -27,9 +30,9 @@ body{
     height: 64px
 }
 #sidebar{
+    height: 100%;
     position: absolute;
     top: 0;
-    height: 100%;
     width: 250px;
     background: #1F262D;
     -webkit-box-shadow: 1px 0px 20px rgba(0, 0, 0, 0.08);
