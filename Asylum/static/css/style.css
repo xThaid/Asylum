@@ -74,9 +74,6 @@ body{
     padding: 0;
     display: flex;
 }
-.navbar-item:hover{
-
-}
 
 .navbar-link{
     color: #A5A8AB;
@@ -140,4 +137,53 @@ body{
     margin: 0;
     font-size: 18px;
     font-weight: 600;
+}
+.card{
+    background: white;
+    margin-bottom: 20px;
+}
+.card-large{
+    padding: 20px;
+}
+.card-large .card-title h3{
+    height: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #3E5569;
+}
+.card-large .card-title h4{
+    height: 15px;
+    font-size: 15px;
+    color: #A1AAB2;
+}
+.card-small{
+    padding: 5px;
+    height: 66px;
+}
+.card-small .card-title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+}
+.card-small .card-title h3{
+    font-size: 22px;
+    font-weight: bold;
+    color: #3E5569;
+    padding:0;
+    margin:0;
+}
+.card-small .card-title h4{
+    font-size: 14px;
+    color: #A1AAB2;
+    padding:0;
+    margin:0;
+}
+.card-small .card-content{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 100%;
+    border-right: 1px solid #eeeeee;
 }
