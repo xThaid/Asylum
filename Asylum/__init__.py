@@ -1,10 +1,10 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from Asylum.models import db
 from . import config
 
 app = Flask(__name__)
 
 app.config.from_object(config.Config)
-db = SQLAlchemy(app)
+db.init_app(app)
 from . import routes
 routes.init_routes(app)

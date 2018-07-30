@@ -1,16 +1,6 @@
 from . import db
 
 
-class User(db.Model):
-    __tablename__ = 'User'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)
-
-    def __repr__(self):
-        return '<User :{}>'.format(self.username)
-
-
 class EnergyProduction(db.Model):
     __tablename__ = 'energy_production'
     id = db.Column(db.Integer, primary_key=True)
