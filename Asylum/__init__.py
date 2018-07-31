@@ -1,5 +1,5 @@
 from flask import Flask
-from Asylum.models import db
+from Asylum.db_models import db
 from . import config
 
 app = Flask(__name__)

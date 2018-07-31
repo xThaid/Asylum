@@ -1,7 +1,7 @@
 
 function genChart(data) {
     Chart.defaults.global.elements.point.radius = 0;
-    var ctx = document.getElementById("power-today-chart").getContext('2d');
+    let ctx = document.getElementById("power-today-chart").getContext('2d');
     window.myChart = new Chart(ctx, {
         type: 'line',
         data: data,
