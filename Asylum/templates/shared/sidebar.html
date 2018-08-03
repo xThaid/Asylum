@@ -1,12 +1,5 @@
-<aside id="sidebar">
-    <a id="logo" href="/">
-        <b id="logo-icon">
-             <i class="fas fa-home"></i>
-        </b>
-        <span id="logo-text">
-             Asylum
-        </span>
-    </a>
+<div id="sidebar">
+    {% include 'shared/logo.html' %}
     <nav id="navbar2">
         <ul id="navbar">
             <li class="navbar-item"> <a class="navbar-link" href="/home" aria-expanded="false"><div class="navbar-icon" ><i class="mdi mdi-view-dashboard"></i></div><span class="navbar-text">Strona Główna</span></a></li>
@@ -15,4 +8,4 @@
             <li class="navbar-item"> <a class="navbar-link" href="/locks" aria-expanded="false"><div class="navbar-icon" ><i class="mdi mdi-lock"></i></div><span class="navbar-text">Zamki</span></a></li>
         </ul>
     </nav>
-</aside>
+</div>

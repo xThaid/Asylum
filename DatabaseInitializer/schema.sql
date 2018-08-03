@@ -7,8 +7,10 @@ DROP TABLE IF EXISTS Consumption;
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
-  password TEXT NOT NULL
-);
+  name TEXT NOT NULL,
+  role TEXT NOT NULL,
+  password_hash TEXT NOT NULL
+)
 
 CREATE TABLE energy_production(
   id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1,4 +1,4 @@
-from Asylum.common_utilities import get_last_rows, to_strftime
+from Asylum.db_models import get_last_rows, to_strftime
 from Asylum.db_models.energy import EnergyProduction
 from Asylum.models.shared import ChartData
 
@@ -24,3 +24,4 @@ class EnergyIndexModel:
         self.current_power = data[0][-1]
         self.energy = data[2]
         self.max_power = max(data[0])
+

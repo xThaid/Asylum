@@ -10,3 +10,4 @@ def init_routes(app):
     blinds.init_blinds_routes(app)
     home.init_home_routes(app)
     locks.init_auth_routes(app)
+    auth.init_auth_routes(app)
