@@ -1,6 +1,7 @@
-from flask import render_template, request, jsonify, make_response
-from Asylum.db_models.user import User
+from flask import render_template, request, jsonify, make_response, redirect, url_for, current_app
+from Asylum.db_models.user import User, authorize
 import re
+import jwt
 
 
 def init_auth_routes(app):
@@ -83,12 +84,43 @@ def init_auth_routes(app):
 
     @app.route('/auth/login', methods=['POST'])
     def login():
-        return render_template('energy.html')
+        post_data = request.get_json()
+        if post_data is None \
+                or 'username' not in post_data \
+                or 'password' not in post_data \
+                or post_data['username'] is None \
+                or post_data['password'] is None:
+            response = {
+                'status': 'error',
+                'code': 3
+            }
+            return make_response(jsonify(response)), 400
+
+        login_status = User.login(post_data)
+
+        if login_status['response']['status'] == 'success':
+            res = make_response(jsonify(login_status['response']))
+            res.set_cookie(*login_status['cookie'], secure=False, httponly=True, samesite='strict')
+            return res, 200
+
+        return make_response(jsonify(login_status['response'])), 400
 
     @app.route('/auth/login', methods=['GET'])
     def login_page():
-        return render_template('energy.html')
+        if 'Authorization' not in request.cookies:
+            return render_template('auth/login.html')
+
+        context = None
+        data = request.cookies['Authorization']
+        token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
+        try:
+            context = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
+        except:
+            return render_template('auth/login.html')
+
+        return redirect(url_for('home'), code=302)
 
     @app.route('/auth/logout', methods=['POST'])
-    def logout():
-        return render_template('energy.html')
+    @authorize
+    def logout(context):
+        return make_response(jsonify(context)), 200

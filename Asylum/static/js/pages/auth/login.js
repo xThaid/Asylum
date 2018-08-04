@@ -6,7 +6,7 @@ function completeRequestCallback(response) {
             "debug": false,
             "newestOnTop": false,
             "progressBar": false,
-            "positionClass": "toast-top-right",
+            "positionClass": "toast-top-center",
             "preventDuplicates": false,
             "onclick": null,
             "showDuration": "300",
@@ -21,52 +21,33 @@ function completeRequestCallback(response) {
     let message;
     switch (response.responseJSON.code){
         case 0:
-            message  = 'Pomyślnie stworzono konto';
+            window.location.replace(response.responseJSON['url']);
             break;
         case 1:
             message  = 'Błąd podczas komunikacji z bazą danych';
             break;
         case 2:
-            message  = 'Podany login jest już zajęty';
+            message  = 'Nieprawidłowy login lub hasło';
             break;
         case 3:
             message  = 'Brakujące parametry';
-            break;
-        case 4:
-            message  = 'Nieprawidłowy login';
-            break;
-        case 5:
-            message  = 'Nieprawidłowa nazwa użytkownika';
-            break;
-        case 6:
-            message  = 'Nieprawidłowe hasło';
-            break;
-        case 7:
-            message  = 'Podane hasła sa różne';
-            break;
-        case 8:
-            message  = 'Nieprawidłowa rola';
             break;
         default:
             message  = 'Nieznany błąd';
             break;
     }
-    toastr[response.responseJSON.status](message, "Rejestracja")
+    toastr[response.responseJSON.status](message, "Logowanie");
 }
-
 $(document).ready(function(){
     $('form').submit(function () {
         const form =   $('form').serializeArray();
         const data = JSON.stringify(
             {
                 "username": form[0].value,
-                "name": form[1].value,
-                'password': form[2].value,
-                'repassword': form[3].value,
-                'role': form[4].value
+                "password": form[1].value
             });
         $.ajax({
-            url         : "register",
+            url         : "login",
             type        : "POST",
             contentType : 'application/json',
             dataType    : 'json',

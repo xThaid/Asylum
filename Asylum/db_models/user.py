@@ -1,8 +1,9 @@
 from . import db
 from passlib.hash import pbkdf2_sha256
 import jwt
-from flask import current_app
+from flask import current_app, abort, request, redirect, url_for
 import datetime
+from functools import wraps
 
 
 class User(db.Model):
@@ -21,48 +22,86 @@ class User(db.Model):
         return pbkdf2_sha256.verify(password, self.password_hash)
 
     def register(self):
-        user = User.query.filter_by(username=self.username).first()
-        if not user:
-            try:
-                db.session.add(self)
-                db.session.commit()
+        try:
+            user = User.query.filter_by(username=self.username).first()
+            if not user:
+                    db.session.add(self)
+                    db.session.commit()
 
-                return {
-                    'status': 'success',
-                    'code': 0
-                }
-            except Exception:
+                    return {
+                        'status': 'success',
+                        'code': 0
+                    }
+            else:
                 return {
                     'status': 'error',
-                    'code': 1
+                    'code': 2
                 }
-        else:
+        except Exception:
             return {
-                'status': 'warning',
-                'code': 2
+                'status': 'error',
+                'code': 1
+            }
+
+    @staticmethod
+    def login(data):
+        try:
+            user = User.query.filter_by(username=data['username']).first()
+            if user and user.verify_password(data['password']):
+                token = user.encode_auth_token()
+                return {
+                    'response':
+                    {
+                        'status': 'success',
+                        'code': 0,
+                        'url': url_for('home')
+                    },
+                    'cookie': ['Authorization', 'Bearer ' + token.decode('utf-8')]
+                }
+            else:
+                return {
+                    'status': 'error',
+                    'code': 2
+                }
+        except Exception:
+            return {
+                'status': 'error',
+                'code': 1
             }
 
     def encode_auth_token(self):
         payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
             'iat': datetime.datetime.utcnow(),
-            'sub': self.id
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+            'sub': self.id,
+            "context": {
+                "user": {
+                    'id': self.id,
+                    'name': self.name,
+                    'role': self.role
+                }
+            }
         }
         return jwt.encode(
             payload,
             current_app.config.get('SECRET_KEY'),
-            algorithm='HS256'
+            'HS256'
         )
 
-    @staticmethod
-    def decode_auth_token(auth_token):
-        try:
-            payload = jwt.decode(auth_token, current_app.config.get('SECRET_KEY'))
-            return payload['sub']
-        except jwt.ExpiredSignatureError:
-            return 'Signature expired'
-        except jwt.InvalidTokenError:
-            return 'Invalid token'
 
-    def __repr__(self):
-        return '<User :{}>'.format(self.username)
+def authorize(f):
+    @wraps(f)
+    def decorated_function(*args, **kws):
+        if 'Authorization' not in request.cookies:
+            return redirect(url_for('login'), code=302)
+
+        context = None
+        data = request.cookies['Authorization']
+        token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
+        try:
+            context = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
+        except:
+            return redirect(url_for('login'), code=302)
+
+        return f(context, *args, **kws)
+    return decorated_function

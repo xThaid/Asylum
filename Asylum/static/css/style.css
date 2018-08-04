@@ -24,12 +24,20 @@ body{
     flex-wrap: nowrap;
     background: #eeeeee;
 }
+
+#page-wrapper{
+    min-height: calc(100% - 132px);
+    width: calc(100% - 250px);
+}
+#page-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 .row{
     width: 100%;
-}
-#page-wrapper{
-    height: 100%;
-    width: calc(100% - 250px);
 }
 #topbar{
     width: 100%;
@@ -197,14 +205,6 @@ body{
     justify-content: space-evenly;
     height: 100%;
     border-right: 1px solid #eeeeee;
-}
-#page-container{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
 }
 .form-body{
     width: 400px;
