@@ -60,14 +60,20 @@ class User(db.Model):
                 }
             else:
                 return {
-                    'status': 'error',
-                    'code': 2
+                    'response':
+                    {
+                        'status': 'error',
+                        'code': 2,
+                    },
                 }
         except Exception:
             return {
-                'status': 'error',
-                'code': 1
-            }
+                    'response':
+                    {
+                        'status': 'error',
+                        'code': 1
+                    },
+                }
 
     def encode_auth_token(self):
         payload = {
