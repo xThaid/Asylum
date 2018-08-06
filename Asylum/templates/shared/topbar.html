@@ -1,3 +1,22 @@
 <header id="topbar">
-
+    <div class="toogle-menu"><i class="mdi mdi-menu"></i></div>
+    {% if model['user']['role'] == 'admin' %}
+        <a href="/admin" class="admin-panel-button">Panel administracyjny</a>
+    {% endif %}
+    <div id="user-icon" class="user-icon">
+        <div class="user-menu">
+            <a href="user\settings">
+                 <div class="user-menu-item">
+                     <i class="mdi mdi-account-settings-variant"></i>
+                     Ustawienia
+                 </div>
+            </a>
+             <a href="\auth\logout">
+                 <div class="user-menu-item">
+                     <i class="mdi mdi-logout"></i>
+                     Wyloguj
+                 </div>
+            </a>
+        </div>
+    </div>
 </header>

@@ -8,6 +8,7 @@ def init_home_routes(app):
     @authorize
     def home(context):
         model = {
-            'pageName': 'Strona Główna'
+            'pageName': 'Strona Główna',
+            'user': context['user']
         }
         return render_template('home.html', model=model)

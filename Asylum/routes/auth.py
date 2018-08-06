@@ -7,7 +7,8 @@ import jwt
 def init_auth_routes(app):
 
     @app.route('/auth/register', methods=['POST'])
-    def register():
+    @authorize
+    def register(context):
         post_data = request.get_json()
         if post_data is None\
                 or 'username' not in post_data\
@@ -76,9 +77,11 @@ def init_auth_routes(app):
         return make_response(jsonify(response)), 400
 
     @app.route('/auth/register', methods=['GET'])
-    def register_page():
+    @authorize
+    def register_page(context):
         model = {
-            'page_name': 'Tworzenie konta'
+            'page_name': 'Tworzenie konta',
+            'user': context['user']
         }
         return render_template('auth/register.html', model=model)
 
@@ -120,7 +123,7 @@ def init_auth_routes(app):
 
         return redirect(url_for('home'), code=302)
 
-    @app.route('/auth/logout', methods=['POST'])
+    @app.route('/auth/logout', methods=['GET'])
     @authorize
     def logout(context):
         return make_response(jsonify(context)), 200

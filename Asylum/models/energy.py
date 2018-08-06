@@ -9,8 +9,9 @@ class EnergyIndexModel:
     current_power = 0
     energy = []
     max_power = 0
+    user = {}
 
-    def __init__(self):
+    def __init__(self, context):
         data = get_last_rows(EnergyProduction, [EnergyProduction.power, EnergyProduction.time], 1440, 1440)
         data[1] = to_strftime(data[1], '%H:%M')
         data.append(get_last_rows(EnergyProduction, [EnergyProduction.energy], 11520, 11520)[0][1::1440])
@@ -24,4 +25,4 @@ class EnergyIndexModel:
         self.current_power = data[0][-1]
         self.energy = data[2]
         self.max_power = max(data[0])
-
+        self.user = context['user']

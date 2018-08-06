@@ -1,6 +1,14 @@
 html, body{
   height:100%;
 }
+a{
+    color: inherit;
+    text-decoration: inherit;
+}
+a:hover{
+    color: inherit;
+    text-decoration: inherit;
+}
 body{
     margin: 0;
     font-family: "Nunito Sans", sans-serif;
@@ -44,7 +52,10 @@ body{
     -webkit-box-shadow: 1px 0 7px rgba(0, 0, 0, 0.05);
     box-shadow: 1px 0 7px rgba(0, 0, 0, 0.05);
     background: #141619;
-    height: 64px
+    height: 64px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
 }
 #sidebar{
     min-height: 100%;
@@ -273,4 +284,75 @@ body{
     align-items: center;
     font-size: 22px;
     color: white;
+}
+.admin-panel-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 150px;
+    color: #D0D0D1;
+    text-decoration: none;
+    font-size: 14px;
+    margin-left: 20px;
+}
+.admin-panel-button:hover{
+    color: white;
+    text-decoration: none;
+}
+.toogle-menu{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin-left: 15px;
+    width: 40px;
+    font-size: 24px;
+    color: #D0D0D1;
+}
+.toogle-menu:hover{
+    cursor: pointer;
+    color: white;
+}
+.user-icon{
+    height: 35px;
+    width: 35px;
+    background: url("../../static/assets/images/user_custom.jpg") no-repeat center;
+    background-size: cover;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: 15px;
+}
+.user-icon:hover{
+    cursor: pointer;
+}
+.user-menu{
+    width: 280px;
+    background: white;
+    position: relative;
+    top: 52px;
+    right: 240px;
+    z-index: 10000;
+    -webkit-box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.1);
+    cursor: default;
+    display: none;
+    font-size: 15px;
+    color: #212529;
+}
+.user-menu-item{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+    height: 35px;
+    padding: 0 0 0 15px;
+}
+.user-menu-item:hover{
+    background: #f3f0f0;
+}
+.user-menu-item i{
+    width: 30px;
+    display: block;
+    font-size: 20px;
 }

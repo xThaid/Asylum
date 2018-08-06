@@ -1,5 +1,4 @@
 $(function(){
-
     if(window.location.pathname === '/'){
         window.location.pathname = '/home';
     }
@@ -9,4 +8,13 @@ $(function(){
             $( this ).addClass('navbar-link-active');
         }
     });
+
+    $('.user-icon').click(function(){
+        $('.user-menu').toggle();
+    });
+    $('body').click(function(evt){
+        if(evt.target.id === "user-icon")
+            return;
+        $('.user-menu').hide();
+    })
 });

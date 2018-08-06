@@ -8,4 +8,4 @@ def init_energy_routes(app):
     @app.route('/energy', methods=['GET'])
     @authorize
     def energy(context):
-        return render_template('energy.html', model=vars(EnergyIndexModel()))
+        return render_template('energy.html', model=vars(EnergyIndexModel(context)))
