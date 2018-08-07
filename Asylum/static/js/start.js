@@ -16,5 +16,5 @@ $(function(){
         if(evt.target.id === "user-icon")
             return;
         $('.user-menu').hide();
-    })
+    });
 });

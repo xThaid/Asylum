@@ -126,4 +126,6 @@ def init_auth_routes(app):
     @app.route('/auth/logout', methods=['GET'])
     @authorize
     def logout(context):
-        return make_response(jsonify(context)), 200
+        res = make_response(redirect(url_for('login'), code=302))
+        res.set_cookie('Authorization', '', expires=0, secure=False, httponly=True, samesite='strict')
+        return res
