@@ -1,5 +1,5 @@
-venv/
-Databases/*
-.idea/
-__pycache__/
-Asylum/static/assets/*
+venv
+db
+.idea
+__pycache__
+web/static/assets
