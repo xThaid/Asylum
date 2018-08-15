@@ -42,7 +42,7 @@ CREATE TABLE blinds_task_history(
   time INTEGER NOT NULL,
   device INTEGER NOT NULL,
   action INTEGER NOT NULL,
-  user_id INTEGER,
+  user_id INTEGER DEFAULT NULL,
   status INTEGER NOT NULL,
   FOREIGN KEY(user_id) REFERENCES user(id)
 );

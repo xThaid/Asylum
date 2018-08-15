@@ -13,6 +13,7 @@ def create_connection(db_file, db_script):
         except IOError as e:
             print(e)
             sys.exit(2)
+        conn.commit()
         conn.close()
         print("Database created successfully")
     except Error as e:

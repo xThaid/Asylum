@@ -1,6 +1,5 @@
 from astral import Location
 import sqlite3
-from sqlite3 import Error
 from datetime import datetime
 import configparser
 
@@ -9,7 +8,7 @@ def create_connection(db_file):
     try:
         conn = sqlite3.connect(db_file)
         return conn
-    except Error as e:
+    except sqlite3.Error as e:
         print(e)
 
     return None
@@ -36,8 +35,9 @@ with conn:
                            (row[0],)).fetchall()
         if not task:
             time = 0
+            now = datetime.now()
             if row[3] == 0:
-                time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() + row[4]
+                time = now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() + row[4]
             elif row[3] == 1:
                 time = sun['dawn'].timestamp() + row[4]
             elif row[3] == 2:
@@ -47,8 +47,10 @@ with conn:
             elif row[3] == 4:
                 time = sun['dusk'].timestamp() + row[4]
 
-            if time < datetime.now().timestamp():
+            if time < now.timestamp():
                 time += 86400
 
             cur.execute("INSERT INTO blinds_task(time, device, action, schedule_id, timeout) VALUES (?, ?, ?, ?, ?)",
-                        (int(time), row[1], row[2], row[0], 30))
+                        (int(time), row[1], row[2], row[0], 30 * 60))
+conn.commit()
+conn.close()
