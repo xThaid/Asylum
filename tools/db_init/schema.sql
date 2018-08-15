@@ -1,8 +1,10 @@
 BEGIN TRANSACTION;
 
 DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS Production;
-DROP TABLE IF EXISTS Consumption;
+DROP TABLE IF EXISTS energy;
+DROP TABLE IF EXISTS blinds_task;
+DROP TABLE IF EXISTS blinds_task_history;
+DROP TABLE IF EXISTS blinds_schedule;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -10,25 +12,47 @@ CREATE TABLE user (
   name TEXT NOT NULL,
   role TEXT NOT NULL,
   password_hash TEXT NOT NULL
-)
-
-CREATE TABLE energy_production(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  power INTEGER NOT NULL,
-  energy INTEGER NOT NULL,
-
-  CONSTRAINT time_unique UNIQUE (time)
-
 );
-CREATE TABLE energy_consumption(
+
+CREATE TABLE energy(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
-  power INTEGER NOT NULL,
-  energy INTEGER NOT NULL,
+  production INTEGER NOT NULL,
+  import INTEGER NOT NULL,
+  export INTEGER NOT NULL,
 
   CONSTRAINT time_unique UNIQUE (time)
+);
 
+CREATE TABLE blinds_task(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  time INTEGER NOT NULL,
+  device INTEGER NOT NULL,
+  action INTEGER NOT NULL,
+  user_id INTEGER DEFAULT NULL,
+  schedule_id INTEGER DEFAULT NULL,
+  timeout INTEGER NOT NULL,
+  active INTEGER NOT NULL DEFAULT 1,
+  FOREIGN KEY(user_id) REFERENCES user(id)
+  FOREIGN KEY(schedule_id) REFERENCES blinds_schedule(id)
+);
+
+CREATE TABLE blinds_task_history(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  time INTEGER NOT NULL,
+  device INTEGER NOT NULL,
+  action INTEGER NOT NULL,
+  user_id INTEGER,
+  status INTEGER NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES user(id)
+);
+
+CREATE TABLE blinds_schedule(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  device INTEGER NOT NULL,
+  action INTEGER NOT NULL,
+  hour_type INTEGER NOT NULL,
+  time_offset INTEGER NOT NULL
 );
 
 COMMIT;

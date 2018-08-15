@@ -1,5 +1,7 @@
 venv
 db
+*.sqlite
 .idea
 __pycache__
 web/static/assets
+config.ini

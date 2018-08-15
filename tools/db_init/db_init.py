@@ -20,7 +20,4 @@ def create_connection(db_file, db_script):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        print("Missing arguments")
-        sys.exit(1)
-    create_connection(sys.argv[1], sys.argv[2])
+    create_connection('asylum.sqlite', 'schema.sql')
