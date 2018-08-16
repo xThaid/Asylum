@@ -22,7 +22,7 @@ loc.latitude = float(config['LOCATION']['Latitude'])
 loc.longitude = float(config['LOCATION']['Longitude'])
 sun = loc.sun()
 
-database = config['DATABASE']['Path'] + config['DATABASE']['Name']
+database = config['DATABASE']['Path']
 conn = create_connection(database)
 with conn:
     cur = conn.cursor()

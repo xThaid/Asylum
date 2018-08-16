@@ -7,7 +7,7 @@ import jwt
 def init_auth_routes(app):
 
     @app.route('/auth/register', methods=['POST'])
-    @authorize('admin')
+    @authorize('admin','none')
     def register(context):
 
         post_data = request.get_json()
@@ -78,7 +78,7 @@ def init_auth_routes(app):
         return make_response(jsonify(response)), 400
 
     @app.route('/auth/register', methods=['GET'])
-    @authorize('admin')
+    @authorize('admin', 'none')
     def register_page(context):
         model = {
             'page_name': 'Tworzenie konta',

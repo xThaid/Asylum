@@ -1,10 +1,9 @@
-import os
-basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+import configparser
+config = configparser.ConfigParser()
+config.read("../config.ini")
 
 
 class Config(object):
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'development'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + basedir + '/db/asylum.sqlite'
+    SECRET_KEY = config['SECURITY']['SecretKey']
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + config['DATABASE']['Path']
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    DEBUG = True

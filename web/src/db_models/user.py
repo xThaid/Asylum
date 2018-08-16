@@ -99,6 +99,14 @@ def authorize(*roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kws):
+            if 'none' in roles:
+                context = {
+                "user": {
+                    'id': -1,
+                    'name': 'unauthorized',
+                    'role': 'unauthorized'
+                }}
+                return f(context, *args, **kws)
             if 'Authorization' not in request.cookies:
                 return redirect(url_for('login'), code=302)
 

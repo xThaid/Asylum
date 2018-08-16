@@ -1,5 +1,5 @@
 from src.db_models import get_last_rows, to_strftime
-from src.db_models.energy import EnergyProduction
+from src.db_models.energy import Energy
 from src.models.shared import ChartData
 
 
@@ -13,9 +13,9 @@ class EnergyIndexModel:
     breadcrumb = []
 
     def __init__(self, context):
-        data = get_last_rows(EnergyProduction, [EnergyProduction.power, EnergyProduction.time], 1440, 1440)
+        data = get_last_rows(Energy, [Energy.production, Energy.time], 1440, 1440)
         data[1] = to_strftime(data[1], '%H:%M')
-        data.append(get_last_rows(EnergyProduction, [EnergyProduction.energy], 11520, 11520)[0][1::1440])
+        data.append(get_last_rows(Energy, [Energy.production], 11520, 11520)[0][1::1440])
         data[2] = [(y - x) / 1000 for x, y in zip(data[2], data[2][1:])]
 
         chart_data = ChartData()\

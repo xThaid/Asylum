@@ -5,7 +5,7 @@ db = SQLAlchemy()
 
 
 def get_last_rows(db_model, attributes, from_date, count):
-    power_production2 = db_model\
+    power_production = db_model\
         .query.with_entities(db_model.id, *attributes)\
         .order_by(db_model.id.desc())\
         .limit(from_date)\
@@ -16,7 +16,7 @@ def get_last_rows(db_model, attributes, from_date, count):
 
     data_list = []
     for x in range(1, len(attributes) + 1):
-        data_list.append([o[x] for o in power_production2])
+        data_list.append([o[x] for o in power_production])
     return data_list
 
 

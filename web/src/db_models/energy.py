@@ -1,23 +1,14 @@
 from . import db
 
 
-class EnergyProduction(db.Model):
-    __tablename__ = 'energy_production'
+class Energy(db.Model):
+    __tablename__ = 'energy'
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.Integer, index=True, unique=True, nullable=False)
-    power = db.Column(db.Integer, nullable=False)
-    energy = db.Column(db.Integer, nullable=False)
+    production = db.Column(db.Integer, nullable=False)
+    import_ = db.Column(db.Integer, nullable=False)
+    export = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return ('<ProductionID:%i ,Energy: %s, Power: %s' % (self.id, self.energy, self.power)) + '>'
-
-
-class EnergyConsumption(db.Model):
-    __tablename__ = 'energy_consumption'
-    id = db.Column(db.Integer, primary_key=True)
-    time = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    power = db.Column(db.Integer, nullable=False)
-    energy = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return ('<ConsumptionID:%i ,Energy: %s, Power: %s' % (self.id, self.energy, self.power)) + '>'
+        return ('Energy<id:%i ,time: %s, production: %s, import: %s, export: %s' %
+                (self.id, self.time, self.production, self.import_, self.export)) + '>'
