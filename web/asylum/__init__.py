@@ -1,5 +1,5 @@
 from flask import Flask, url_for
-from src.db_models import db
+from asylum.models import db
 from . import config
 
 app = Flask(__name__, static_folder='../static')

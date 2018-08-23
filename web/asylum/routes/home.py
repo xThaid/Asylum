@@ -1,5 +1,5 @@
 from flask import render_template
-from src.db_models.user import authorize
+from asylum.core.auth import authorize
 
 
 def init_home_routes(app):

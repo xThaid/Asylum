@@ -1,81 +1,34 @@
 from flask import render_template, request, jsonify, make_response, redirect, url_for, current_app
-from src.db_models.user import User, authorize
-import re
+from asylum.core.auth import authorize
+from asylum.core import auth
 import jwt
 
 
 def init_auth_routes(app):
 
     @app.route('/auth/register', methods=['POST'])
-    @authorize('admin','none')
+    @authorize('admin', 'none')
     def register(context):
-
         post_data = request.get_json()
         if post_data is None\
                 or 'username' not in post_data\
                 or 'name' not in post_data\
                 or 'password' not in post_data\
                 or 'repassword' not in post_data \
-                or 'role' not in post_data \
-                or post_data['username'] is None\
-                or post_data['name'] is None\
-                or post_data['password'] is None\
-                or post_data['repassword'] is None\
-                or post_data['role'] is None:
+                or 'role' not in post_data:
             response = {
                 'status': 'error',
                 'code': 3
             }
             return make_response(jsonify(response)), 400
 
-        if re.match('^[a-zA-Z0-9]{3,20}$', post_data['username']) is None:
-            response = {
-                'status': 'error',
-                'code': 4
-            }
-            return make_response(jsonify(response)), 400
+        response = auth.register(post_data['username'],
+                                 post_data['name'],
+                                 post_data['password'],
+                                 post_data['repassword'],
+                                 post_data['role'])
 
-        if re.match('^[a-zA-Z0-9]{3,20}$', post_data['name']) is None:
-            response = {
-                'status': 'error',
-                'code': 5
-            }
-            return make_response(jsonify(response)), 400
-
-        if re.match('^(?=.*[A-Za-z])(?=.*\d)[\S]{8,}$', post_data['password']) is None:
-            response = {
-                'status': 'error',
-                'code': 6
-            }
-            return make_response(jsonify(response)), 400
-
-        if post_data['repassword'] != post_data['password']:
-            response = {
-                'status': 'error',
-                'code': 7
-            }
-            return make_response(jsonify(response)), 400
-
-        if post_data['role'] not in ['admin', 'user', 'guest']:
-            response = {
-                'status': 'error',
-                'code': 8
-            }
-            return make_response(jsonify(response)), 400
-
-        user = User(
-            username=post_data['username'],
-            name=post_data['name'],
-            role=post_data['role']
-        )
-        response = user\
-            .hash_password(post_data['password'])\
-            .register()
-
-        if response['status'] == 'success':
-            return make_response(jsonify(response)), 202
-
-        return make_response(jsonify(response)), 400
+        return make_response(jsonify(response['response'])), response['response_code']
 
     @app.route('/auth/register', methods=['GET'])
     @authorize('admin', 'none')
@@ -105,34 +58,31 @@ def init_auth_routes(app):
         post_data = request.get_json()
         if post_data is None \
                 or 'username' not in post_data \
-                or 'password' not in post_data \
-                or post_data['username'] is None \
-                or post_data['password'] is None:
+                or 'password' not in post_data:
             response = {
                 'status': 'error',
                 'code': 3
             }
             return make_response(jsonify(response)), 400
 
-        login_status = User.login(post_data)
+        login_status = auth.login(post_data['username'], post_data['password'])
 
-        if login_status['response']['status'] == 'success':
+        if login_status['response']['code'] == 0:
             res = make_response(jsonify(login_status['response']))
             res.set_cookie(*login_status['cookie'], secure=False, httponly=True, samesite='strict')
-            return res, 200
+            return res, login_status['response_code']
 
-        return make_response(jsonify(login_status['response'])), 400
+        return make_response(jsonify(login_status['response'])), login_status['response_code']
 
     @app.route('/auth/login', methods=['GET'])
     def login_page():
         if 'Authorization' not in request.cookies:
             return render_template('auth/login.html')
 
-        context = None
         data = request.cookies['Authorization']
         token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
         try:
-            context = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
+            jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
         except:
             return render_template('auth/login.html')
 
