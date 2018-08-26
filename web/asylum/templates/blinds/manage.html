@@ -5,14 +5,77 @@
     {%  include 'shared/head.html' %}
 </head>
 <body>
-    {#%  include 'shared/preloader.html' %#}
     <div id="main-wrapper">
+        <div id="add-task" class="front-form">
+             <div class="form-body card" >
+                <form class="form" id="form-add-task">
+                 <input type="hidden" name="devices-id" value="{{ model['devices'] }}">
+                    <div class="form-group">
+                        <div class="form-icon" style="background: #28B779"><i class="mdi mdi-timetable"></i></div>
+                        <input type="text" autocomplete="off" class="form-control datetimepicker-input" id="datetimepicker5" name="datetime" data-toggle="datetimepicker" data-target="#datetimepicker5" placeholder="Wybierz datę i godzinę" required/>
+                    </div>
+                     <div class="form-group">
+                         <div class="form-icon" style="background: #FFB848;"><i class="mdi mdi-clipboard-flow"></i></div>
+                        <select class="form-control" style="height: 44px;" name="action" required>
+                            <option value="" style="" disabled selected>Wybierz akcję</option>
+                            {% for x in model['action_names'] %}
+                                <option value="{{ x }}">{{ model['action_names'].get(x) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                 <hr class="form-line">
+                    <div class="form-button-container">
+                        <button type="submit" class="btn btn-primary form-button" onclick="">Dodaj zadanie</button>
+                        <input type="button" value="Cofnij" class="btn btn-primary form-button" style="margin-top: 15px;" onclick="hide_front_form('add-task');">
+                    </div>
+                </form>
+            </div>
+        </div>
+        {#%  include 'shared/preloader.html' %#}
         {% include 'shared/sidebar.html' %}
         <div id="page-wrapper">
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-
+                 <div class="card card-large" style="width: 900px;">
+                    <div class="card-title">
+                        <h3>Zaplanowane zadania</h3>
+                        <div id="task" class="button add-button" onclick="show_front_form('add-task');"><i class="mdi mdi-plus-circle-outline"></i></div>
+                    </div>
+                     <div class="card-content" style="border-right: none; flex-direction: column">
+                     {% if model['user_tasks']|length > 0 %}
+                         <table class="table table-striped">
+                             <thead>
+                             <tr>
+                                 <th scope="col">#</th>
+                                 {% if model['devices']|length > 1 %}
+                                 <th scope="col">Urządzenie</th>
+                                 {% endif %}
+                                 <th scope="col">Akcja</th>
+                                 <th scope="col">Czas</th>
+                                 <th scope="col">Zleceniodawca</th>
+                                 <th scope="col">Usuń</th>
+                              </tr>
+                             </thead>
+                             <tbody>
+                             {% for x in model['user_tasks'] %}
+                             <tr>
+                                 <th scope="row">{{ loop.index }}</th>
+                                 {% if model['devices']|length > 1 %}
+                                 <td>{{ model['devices_names'].get(x.device) }}</td>
+                                 {% endif %}
+                                 <td>{{ model['action_names'].get(x.action) }}</td>
+                                 <td class="choose-time">{{ x.time }}</td>
+                                 <td>{{ x.user }}</td>
+                                 <td style="padding: auto;"><div id="task" class="button delete-button" onclick="delete_task({{ x.task_id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
+                             </tr>
+                         {% endfor %}
+                             </tbody>
+                         </table>
+                     {% endif %}
+                     </div>
+                 </div>
             </div>
             {#% include 'shared/footer.html' %#}
         </div>
@@ -22,14 +85,10 @@
     <script src="/static/assets/libs/jquery/jquery-3.3.1.min.js"></script>
     <script src="/static/assets/libs/popper/umd/popper.min.js"></script>
     <script src="/static/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="/static/js/start.js"></script>
-</body>
-</html>
-
-    <script src="/static/assets/libs/jquery/jquery-3.3.1.min.js"></script>
-    <script src="/static/assets/libs/popper/umd/popper.min.js"></script>
-    <script src="/static/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/static/assets/libs/DataTables/datatables.min.js"></script>
+    <script src="/static/assets/libs/toastr/toastr.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/moment/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/datatimepicker/tempusdominus-bootstrap-4.min.js"></script>
     <script src="/static/js/start.js"></script>
     <script src="/static/js/pages/blinds/manage_blinds.js"></script>
 </body>

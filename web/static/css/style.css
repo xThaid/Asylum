@@ -1,5 +1,6 @@
 html, body{
-  height:100%;
+    height:100%;
+    width: 100%;
 }
 a{
     color: inherit;
@@ -19,12 +20,13 @@ body{
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
+    width: 100%;
+    height: 100%;
 }
 #main-wrapper{
     width: 100%;
     min-height: 100%;
-    min-width: 800px;
+    min-width: 1200px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -180,6 +182,7 @@ body{
     font-size: 18px;
     font-weight: bold;
     color: #3E5569;
+    display: inline;
 }
 .card-large .card-title h4{
     height: 15px;
@@ -203,6 +206,27 @@ body{
     color: #3E5569;
     padding:0;
     margin:0;
+}
+.add-button{
+    display: inline;
+    color: green;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 30px;
+}
+.delete-button{
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 17px;
+    padding: 0;
+    width: 20px;
+}
+.add-button:hover{
+    color: lawngreen;
+}
+.delete-button:hover{
+    color:lightpink;
 }
 .card-small .card-title h4{
     font-size: 14px;
@@ -254,7 +278,7 @@ body{
     border-radius: 0 2px 2px 0;
     font-size: 17px;
     padding-left: 15px;
-    border-left: none;
+
 }
 .form-control:focus{
   border-color: inherit;
@@ -386,4 +410,27 @@ body{
     align-items: flex-start;
     font-size: 16px;
     padding-top: 5px;
+}
+.card-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height:  30px;
+}
+.front-form{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    opacity: 0;
+    z-index: 50000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+.choose-time{
+    cursor: zoom-in;
 }

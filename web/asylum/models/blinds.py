@@ -7,7 +7,7 @@ class BlindsTask(db.Model):
     time = db.Column(db.Integer, index=True, nullable=False)
     device = db.Column(db.Integer, nullable=False)
     action = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, nullable=True)
+    user_id = db.Column(db.Integer,  db.ForeignKey('user.id'), nullable=True)
     schedule_id = db.Column(db.Integer, nullable=True)
     timeout = db.Column(db.Integer, nullable=False)
     active = db.Column(db.Integer, nullable=False)
@@ -23,7 +23,7 @@ class BlindsTaskHistory(db.Model):
     time = db.Column(db.Integer, index=True, nullable=False)
     device = db.Column(db.Integer, nullable=False)
     action = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     status = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
