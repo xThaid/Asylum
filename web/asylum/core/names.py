@@ -14,3 +14,10 @@ action_names = {
     2: 'Zamknij',
     3: 'Zatrzymaj'
 }
+hour_type_names = {
+    1: 'Świt',
+    2: 'Wschód',
+    3: 'Zenit',
+    4: 'Zachód',
+    5: 'Zmierzch'
+}

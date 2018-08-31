@@ -27,7 +27,42 @@
                  <hr class="form-line">
                     <div class="form-button-container">
                         <button type="submit" class="btn btn-primary form-button" onclick="">Dodaj zadanie</button>
-                        <input type="button" value="Cofnij" class="btn btn-primary form-button" style="margin-top: 15px;" onclick="hide_front_form('add-task');">
+                        <input type="button" value="Cofnij" class="btn btn-primary form-button" style="margin-top: 15px;" onclick="hide_front_form();">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="add-schedule" class="front-form">
+             <div class="form-body card" >
+                <form class="form" id="form-add-schedule">
+                 <input type="hidden" name="devices-id" value="{{ model['devices'] }}">
+                     <div class="form-group">
+                         <div class="form-icon" style="background: #FFB848;"><i class="mdi mdi-clipboard-flow"></i></div>
+                        <select class="form-control" style="height: 44px;" name="action" required>
+                            <option value="" style="" disabled selected>Wybierz akcję</option>
+                            {% for x in model['action_names'] %}
+                                <option value="{{ x }}">{{ model['action_names'].get(x) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                         <div class="form-icon" style="background: #DA542E;"><i class="mdi mdi-weather-sunset"></i></div>
+                        <select class="form-control" style="height: 44px;" name="hour_type" required>
+                            <option value="" style="" disabled selected>Wybierz porę dnia</option>
+                            {% for x in model['hour_type_names'] %}
+                                <option value="{{ x }}">{{ model['hour_type_names'].get(x) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-icon" style="background: #28B779; width: 48px;"><i class="mdi mdi-clock"></i></div>
+                        <div class="form-icon" id="change-sign" style="background: white; width: 48px; color: #3E5569; cursor: pointer;">+</div>
+                        <input type="text" autocomplete="off" class="form-control datetimepicker-input" id="datetimepicker6" name="datetime" data-toggle="datetimepicker" data-target="#datetimepicker6" placeholder="Wybierz czas" required/>
+                    </div>
+                 <hr class="form-line">
+                    <div class="form-button-container">
+                        <button type="submit" class="btn btn-primary form-button" onclick="">Dodaj zadanie</button>
+                        <input type="button" value="Cofnij" class="btn btn-primary form-button" style="margin-top: 15px;" onclick="hide_front_form();">
                     </div>
                 </form>
             </div>
@@ -38,7 +73,7 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-                 <div class="card card-large" style="width: 900px;">
+                <div class="card card-large" style="width: 900px;">
                     <div class="card-title">
                         <h3>Zaplanowane zadania</h3>
                         <div id="task" class="button add-button" onclick="show_front_form('add-task');"><i class="mdi mdi-plus-circle-outline"></i></div>
@@ -69,6 +104,44 @@
                                  <td class="choose-time">{{ x.time }}</td>
                                  <td>{{ x.user }}</td>
                                  <td style="padding: auto;"><div id="task" class="button delete-button" onclick="delete_task({{ x.task_id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
+                             </tr>
+                         {% endfor %}
+                             </tbody>
+                         </table>
+                     {% endif %}
+                     </div>
+                 </div>
+                <div class="card card-large" style="width: 900px; margin-top: 100px;">
+                    <div class="card-title">
+                        <h3>Harmonogram</h3>
+                        <div id="task" class="button add-button" onclick="show_front_form('add-schedule');"><i class="mdi mdi-plus-circle-outline"></i></div>
+                    </div>
+                     <div class="card-content" style="border-right: none; flex-direction: column">
+                     {% if model['schedule']|length > 0 %}
+                         <table class="table table-striped">
+                             <thead>
+                             <tr>
+                                 <th scope="col">#</th>
+                                 {% if model['devices']|length > 1 %}
+                                 <th scope="col">Urządzenie</th>
+                                 {% endif %}
+                                 <th scope="col">Akcja</th>
+                                 <th scope="col">Pora dnia</th>
+                                 <th scope="col">Czas</th>
+                                 <th scope="col">Usuń</th>
+                              </tr>
+                             </thead>
+                             <tbody>
+                             {% for x in model['schedule'] %}
+                             <tr>
+                                 <th scope="row">{{ loop.index }}</th>
+                                 {% if model['devices']|length > 1 %}
+                                 <td>{{ model['devices_names'].get(x.device) }}</td>
+                                 {% endif %}
+                                 <td>{{ model['action_names'].get(x.action) }}</td>
+                                 <td>{{ model['hour_type_names'].get(x.hour_type) }}</td>
+                                 <td>{{ x.time_offset }} h</td>
+                                 <td style="padding: auto;"><div id="task" class="button delete-button" onclick="delete_schedule({{ x.id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
                              </tr>
                          {% endfor %}
                              </tbody>
