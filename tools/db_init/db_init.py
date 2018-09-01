@@ -1,5 +1,6 @@
 import sqlite3
 import sys
+import os
 from sqlite3 import Error
 
 
@@ -21,4 +22,5 @@ def create_connection(db_file, db_script):
 
 
 if __name__ == '__main__':
-    create_connection('asylum.sqlite', 'schema.sql')
+    current_dir = os.path.dirname(os.path.realpath(__file__)) + '\\'
+    create_connection(current_dir + 'asylum.sqlite', current_dir + 'schema.sql')

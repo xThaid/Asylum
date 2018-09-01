@@ -43,6 +43,7 @@ CREATE TABLE blinds_task_history(
   device INTEGER NOT NULL,
   action INTEGER NOT NULL,
   user_id INTEGER DEFAULT NULL,
+  schedule_id INTEGER DEFAULT NULL,
   status INTEGER NOT NULL,
   FOREIGN KEY(user_id) REFERENCES user(id)
 );
@@ -52,7 +53,9 @@ CREATE TABLE blinds_schedule(
   device INTEGER NOT NULL,
   action INTEGER NOT NULL,
   hour_type INTEGER NOT NULL,
-  time_offset INTEGER NOT NULL
+  time_offset INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES user(id)
 );
 
 COMMIT;

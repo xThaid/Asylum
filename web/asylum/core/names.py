@@ -1,4 +1,4 @@
-devices_names = {
+devices = {
     1: 'Mały pokój',
     2: 'Pokój Wojtek',
     3: 'Pokój Jakub - małe',
@@ -9,12 +9,12 @@ devices_names = {
     8: 'Jadalnia',
     9: 'Kuchnia'
 }
-action_names = {
+actions = {
     1: 'Otwórz',
     2: 'Zamknij',
     3: 'Zatrzymaj'
 }
-hour_type_names = {
+hour_types = {
     1: 'Świt',
     2: 'Wschód',
     3: 'Zenit',

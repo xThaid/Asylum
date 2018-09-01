@@ -1,6 +1,6 @@
 <header id="topbar">
     <div class="toogle-menu"><i class="mdi mdi-menu"></i></div>
-    {% if model['user']['role'] == 'admin' %}
+    {% if page_model['user']['role'] == 'admin' %}
         <a href="/admin" class="admin-panel-button">Panel administracyjny</a>
     {% endif %}
     <div id="user-icon" class="user-icon">

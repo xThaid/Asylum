@@ -1,9 +1,9 @@
 <div id="page-breadcrumb">
-    <h4 class="page-title">{{ model['page_name'] }}</h4>
+    <h4 class="page-title">{{ page_model['page_name'] }}</h4>
     <ol id="breadcrumb">
-        {% for page in model['breadcrumb'][:-1] %}
+        {% for page in page_model['breadcrumb'][:-1] %}
             <li class="breadcrumb-item"><a href="{{ page['href'] }}">{{ page['name'] }}</a></li>
         {% endfor %}
-        <li class="breadcrumb-item active">{{ model['breadcrumb'][-1]['name'] }}</li>
+        <li class="breadcrumb-item active">{{ page_model['breadcrumb'][-1]['name'] }}</li>
     </ol>
 </div>

@@ -24,6 +24,7 @@ class BlindsTaskHistory(db.Model):
     device = db.Column(db.Integer, nullable=False)
     action = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    schedule_id = db.Column(db.Integer, db.ForeignKey('BlindsSchedule.id'), nullable=True)
     status = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -38,6 +39,7 @@ class BlindsSchedule(db.Model):
     action = db.Column(db.Integer, nullable=False)
     hour_type = db.Column(db.Integer, nullable=False)
     time_offset = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
         return ('BlindsSchedule<id:%i ,device: %s, action: %s, hour_type: %s' %
