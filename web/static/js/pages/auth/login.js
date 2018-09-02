@@ -18,25 +18,7 @@ function completeRequestCallback(response) {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-    let message;
-    switch (response.responseJSON.code){
-        case 0:
-            window.location.replace(response.responseJSON['url']);
-            break;
-        case 1:
-            message  = 'Błąd podczas komunikacji z bazą danych';
-            break;
-        case 2:
-            message  = 'Nieprawidłowy login lub hasło';
-            break;
-        case 3:
-            message  = 'Brakujące parametry';
-            break;
-        default:
-            message  = 'Nieznany błąd';
-            break;
-    }
-    toastr[response.responseJSON.status](message, "Logowanie");
+    toastr[response.responseJSON.status](mresponse.responseJSON.message, "Logowanie");
 }
 $(document).ready(function(){
     $('form').submit(function () {

@@ -1,7 +1,9 @@
-from flask import render_template, request, jsonify, make_response, redirect, url_for, current_app
-from asylum.core.auth import authorize
-from asylum.core import auth
+from flask import render_template, request, current_app
 import jwt
+
+from asylum.core import auth, web_response
+from asylum.core.page_model import PageModel
+from asylum.core.auth import authorize
 
 
 def init_auth_routes(app):
@@ -16,42 +18,23 @@ def init_auth_routes(app):
                 or 'password' not in post_data\
                 or 'repassword' not in post_data \
                 or 'role' not in post_data:
-            response = {
-                'status': 'error',
-                'code': 3
-            }
-            return make_response(jsonify(response)), 400
 
-        response = auth.register(post_data['username'],
-                                 post_data['name'],
-                                 post_data['password'],
-                                 post_data['repassword'],
-                                 post_data['role'])
+            return web_response.bad_request()
 
-        return make_response(jsonify(response['response'])), response['response_code']
+        return auth.register(post_data['username'],
+                             post_data['name'],
+                             post_data['password'],
+                             post_data['repassword'],
+                             post_data['role'])
 
     @app.route('/auth/register', methods=['GET'])
     @authorize('admin', 'none')
     def register_page(context):
-        model = {
-            'page_name': 'Tworzenie konta',
-            'user': context['user'],
-            'breadcrumb': [
-                {
-                    'name': 'Strona główna',
-                    'href': '/home'
-                },
-                {
-                    'name': 'Panel administracyjny',
-                    'href': '/admin'
-                },
-                {
-                    'name': 'Rejestracja',
-                    'href': '/auth/register'
-                }
-            ]
-        }
-        return render_template('auth/register.html', model=model)
+        page_model = PageModel('Tworzenie konta', context['user'])\
+            .add_breadcrumb_page('Panel Administracyjny', '/admin')\
+            .add_breadcrumb_page('Rejestracja', '/auth/register')\
+            .to_dict()
+        return render_template('auth/register.html', page_model=page_model)
 
     @app.route('/auth/login', methods=['POST'])
     def login():
@@ -59,20 +42,9 @@ def init_auth_routes(app):
         if post_data is None \
                 or 'username' not in post_data \
                 or 'password' not in post_data:
-            response = {
-                'status': 'error',
-                'code': 3
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.bad_request()
 
-        login_status = auth.login(post_data['username'], post_data['password'])
-
-        if login_status['response']['code'] == 0:
-            res = make_response(jsonify(login_status['response']))
-            res.set_cookie(*login_status['cookie'], secure=False, httponly=True, samesite='strict')
-            return res, login_status['response_code']
-
-        return make_response(jsonify(login_status['response'])), login_status['response_code']
+        return auth.login(post_data['username'], post_data['password'])
 
     @app.route('/auth/login', methods=['GET'])
     def login_page():
@@ -86,10 +58,8 @@ def init_auth_routes(app):
         except:
             return render_template('auth/login.html')
 
-        return redirect(url_for('home'), code=302)
+        return web_response.redirect_to('home')
 
     @app.route('/auth/logout', methods=['GET'])
     def logout():
-        res = make_response(redirect(url_for('login'), code=302))
-        res.set_cookie('Authorization', '', expires=0, secure=False, httponly=True, samesite='strict')
-        return res
+        return web_response.logout()

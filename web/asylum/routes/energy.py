@@ -1,4 +1,6 @@
 from flask import render_template
+
+from asylum.core.page_model import PageModel
 from asylum.core.auth import authorize
 from asylum.core.utilities import unixtime_to_strftime
 from asylum.core.chart_data import ChartData
@@ -19,25 +21,18 @@ def init_energy_routes(app):
 
         chart_data = ChartData()\
             .set_labels(data[1][1::5])\
-            .add_dataset('Produkcja', data[0][1::5], 'rgba(20, 255, 50, 0.8)', 'rgba(40, 255, 70, 0.4)', 1)
+            .add_dataset('Produkcja', data[0][1::5], 'rgba(20, 255, 50, 0.8)', 'rgba(40, 255, 70, 0.4)', 1)\
+            .to_json()
 
-        model = {
-            'chart_data': chart_data.to_json(),
+        page_model = PageModel('Energia', context['user'])\
+            .add_breadcrumb_page('Energia', '/energy')\
+            .to_dict()
+
+        data_model = {
+            'chart_data': chart_data,
             'current_power': data[0][-1],
             'energy': data[2],
-            'max_power': max(data[0]),
-            'user': context['user'],
-            'page_name': 'Energia',
-            'breadcrumb': [
-                {
-                    'name': 'Strona główna',
-                    'href': '/home'
-                },
-                {
-                    'name': 'Energia',
-                    'href': '/energy'
-                }
-            ]
+            'max_power': max(data[0])
         }
 
-        return render_template('energy.html', model=model)
+        return render_template('energy.html', data_model=data_model, page_model=page_model)

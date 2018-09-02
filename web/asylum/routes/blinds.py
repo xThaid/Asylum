@@ -1,7 +1,8 @@
-from flask import render_template, request, make_response, jsonify, redirect, url_for
+from flask import render_template, request
 import time
 from datetime import timedelta
 
+from asylum.core import web_response
 from asylum.core import names
 from asylum.core.utilities import unixtime_to_strftime
 from asylum.core.auth import authorize
@@ -36,7 +37,7 @@ def init_blinds_routes(app):
         )
 
         if len(blinds_id_list) == 0:
-            return redirect(url_for('blinds_index'), code=302)
+            return web_response.redirect_to('blinds_index')
 
         task_query_result = BlindsTask\
             .query \
@@ -92,7 +93,6 @@ def init_blinds_routes(app):
     @authorize('user', 'admin')
     def add_blinds_task(context):
         post_data = request.get_json()
-
         if post_data is None \
                 or 'devices' not in post_data \
                 or 'timedate' not in post_data \
@@ -101,11 +101,8 @@ def init_blinds_routes(app):
                 or not names.actions.get(post_data['action']) \
                 or type(post_data['timedate']) is not int \
                 or post_data['timedate'] < time.time():
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+
+            return web_response.bad_request()
 
         devices_list = list(
             map(lambda x: BlindsTask(
@@ -121,28 +118,15 @@ def init_blinds_routes(app):
         )
 
         if len(devices_list) == 0:
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.bad_request()
 
         try:
             db.session.bulk_save_objects(devices_list)
-
             db.session.commit()
         except:
-            response = {
-                'status': 'error',
-                'code': 2
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.database_error()
 
-        response = {
-            'status': 'success',
-            'code': 0
-        }
-        return make_response(jsonify(response)), 201
+        return web_response.blind_task_added()
 
     @app.route('/blinds/manage/addSchedule', methods=['POST'])
     @authorize('user', 'admin')
@@ -158,11 +142,8 @@ def init_blinds_routes(app):
                 or names.actions.get(post_data['action'], 'fail') == 'fail' \
                 or names.hour_types.get(post_data['hour_type'], 'fail') == 'fail' \
                 or type(post_data['time_offset']) is not int:
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+
+            return web_response.bad_request()
 
         devices_list = list(
             map(lambda x: BlindsSchedule(
@@ -177,27 +158,15 @@ def init_blinds_routes(app):
         )
 
         if len(devices_list) == 0:
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.bad_request()
 
         try:
             db.session.bulk_save_objects(devices_list)
             db.session.commit()
         except:
-            response = {
-                'status': 'error',
-                'code': 2
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.database_error()
 
-        response = {
-            'status': 'success',
-            'code': 0
-        }
-        return make_response(jsonify(response)), 201
+        return web_response.blinds_schedule_added()
 
     @app.route('/blinds/manage/deleteTask', methods=['POST'])
     @authorize('user', 'admin')
@@ -208,27 +177,15 @@ def init_blinds_routes(app):
                 or 'task_id' not in post_data \
                 or type(post_data['task_id']) is not int:
 
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.bad_request()
 
         try:
             BlindsTask.query.filter_by(id=post_data['task_id']).delete()
             db.session.commit()
         except:
-            response = {
-                'status': 'error',
-                'code': 2
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.database_error()
 
-        response = {
-            'status': 'success',
-            'code': 0
-        }
-        return make_response(jsonify(response)), 200
+        return web_response.blinds_task_deleted()
 
     @app.route('/blinds/manage/deleteSchedule', methods=['POST'])
     @authorize('user', 'admin')
@@ -238,24 +195,12 @@ def init_blinds_routes(app):
                 or 'schedule_id' not in post_data \
                 or type(post_data['schedule_id']) is not int:
 
-            response = {
-                'status': 'error',
-                'code': 1
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.bad_request()
 
         try:
             BlindsSchedule.query.filter_by(id=post_data['schedule_id']).delete()
             db.session.commit()
         except:
-            response = {
-                'status': 'error',
-                'code': 2
-            }
-            return make_response(jsonify(response)), 400
+            return web_response.database_error()
 
-        response = {
-            'status': 'success',
-            'code': 0
-        }
-        return make_response(jsonify(response)), 200
+        return web_response.blinds_schedule_deleted()

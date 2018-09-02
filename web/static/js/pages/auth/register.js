@@ -1,5 +1,7 @@
 function completeRequestCallback(response) {
     $('form').each(function () { this.reset(); });
+    toastr[response.responseJSON.status](response.responseJSON.message, "Rejestracja");
+}
     toastr.options =
         {
             "closeButton": true,
@@ -18,48 +20,14 @@ function completeRequestCallback(response) {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-    let message;
-    switch (response.responseJSON.code){
-        case 0:
-            message  = 'Pomyślnie stworzono konto';
-            break;
-        case 1:
-            message  = 'Błąd podczas komunikacji z bazą danych';
-            break;
-        case 2:
-            message  = 'Podany login jest już zajęty';
-            break;
-        case 3:
-            message  = 'Brakujące parametry';
-            break;
-        case 4:
-            message  = 'Nieprawidłowy login';
-            break;
-        case 5:
-            message  = 'Nieprawidłowa nazwa użytkownika';
-            break;
-        case 6:
-            message  = 'Nieprawidłowe hasło';
-            break;
-        case 7:
-            message  = 'Podane hasła sa różne';
-            break;
-        case 8:
-            message  = 'Nieprawidłowa rola';
-            break;
-        case 9:
-            message  = 'Nie masz do tego uprawnień';
-            break;
-        default:
-            message  = 'Nieznany błąd';
-            break;
-    }
-    toastr[response.responseJSON.status](message, "Rejestracja")
-}
-
 $(document).ready(function(){
     $('form').submit(function () {
         const form =   $('form').serializeArray();
+
+        if(form[2].value !== form[3].value) {
+            toastr['warning']('Podane hasła nie są identyczne', "Rejestracja");
+            return false;
+        }
         const data = JSON.stringify(
             {
                 "username": form[0].value,

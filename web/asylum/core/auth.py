@@ -1,70 +1,29 @@
 import jwt
-from flask import current_app, request, redirect, url_for
+from flask import current_app, request
 import datetime
 from functools import wraps
-from asylum.models.user import User
-from asylum.models import db
 import re
+
+from asylum.core import web_response
+from asylum.models import db
+from asylum.models.user import User
 
 
 def register(username, name, password, repassword, role):
+
     if username is None \
        or name is None \
        or password is None \
        or repassword is None \
-       or role is None:
+       or role is None\
+       or re.match('^[a-zA-Z0-9]{3,20}$', username) is None\
+       or re.match('^[a-zA-Z0-9]{3,20}$', name) is None\
+       or re.match('^(?=.*[A-Za-z])(?=.*\d)[\S]{8,}$', password) is None\
+       or repassword != password \
+       or role not in ['admin', 'user', 'guest']:
 
-        return {
-            'response': {
-                'status': 'error',
-                'code': 3
-                },
-            'response_code': 400
-        }
-    if re.match('^[a-zA-Z0-9]{3,20}$', username) is None:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 4
-            },
-            'response_code': 400
-        }
+        return web_response.bad_request()
 
-    if re.match('^[a-zA-Z0-9]{3,20}$', name) is None:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 5
-            },
-            'response_code': 400
-        }
-
-    if re.match('^(?=.*[A-Za-z])(?=.*\d)[\S]{8,}$', password) is None:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 6
-            },
-            'response_code': 400
-        }
-
-    if repassword != password:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 7
-            },
-            'response_code': 400
-        }
-
-    if role not in ['admin', 'user', 'guest']:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 8
-            },
-            'response_code': 400
-        }
     user = User(
         username=username,
         name=name,
@@ -75,72 +34,25 @@ def register(username, name, password, repassword, role):
             db.session.add(user)
             db.session.commit()
 
-            return {
-                'response': {
-                    'status': 'success',
-                    'code': 0
-                },
-                'response_code': 201
-            }
+            return web_response.user_added()
         else:
-            return {
-                'response': {
-                    'status': 'error',
-                    'code': 2
-                },
-                'response_code': 400
-            }
+            return web_response.user_already_exist()
     except Exception:
-        return {
-            'response': {
-                'status': 'error',
-                'code': 1
-            },
-            'response_code': 500
-        }
+        return web_response.database_error()
 
 
 def login(username, password):
     if username is None or password is None:
-        return{
-            'response': {
-                'status': 'error',
-                'code': 3
-            },
-            'response_code': 400
-        }
+        return web_response.login_failed()
     try:
         user = User.query.filter_by(username=username).first()
         if user and user.verify_password(password):
             token = encode_auth_token(user)
-            return {
-                'response':
-                    {
-                        'status': 'success',
-                        'code': 0,
-                        'url': url_for('home')
-                    },
-                'cookie': ['Authorization', 'Bearer ' + token.decode('utf-8')],
-                'response_code': 200
-            }
+            return web_response.login_success(['Authorization', 'Bearer ' + token.decode('utf-8')])
         else:
-            return {
-                'response':
-                    {
-                        'status': 'error',
-                        'code': 2,
-                    },
-                'response_code': 401
-            }
+            return web_response.login_failed()
     except Exception:
-        return {
-            'response':
-                {
-                    'status': 'error',
-                    'code': 1
-                },
-            'response_code': 500
-        }
+        return web_response.database_error()
 
 
 def encode_auth_token(user):
@@ -176,17 +88,17 @@ def authorize(*roles):
                     }}
                 return f(context, *args, **kws)
             if 'Authorization' not in request.cookies:
-                return redirect(url_for('login'), code=302)
+                return web_response.redirect_to('login')
 
             data = request.cookies['Authorization']
             token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
             try:
                 context = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
             except:
-                return redirect(url_for('login'), code=302)
+                return web_response.redirect_to('login')
 
             if context['user']['role'] not in roles:
-                return redirect(url_for('login'), code=302)
+                return web_response.redirect_to('login')
 
             return f(context, *args, **kws)
 

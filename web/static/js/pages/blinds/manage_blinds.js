@@ -87,19 +87,7 @@ $('#form-add-task').submit(function () {
             location.reload();
         },
         error: function (response){
-        let message;
-        switch(response.responseJSON.code){
-            case 1:
-                message = "Niewłaściwe dane";
-                break;
-            case 2:
-                message = "Błąd bazy danych";
-                break;
-            default:
-                message = "Nieznany błąd";
-                break;
-        }
-        toastr[response.responseJSON.status](message, "Nie dodano zadania")
+            toastr[response.responseJSON.status](response.responseJSON.message, "Nie dodano zadania");
         }
     });
      return false;
@@ -124,19 +112,7 @@ $('#form-add-schedule').submit(function () {
             location.reload();
         },
         error: function (response){
-        let message;
-        switch(response.responseJSON.code){
-            case 1:
-                message = "Niewłaściwe dane";
-                break;
-            case 2:
-                message = "Błąd bazy danych";
-                break;
-            default:
-                message = "Nieznany błąd";
-                break;
-        }
-        toastr[response.responseJSON.status](message, "Nie dodano harmonogramu")
+            toastr[response.responseJSON.status](response.responseJSON.message, "Nie dodano harmonogramu");
         }
     });
      return false;
@@ -169,19 +145,7 @@ function delete_task(task_id) {
             location.reload();
         },
         error: function (response) {
-            let message;
-            switch (response.responseJSON.code) {
-                case 1:
-                    message = "Niewłaściwe dane";
-                    break;
-                case 2:
-                    message = "Błąd bazy danych";
-                    break;
-                default:
-                    message = "Nieznany błąd";
-                    break;
-            }
-            toastr[response.responseJSON.status](message, "Nie usunięto zadania")
+            toastr[response.responseJSON.status](response.responseJSON.message, "Nie usunięto zadania");
         }
     });
 }
@@ -201,19 +165,7 @@ function delete_task(task_id) {
              location.reload();
          },
          error: function (response) {
-             let message;
-             switch (response.responseJSON.code) {
-                 case 1:
-                     message = "Niewłaściwe dane";
-                     break;
-                 case 2:
-                     message = "Błąd bazy danych";
-                     break;
-                 default:
-                     message = "Nieznany błąd";
-                     break;
-             }
-             toastr[response.responseJSON.status](message, "Nie usunięto harmonogramu")
+             toastr[response.responseJSON.status](response.responseJSON.message, "Nie usunięto harmonogramu");
          }
      });
  }
