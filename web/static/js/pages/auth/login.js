@@ -18,7 +18,10 @@ function completeRequestCallback(response) {
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-    toastr[response.responseJSON.status](mresponse.responseJSON.message, "Logowanie");
+    toastr[response.responseJSON.status](response.responseJSON.message, "Logowanie");
+    if(response.responseJSON.status === 'success'){
+        window.location.reload();
+    }
 }
 $(document).ready(function(){
     $('form').submit(function () {

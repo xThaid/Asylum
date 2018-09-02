@@ -11,7 +11,7 @@ def database_error():
 
 
 def redirect_to(function_name):
-    redirect(url_for(function_name), code=302)
+    return redirect(url_for(function_name), code=302)
 
 
 def bad_request():

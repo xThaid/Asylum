@@ -100,7 +100,7 @@ $('#form-add-schedule').submit(function () {
             'devices': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
             "action": parseInt(form[1].value, 10),
             'hour_type': parseInt(form[2].value, 10),
-            'time_offset':  moment.duration(form[3].value, 'HH:mm').asMinutes()
+            'time_offset': (($('#change-sign').html() === "+") ? 1 : -1) * moment.duration(form[3].value, 'HH:mm').asMinutes()
         });
     $.ajax({
         url         : "addSchedule",

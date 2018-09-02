@@ -141,7 +141,7 @@
                                  {% endif %}
                                  <td>{{ data_model['names'].actions.get(x.action) }}</td>
                                  <td>{{ data_model['names'].hour_types.get(x.hour_type) }}</td>
-                                 <td>{{ x.time_offset }} h</td>
+                                 <td>{{ x.time_offset_sign + x.time_offset }} h</td>
                                  <td>{{ x.user }}</td>
                                  <td style="padding: auto;"><div id="task" class="button delete-button" onclick="delete_schedule({{ x.id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
                              </tr>
