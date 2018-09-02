@@ -108,8 +108,15 @@ def init_blinds_routes(app):
             return make_response(jsonify(response)), 400
 
         devices_list = list(
-            map(lambda x: int(x), list(
-                filter(lambda x: x.isdigit() and names.devices.get(int(x)), post_data['devices']))
+            map(lambda x: BlindsTask(
+                    time=post_data['timedate'],
+                    device=x,
+                    action=post_data['action'],
+                    user_id=context['user']['id'],
+                    timeout=5,
+                    active=True
+                ), list(
+                filter(lambda x: names.devices.get(x), post_data['devices']))
                 )
         )
 
@@ -121,16 +128,7 @@ def init_blinds_routes(app):
             return make_response(jsonify(response)), 400
 
         try:
-            for device in devices_list:
-                task = BlindsTask(
-                    time=post_data['timedate'],
-                    device=device,
-                    action=post_data['action'],
-                    user_id=context['user']['id'],
-                    timeout=5,
-                    active=True
-                )
-                db.session.add(task)
+            db.session.bulk_save_objects(devices_list)
 
             db.session.commit()
         except:
@@ -174,7 +172,7 @@ def init_blinds_routes(app):
                     time_offset=post_data['time_offset'],
                     user_id=context['user']['id']
                 ), list(
-                filter(lambda x: x.isdigit() and names.devices.get(int(x)), post_data['devices']))
+                filter(lambda x: names.devices.get(x), post_data['devices']))
                 )
         )
 
@@ -186,7 +184,7 @@ def init_blinds_routes(app):
             return make_response(jsonify(response)), 400
 
         try:
-            map(lambda x: db.session.add(x), devices_list)
+            db.session.bulk_save_objects(devices_list)
             db.session.commit()
         except:
             response = {

@@ -6,12 +6,12 @@ class PageModel:
     def __init__(self, page_name, user):
         self.user = user
         self.page_name = page_name
-        self.breadcrumb.append(
+        self.breadcrumb = [
             {
                 'name': 'Strona główna',
                 'href': '/home'
             }
-        )
+        ]
 
     def add_breadcrumb_page(self, name, href):
         self.breadcrumb.append(
