@@ -1,30 +1,20 @@
 from astral import Location
-import sqlite3
 from datetime import datetime
 import configparser
+import os
 
-
-def create_connection(db_file):
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except sqlite3.Error as e:
-        print(e)
-
-    return None
-
+import db
 
 config = configparser.ConfigParser()
-config.read("../../config.ini")
+config.read(os.environ['ASYLUM_CONFIG'])
 
 loc = Location()
 loc.latitude = float(config['LOCATION']['Latitude'])
 loc.longitude = float(config['LOCATION']['Longitude'])
 sun = loc.sun()
 
-database = config['DATABASE']['Path']
-conn = create_connection(database)
-with conn:
+conn = db.create_connection()
+try:
     cur = conn.cursor()
     cur.execute("SELECT * FROM blinds_schedule")
 
@@ -37,7 +27,8 @@ with conn:
             time = 0
             now = datetime.now()
             if row[3] == 0:
-                time = now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp() + row[4]
+                time = now.replace(hour=0, minute=0, second=0, microsecond=0) \
+                    .timestamp() + row[4]
             elif row[3] == 1:
                 time = sun['dawn'].timestamp() + row[4]
             elif row[3] == 2:
@@ -50,7 +41,8 @@ with conn:
             if time < now.timestamp():
                 time += 86400
 
-            cur.execute("INSERT INTO blinds_task(time, device, action, schedule_id, timeout) VALUES (?, ?, ?, ?, ?)",
-                        (int(time), row[1], row[2], row[0], 30 * 60))
-conn.commit()
-conn.close()
+            cur.execute("INSERT INTO blinds_task (time, device, action, schedule_id, timeout) \
+                VALUES (?, ?, ?, ?, ?)", (int(time), row[1], row[2], row[0], 30 * 60))
+finally:
+    conn.commit()
+    conn.close()
