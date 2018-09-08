@@ -28,7 +28,7 @@ $(document).ready(function(){
         const form =   $('form').serializeArray();
         const data = JSON.stringify(
             {
-                "username": form[0].value,
+                "login": form[0].value,
                 "password": form[1].value
             });
         $.ajax({

@@ -2,36 +2,21 @@ import jwt
 from flask import current_app, request
 import datetime
 from functools import wraps
-import re
 
 from asylum.core import web_response
 from asylum.models import db
 from asylum.models.user import User
 
 
-def register(username, name, password, repassword, role):
-
-    if username is None \
-       or name is None \
-       or password is None \
-       or repassword is None \
-       or role is None\
-       or re.match('^[a-zA-Z0-9]{3,20}$', username) is None\
-       or re.match('^[a-zA-Z0-9]{3,20}$', name) is None\
-       or re.match('^(?=.*[A-Za-z])(?=.*\d)[\S]{8,}$', password) is None\
-       or repassword != password \
-       or role not in ['admin', 'user', 'guest']:
-
-        return web_response.bad_request()
-
-    user = User(
-        username=username,
-        name=name,
-        role=role
-    ).hash_password(password)
+def register(username, name, password, role):
     try:
         if not User.query.filter_by(username=username).first():
-            db.session.add(user)
+            db.session.add(User(
+                username=username,
+                name=name,
+                role=role
+            ).hash_password(password))
+
             db.session.commit()
 
             return web_response.user_added()
@@ -42,8 +27,6 @@ def register(username, name, password, repassword, role):
 
 
 def login(username, password):
-    if username is None or password is None:
-        return web_response.login_failed()
     try:
         user = User.query.filter_by(username=username).first()
         if user and user.verify_password(password):

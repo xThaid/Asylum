@@ -76,7 +76,7 @@
                 <div class="card card-large" style="width: 900px;">
                     <div class="card-title">
                         <h3>Zaplanowane zadania</h3>
-                        <div id="task" class="button add-button" onclick="show_front_form('add-task');"><i class="mdi mdi-plus-circle-outline"></i></div>
+                        <div id="task" class="button add-button" onclick="show_front_form('add-task');$('#datetimepicker5').datetimepicker('minDate', moment(moment().add(1, 'minutes').format('DD-MM-YYYY HH:mm'), 'DD-MM-YYYY HH::mm'));"><i class="mdi mdi-plus-circle-outline"></i></div>
                     </div>
                      <div class="card-content" style="border-right: none; flex-direction: column">
                      {% if data_model['user_tasks']|length > 0 %}

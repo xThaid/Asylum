@@ -30,7 +30,7 @@ $(document).ready(function(){
         }
         const data = JSON.stringify(
             {
-                "username": form[0].value,
+                "login": form[0].value,
                 "name": form[1].value,
                 'password': form[2].value,
                 'repassword': form[3].value,

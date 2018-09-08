@@ -2,6 +2,7 @@ from flask import render_template, request, current_app
 import jwt
 
 from asylum.core import auth, web_response
+from asylum.core import validate_json
 from asylum.core.page_model import PageModel
 from asylum.core.auth import authorize
 
@@ -11,21 +12,15 @@ def init_auth_routes(app):
     @app.route('/auth/register', methods=['POST'])
     @authorize('admin', 'none')
     def register(context):
-        post_data = request.get_json()
-        if post_data is None\
-                or 'username' not in post_data\
-                or 'name' not in post_data\
-                or 'password' not in post_data\
-                or 'repassword' not in post_data \
-                or 'role' not in post_data:
+        json = request.get_json()
 
+        if not validate_json.validate_register(json):
             return web_response.bad_request()
 
-        return auth.register(post_data['username'],
-                             post_data['name'],
-                             post_data['password'],
-                             post_data['repassword'],
-                             post_data['role'])
+        return auth.register(json['login'],
+                             json['name'],
+                             json['password'],
+                             json['role'])
 
     @app.route('/auth/register', methods=['GET'])
     @authorize('admin', 'none')
@@ -38,13 +33,12 @@ def init_auth_routes(app):
 
     @app.route('/auth/login', methods=['POST'])
     def login():
-        post_data = request.get_json()
-        if post_data is None \
-                or 'username' not in post_data \
-                or 'password' not in post_data:
+        json = request.get_json()
+
+        if not validate_json.validate(validate_json.login_schema, json):
             return web_response.bad_request()
 
-        return auth.login(post_data['username'], post_data['password'])
+        return auth.login(json['login'], json['password'])
 
     @app.route('/auth/login', methods=['GET'])
     def login_page():

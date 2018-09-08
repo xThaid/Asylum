@@ -90,8 +90,7 @@ def login_success(cookie):
     res = make_response(jsonify(
         {
             'status': 'success',
-            'message': 'Zalogowano!',
-            'url': url_for('home')
+            'message': 'Zalogowano!'
         }
     ), 200)
     res.set_cookie(*cookie, secure=False, httponly=True, samesite='strict')

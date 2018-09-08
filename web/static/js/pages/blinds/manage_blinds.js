@@ -2,7 +2,7 @@ $(document).ready( function () {
     $('#zero_config').DataTable();
     $('#datetimepicker5').datetimepicker({
         format: 'DD-MM-YYYY HH:mm',
-        minDate: moment(moment().format("DD-MM-YYYY"), "DD-MM-YYYY"),
+        minDate: moment(moment().add(1, 'minutes').format("DD-MM-YYYY HH:mm"), "DD-MM-YYYY HH::mm"),
                 icons: {
                     time: "fas fa-clock",
                     date: "fa fa-calendar",
@@ -73,9 +73,9 @@ $('#form-add-task').submit(function () {
     const form =   $('#form-add-task').serializeArray();
     const data = JSON.stringify(
         {
-            'devices': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
-            "timedate": moment(form[1].value, 'DD-MM-YYYY HH:mm').unix(),
-            "action": parseInt(form[2].value, 10)
+            'devices_ids': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
+            "unix_time": moment(form[1].value, 'DD-MM-YYYY HH:mm').unix(),
+            "action_id": parseInt(form[2].value, 10)
         });
     $.ajax({
         url         : "addTask",
@@ -97,8 +97,8 @@ $('#form-add-schedule').submit(function () {
     const form =   $('#form-add-schedule').serializeArray();
     const data = JSON.stringify(
         {
-            'devices': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
-            "action": parseInt(form[1].value, 10),
+            'devices_ids': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
+            "action_id": parseInt(form[1].value, 10),
             'hour_type': parseInt(form[2].value, 10),
             'time_offset': (($('#change-sign').html() === "+") ? 1 : -1) * moment.duration(form[3].value, 'HH:mm').asMinutes()
         });
