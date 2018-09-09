@@ -69,7 +69,20 @@ def authorize(*roles):
                         'name': 'none',
                         'role': 'none'
                     }}
-                return f(context, *args, **kws)
+
+                if 'Authorization' not in request.cookies:
+                    return f(context, *args, **kws)
+
+                data = request.cookies['Authorization']
+                token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
+
+                try:
+                    jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
+                except:
+                    return f(context, *args, **kws)
+
+                return web_response.redirect_to('home')
+
             if 'Authorization' not in request.cookies:
                 return web_response.redirect_to('login')
 
