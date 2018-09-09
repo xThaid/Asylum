@@ -1,16 +1,14 @@
 from astral import Location
 from datetime import datetime
-import configparser
-import os
 
+import config
 import db
 
-config = configparser.ConfigParser()
-config.read(os.environ['ASYLUM_CONFIG'])
+cfg = config.loadConfig()
 
 loc = Location()
-loc.latitude = float(config['LOCATION']['Latitude'])
-loc.longitude = float(config['LOCATION']['Longitude'])
+loc.latitude = float(cfg['LOCATION']['Latitude'])
+loc.longitude = float(cfg['LOCATION']['Longitude'])
 sun = loc.sun()
 
 conn = db.create_connection()

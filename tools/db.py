@@ -1,12 +1,11 @@
 import sqlite3
-import configparser
-import os
+
+import config
 
 
 def create_connection():
-    config = configparser.ConfigParser()
-    config.read(os.environ['ASYLUM_CONFIG'])
-    db_file = config['DATABASE']['Path']
+    cfg = config.loadConfig()
+    db_file = cfg['DATABASE']['Path']
     try:
         conn = sqlite3.connect(db_file)
         return conn
