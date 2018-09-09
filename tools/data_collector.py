@@ -1,10 +1,9 @@
 from sqlite3 import Error
 import requests
 import re
-import configparser
-import os
 import sys
 
+import config
 import db
 
 ENERGY_IMPORT_OFFSET = 471851
@@ -35,11 +34,10 @@ def collect_emeter(url):
 
 
 def main():
-    config = configparser.ConfigParser()
-    config.read(os.environ['ASYLUM_CONFIG'])
+    cfg = config.loadConfig()
 
-    energy_production = collect_flara(config['SUBSYSTEMS']['flara_url'])
-    emeter_reading = collect_emeter(config['SUBSYSTEMS']['emeter_url'])
+    energy_production = collect_flara(cfg['SUBSYSTEMS']['flara_url'])
+    emeter_reading = collect_emeter(cfg['SUBSYSTEMS']['emeter_url'])
     if energy_production is None or emeter_reading is None:
         print("Cannot collect data. Quiting...")
         sys.exit(1)
