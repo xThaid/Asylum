@@ -1,8 +1,8 @@
 devices = {
     1: 'Mały pokój',
     2: 'Pokój Wojtek',
-    3: 'Pokój Jakub - małe',
-    4: 'Pokój Jakub - duże',
+    3: 'Pokój Jakub - duże',
+    4: 'Pokój Jakub - małe',
     5: 'Sypialnia',
     6: 'Balkon',
     7: 'Salon',
