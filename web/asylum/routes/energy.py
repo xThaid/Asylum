@@ -16,35 +16,16 @@ def init_energy_routes(app):
 
         return render_template('energy.html', page_model=page_model)
 
-    @app.route('/energy/getCurrentData', methods=['GET'])
+    @app.route('/energy/getCurrentPowerData', methods=['GET'])
     @authorize('guest', 'user', 'admin')
-    def get_current_energy_data(context):
+    def get_current_power_data(context):
         current_data = energy_data.get_data()
-        current_energy_data = {
-            'production':
-                {
-                    'current': current_data['power_production'],
-                    'max': 1000,
-                    'average': 1000,
-                    'energy': 12.12
-                },
-            'consumption':
-                {
-                    'current': 1000,
-                    'max': 1000,
-                    'average': 1000,
-                    'energy': 12.12
-                },
-            'summary':
-                {
-                    'power_use': 1000,
-                    'power_import': 1000,
-                    'power_export': 1000,
-                    'power_store': 1000,
-                    'energy_use': 11.11,
-                    'energy_import': 11.11,
-                    'energy_export': 11.11,
-                    'energy_store': 11.11,
-                }
-            }
-        return jsonify(current_energy_data)
+
+        return jsonify({
+            'production': current_data['power_production'],
+            'consumption': current_data['power_consumption'],
+            'use': current_data['power_use'],
+            'import': current_data['power_import'],
+            'export': current_data['power_export'],
+            'store': current_data['power_store']
+            })
