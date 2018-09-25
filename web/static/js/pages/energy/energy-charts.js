@@ -63,7 +63,16 @@ $('.peity-bar-orange').peity('bar',{
 
 function updateCell(name, value){
     let maxPower = 4000;
-    $('#' + name + '_peity').text(value + "/" + maxPower).change();
+    let peityValue = value;
+    if(value < 0){
+        $('#' + name + '_peity').peity('donut',{
+            fill: ["#eeeeee", "#E1A500"],
+            radius: 40,
+            innerRadius: 33
+        });
+        peityValue = maxPower + value;
+    }
+    $('#' + name + '_peity').text(peityValue + "/" + maxPower).change();
     $('#' + name).text(value);
 }
 

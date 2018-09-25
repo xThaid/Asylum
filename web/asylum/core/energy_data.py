@@ -20,7 +20,7 @@ def get_flara_data():
         else:
             return None
 
-    except requests.exceptions.RequestException:
+    except (requests.exceptions.RequestException, AttributeError):
         return None
 
 
@@ -46,13 +46,16 @@ def get_emeter_data():
             'total_energy_import': int(float(emeter_reading['37']) * 1000) + ENERGY_IMPORT_OFFSET,
             'total_energy_export': int(float(emeter_reading['38']) * 1000) + ENERGY_EXPORT_OFFSET
         }
-    except requests.exceptions.RequestException as e:
+    except (requests.exceptions.RequestException, ValueError) as e:
         return None
 
 
 def get_data():
     emeter_data = get_emeter_data()
     flara_data = get_flara_data()
+
+    if emeter_data is None or flara_data is None:
+        return None
 
     return {
         'power_consumption': emeter_data['power_import'] + flara_data['power'] - emeter_data['power_export'],

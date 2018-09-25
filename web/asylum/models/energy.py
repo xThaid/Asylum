@@ -6,23 +6,17 @@ class Energy(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.Integer, index=True, unique=True, nullable=False)
     production = db.Column(db.Integer, nullable=False)
-    imports = db.Column(db.Integer, nullable=False)
-    exports = db.Column(db.Integer, nullable=False)
+    import_ = db.Column('import', db.Integer, nullable=False)
+    export = db.Column(db.Integer, nullable=False)
 
     @staticmethod
-    def get_last_rows(attributes, from_date, count):
-        power_production = __class__ \
-            .query.with_entities(__class__.id, *attributes) \
-            .order_by(__class__.id.desc()) \
-            .limit(from_date) \
-            .from_self() \
-            .order_by(__class__.id) \
-            .limit(count) \
-            .all()
-        data_list = []
-        for x in range(1, len(attributes) + 1):
-            data_list.append([o[x] for o in power_production])
-        return data_list
+    def get_last_rows(from_date, count=None):
+        query = __class__.query.filter(__class__.time >= from_date)
+
+        if count is not None:
+            query = query.limit(count)
+
+        return query.all()
 
     def __repr__(self):
         return ('Energy<id:%i ,time: %s, production: %s, import: %s, export: %s' %
