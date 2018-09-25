@@ -1,5 +1,4 @@
 from flask import render_template, request
-import time
 from datetime import timedelta
 
 from asylum.core import web_response

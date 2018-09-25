@@ -1,6 +1,6 @@
 import configparser
 
-CONFIG_LOCATION = "/home/thaid/Dev/repos/Asylum/config.ini"
+CONFIG_LOCATION = "../config.ini"
 
 
 def loadConfig():

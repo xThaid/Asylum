@@ -1,10 +1,8 @@
-from flask import render_template
+from flask import render_template, jsonify
 
 from asylum.core.page_model import PageModel
 from asylum.core.auth import authorize
-from asylum.core.utilities import unixtime_to_strftime
-from asylum.core.chart_data import ChartData
-from asylum.models.energy import Energy
+from asylum.core import energy_data
 
 
 def init_energy_routes(app):
@@ -12,27 +10,41 @@ def init_energy_routes(app):
     @app.route('/energy', methods=['GET'])
     @authorize('guest', 'user', 'admin')
     def energy(context):
-        data = Energy.get_last_rows([Energy.production, Energy.time], 1440, 1440)
-        data[1] = unixtime_to_strftime(data[1], '%H:%M')
-        data.append(Energy.get_last_rows([Energy.production], 11520, 11520)[0][1::1440])
-        data[2] = [(y - x) / 1000 for x, y in zip(data[2], data[2][1:])]
-        for i in range(3):
-            data[i] = [[1, 0], data[i]][data[i] is None]
-
-        chart_data = ChartData()\
-            .set_labels(data[1][1::5])\
-            .add_dataset('Produkcja', data[0][1::5], 'rgba(20, 255, 50, 0.8)', 'rgba(40, 255, 70, 0.4)', 1)\
-            .to_json()
-
         page_model = PageModel('Energia', context['user'])\
             .add_breadcrumb_page('Energia', '/energy')\
             .to_dict()
 
-        data_model = {
-            'chart_data': chart_data,
-            'current_power': data[0][-1],
-            'energy': data[2],
-            'max_power': max(data[0])
-        }
+        return render_template('energy.html', page_model=page_model)
 
-        return render_template('energy.html', data_model=data_model, page_model=page_model)
+    @app.route('/energy/getCurrentData', methods=['GET'])
+    @authorize('guest', 'user', 'admin')
+    def get_current_energy_data(context):
+        current_data = energy_data.get_data()
+        current_energy_data = {
+            'production':
+                {
+                    'current': current_data['power_production'],
+                    'max': 1000,
+                    'average': 1000,
+                    'energy': 12.12
+                },
+            'consumption':
+                {
+                    'current': 1000,
+                    'max': 1000,
+                    'average': 1000,
+                    'energy': 12.12
+                },
+            'summary':
+                {
+                    'power_use': 1000,
+                    'power_import': 1000,
+                    'power_export': 1000,
+                    'power_store': 1000,
+                    'energy_use': 11.11,
+                    'energy_import': 11.11,
+                    'energy_export': 11.11,
+                    'energy_store': 11.11,
+                }
+            }
+        return jsonify(current_energy_data)
