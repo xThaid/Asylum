@@ -84,4 +84,9 @@ function update_data(){
             updateCell('summary_power_store', response.store);
         }
     });
+    setTimeout(update_data, 1000);
 }
+
+jQuery(document).ready(function(){
+	update_data()
+});
