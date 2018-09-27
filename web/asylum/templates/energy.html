@@ -219,6 +219,12 @@
                         </div>
                     </div>
                 </fieldset>
+                <div class="card card-large card-chart" style="width: 900px;">
+                    <div class="card-title">
+                        <h3>Wykresy mocy</h3>
+                    </div>
+                <canvas id="power-today-chart"></canvas>
+                </div>
             </div>
             {#% include 'shared/footer.html' %#}
         </div>
@@ -233,6 +239,7 @@
     <script type="text/javascript" src="/static/js/start.js"></script>
     <script type="text/javascript" src="/static/js/pages/energy/energy-charts.js"></script>
     <script type="text/javascript">
+        genChart({{ data_model['chart_data']|safe }})
     </script>
 
 </body>

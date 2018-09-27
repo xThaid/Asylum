@@ -498,3 +498,8 @@ body{
     width: inherit;
     color: #3E5569;
 }
+
+.card-chart {
+    height: 400px;
+    width: calc(100% - 50px) !important;
+}

@@ -7,15 +7,25 @@ function genChart(data) {
         data: data,
         options: {
             legend: {
-                display: false
+                display: true
             },
+             tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} W`,
+                },
+              },
             maintainAspectRatio: false,
             responsive: true,
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
-                    }
+                        callback: function(value) {
+                            return value + ' W';
+                        },
+                        beginAtZero: true,
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    },
                 }],
                 xAxes:[{
                     ticks:{
