@@ -7,15 +7,25 @@ function genChart(data) {
         data: data,
         options: {
             legend: {
-                display: false
+                display: true
             },
+             tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} W`,
+                },
+              },
             maintainAspectRatio: false,
             responsive: true,
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
-                    }
+                        callback: function(value) {
+                            return value + ' W';
+                        },
+                        beginAtZero: true,
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    },
                 }],
                 xAxes:[{
                     ticks:{
@@ -63,7 +73,16 @@ $('.peity-bar-orange').peity('bar',{
 
 function updateCell(name, value){
     let maxPower = 4000;
-    $('#' + name + '_peity').text(value + "/" + maxPower).change();
+    let peityValue = value;
+    if(value < 0){
+        $('#' + name + '_peity').peity('donut',{
+            fill: ["#eeeeee", "#E1A500"],
+            radius: 40,
+            innerRadius: 33
+        });
+        peityValue = maxPower + value;
+    }
+    $('#' + name + '_peity').text(peityValue + "/" + maxPower).change();
     $('#' + name).text(value);
 }
 

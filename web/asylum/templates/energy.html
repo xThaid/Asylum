@@ -31,10 +31,10 @@
                             <div class="card-peity-title">Moc maksymalna</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span id="production_max_peity" class="peity-donut-green">0/4000</span>
+                                    <span id="production_max_peity" class="peity-donut-green">{{ data_model['power_production_max'] }}/4000</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="production_max" class="card-peity-number">0</div>
+                                    <div id="production_max" class="card-peity-number">{{ data_model['power_production_max'] }}</div>
                                     <div class="card-peity-unit">[W]</div>
                                 </div>
                             </div>
@@ -43,10 +43,10 @@
                             <div class="card-peity-title">Moc średnia</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span id="production_average_peity" class="peity-donut-green">0/4000</span>
+                                    <span id="production_average_peity" class="peity-donut-green">{{ data_model['power_production_average'] }}/4000</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="production_average" class="card-peity-number">0</div>
+                                    <div id="production_average" class="card-peity-number">{{ data_model['power_production_average'] }}</div>
                                     <div class="card-peity-unit">[W]</div>
                                 </div>
                             </div>
@@ -55,10 +55,10 @@
                             <div class="card-peity-title">Energia</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-green">0,0,0,0,0</span>
+                                    <span class="peity-bar-green">{{ data_model['energy_production'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="production_energy" class="card-peity-number">0.00</div>
+                                    <div id="production_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_production_total']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -84,10 +84,10 @@
                             <div class="card-peity-title">Moc maksymalna</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span id="consumption_max_peity" class="peity-donut-red">0/4000</span>
+                                    <span id="consumption_max_peity" class="peity-donut-red">{{ data_model['power_consumption_max'] }}/4000</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="consumption_max" class="card-peity-number">0</div>
+                                    <div id="consumption_max" class="card-peity-number">{{ data_model['power_consumption_max'] }}</div>
                                     <div class="card-peity-unit">[W]</div>
                                 </div>
                             </div>
@@ -96,10 +96,10 @@
                             <div class="card-peity-title">Moc średnia</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span id="consumption_average_peity" class="peity-donut-red">0/4000</span>
+                                    <span id="consumption_average_peity" class="peity-donut-red">{{ data_model['power_consumption_average'] }}/4000</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="consumption_average" class="card-peity-number">0</div>
+                                    <div id="consumption_average" class="card-peity-number">{{ data_model['power_consumption_average'] }}</div>
                                     <div class="card-peity-unit">[W]</div>
                                 </div>
                             </div>
@@ -108,10 +108,10 @@
                             <div class="card-peity-title">Energia</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-red">0,0,0,0,0</span>
+                                    <span class="peity-bar-red">{{ data_model['energy_consumption'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="consumption_energy" class="card-peity-number">0.00</div>
+                                    <div id="consumption_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_consumption_total']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -173,11 +173,11 @@
                             <div class="card-peity-title">Energia wykorzystana</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">0,0,0,0,0</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_use'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_use" class="card-peity-number">0.00</div>
-                                    <div class="card-peity-unit">[kWH]</div>
+                                    <div id="summary_energy_use" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_use_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
                         </div>
@@ -185,10 +185,10 @@
                             <div class="card-peity-title">Energia pobrana</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">0,0,0,0,0</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_import'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_import" class="card-peity-number">0.00</div>
+                                    <div id="summary_energy_import" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_import_total']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -197,10 +197,10 @@
                             <div class="card-peity-title">Energia oddana</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">0,0,0,0,0</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_export'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_export" class="card-peity-number">0.00</div>
+                                    <div id="summary_energy_export" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_export_total']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -209,16 +209,22 @@
                             <div class="card-peity-title">Energia zmagazynowana</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">0,0,0,0,0</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_stored'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_store" class="card-peity-number">0.00</div>
+                                    <div id="summary_energy_store" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_stored_total']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </fieldset>
+                <div class="card card-large card-chart" style="width: 900px;">
+                    <div class="card-title">
+                        <h3>Wykresy mocy</h3>
+                    </div>
+                <canvas id="power-today-chart"></canvas>
+                </div>
             </div>
             {#% include 'shared/footer.html' %#}
         </div>
@@ -233,6 +239,7 @@
     <script type="text/javascript" src="/static/js/start.js"></script>
     <script type="text/javascript" src="/static/js/pages/energy/energy-charts.js"></script>
     <script type="text/javascript">
+        genChart({{ data_model['chart_data']|safe }})
     </script>
 
 </body>

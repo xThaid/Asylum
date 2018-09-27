@@ -1,7 +1,4 @@
 class PageModel:
-    user = {}
-    page_name = ''
-    breadcrumb = []
 
     def __init__(self, page_name, user):
         self.user = user
