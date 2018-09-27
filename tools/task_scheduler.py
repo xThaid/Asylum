@@ -4,7 +4,7 @@ from datetime import datetime
 import config
 import db
 
-cfg = config.loadConfig()
+cfg = config.config
 
 loc = Location()
 loc.latitude = float(cfg['LOCATION']['Latitude'])

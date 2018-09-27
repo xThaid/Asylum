@@ -4,7 +4,7 @@ import config
 
 
 def create_connection():
-    cfg = config.loadConfig()
+    cfg = config.config
     db_file = cfg['DATABASE']['Path']
     try:
         conn = sqlite3.connect(db_file)

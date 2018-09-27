@@ -34,7 +34,7 @@ def collect_emeter(url):
 
 
 def main():
-    cfg = config.loadConfig()
+    cfg = config.config
 
     energy_production = collect_flara(cfg['SUBSYSTEMS']['flara_url'])
     emeter_reading = collect_emeter(cfg['SUBSYSTEMS']['emeter_url'])
