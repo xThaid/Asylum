@@ -2,10 +2,13 @@ import serial
 import socket
 import sys
 import os
+import log
 import jsonrpc
 import config
 
 from concurrent.futures import ThreadPoolExecutor
+
+logger = log.setupLogger('asylumd')
 
 SHUTTER_REPEAT_COUNT = 5
 GATE_REPEAT_COUNT = 3
@@ -16,32 +19,34 @@ class Arduino:
         try:
             self.serial = serial.Serial("/dev/serial0", 115200, timeout=1)
         except serial.SerialException:
-            print("Failed to open serial port")
+            logger.error("Failed to open serial port")
             sys.exit(1)
 
     def ping(self):
+        logger.debug("called ping")
         data = "0"
         self.serial.write((data + '\n').encode())
-        print(self.serial.readline())
+        logger.debug(self.serial.readline())
+        return "pong"
 
     def shutterAction(self, id, action, repeatCount=SHUTTER_REPEAT_COUNT):
-        print("shutter " + id + " " + action)
+        logger.debug("called shutter %d with action %d", id, action)
         data = "1"
         data += (str(id))
         data += (str(action))
         data += (str(repeatCount))
         self.serial.write((data + '\n').encode())
-        print(self.serial.readline())
-        print(self.serial.readline())
+        logger.debug(self.serial.readline())
+        logger.debug(self.serial.readline())
 
     def gateAction(self, id, repeatCount=GATE_REPEAT_COUNT):
-        print("gate " + id)
+        logger.debug("called gate %d", id)
         data = "2"
         data += (str(id))
         data += (str(repeatCount))
         self.serial.write((data + '\n').encode())
-        print(self.serial.readline())
-        print(self.serial.readline())
+        logger.debug(self.serial.readline())
+        logger.debug(self.serial.readline())
 
 
 class Server:
@@ -79,6 +84,7 @@ class Server:
 
 
 def main():
+    logger.info("Starting asylumd")
     arduino = Arduino()
     server = Server(config.config['ASYLUMD']['socket_loc'])
     server.addMethod(arduino.ping)

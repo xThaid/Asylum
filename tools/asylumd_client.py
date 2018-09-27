@@ -29,8 +29,7 @@ def shutterAction(id, action):
         return
     req = jsonrpc.JsonRpcRequest(
         method="shutterAction",
-        params=[id, action],
-        id=0)
+        params=[id, action])
     sendToServer(req)
 
 
@@ -39,8 +38,7 @@ def gateAction(id):
         return
     req = jsonrpc.JsonRpcRequest(
         method="gateAction",
-        params=[id],
-        id=0)
+        params=[id])
     sendToServer(req)
 
 
