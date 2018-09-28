@@ -106,7 +106,7 @@ def init_blinds_routes(app):
                     device=x,
                     action=json['action_id'],
                     user_id=context['user']['id'],
-                    timeout=5,
+                    timeout=5 * 60,
                     active=True
                 ), json['devices_ids'])
             ))
