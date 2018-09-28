@@ -1,5 +1,5 @@
 from datetime import datetime
-import action_sender
+import asylumd_client
 
 import db
 
@@ -11,9 +11,10 @@ try:
     rows = cur.execute("SELECT * FROM blinds_task \
         WHERE time <= ?", (int(now),)).fetchall()
     for row in rows:
-        status = -1
         if (now - row[1]) < row[6]:
-            action_sender.send(row[2], row[3])
+            shutter_id = row[2] - 1
+            action_id = row[3] - 1
+            asylumd_client.shutterAction(shutter_id, action_id)
             status = 1
         else:
             status = 0
