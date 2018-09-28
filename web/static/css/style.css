@@ -287,7 +287,7 @@ body{
 }
 .form-line{
     width: calc(100% + 80px);
-    height: inherit;
+    height: 1px;
     margin-top: 40px;
     position: relative;
     left: -40px

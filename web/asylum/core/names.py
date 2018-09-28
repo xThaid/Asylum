@@ -19,5 +19,6 @@ hour_types = {
     2: 'Wschód',
     3: 'Zenit',
     4: 'Zachód',
-    5: 'Zmierzch'
+    5: 'Zmierzch',
+    6: 'Stała godzina'
 }

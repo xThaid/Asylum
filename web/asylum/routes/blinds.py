@@ -63,12 +63,15 @@ def init_blinds_routes(app):
                 'task_id': x.BlindsTask.id
             } for x in task_query_result]
 
+
         schedule = [{
             'id': x.BlindsSchedule.id,
             'device': x.BlindsSchedule.device,
             'action': x.BlindsSchedule.action,
             'hour_type': x.BlindsSchedule.hour_type,
-            'time_offset_sign': (('   ', '+ ')[x.BlindsSchedule.time_offset > 0], '- ')[x.BlindsSchedule.time_offset < 0],
+            'time_offset_sign': (('   ', '+ ')
+                                 [x.BlindsSchedule.time_offset > 0 and not x.BlindsSchedule.hour_type == 6], '- ')
+            [x.BlindsSchedule.time_offset < 0],
             'time_offset': str(timedelta(minutes=abs(x.BlindsSchedule.time_offset)))[:-3],
             'user': x.name
         }for x in schedule_query_result]

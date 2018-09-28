@@ -123,13 +123,18 @@ def init_energy_routes(app):
             .add_dataset('Magazynowanie', chart_power['store'], [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
+        max_production = filter(lambda x: x is not None, chart_power['production'])
+        max_production = 0 if len(list(max_production)) == 0 else max(max_production)
+        max_consumption = filter(lambda x: x is not None, chart_power['consumption'])
+        max_consumption = 0 if len(list(max_consumption)) == 0 else max(max_consumption)
+
         data_model = {
             'power_production_average': int(production_delta * 3600 / time_from_midnight),
-            'power_production_max': int(max(filter(lambda x: x is not None, chart_power['production']))),
+            'power_production_max': int(max_production),
             'energy_production': productions,
             'energy_production_total': production_delta / 1000,
             'power_consumption_average': int(consumption_delta * 3600 / time_from_midnight),
-            'power_consumption_max': int(max(filter(lambda x: x is not None, chart_power['consumption']))),
+            'power_consumption_max': int(max_consumption),
             'energy_consumption': consumptions,
             'energy_consumption_total': consumption_delta / 1000,
             'energy_use': uses,

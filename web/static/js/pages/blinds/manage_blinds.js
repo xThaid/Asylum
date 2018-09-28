@@ -95,12 +95,13 @@ $('#form-add-task').submit(function () {
 
 $('#form-add-schedule').submit(function () {
     const form =   $('#form-add-schedule').serializeArray();
+    let sign = (form[2].value === '6') ? 1 : (($('#change-sign').html() === "+") ? 1 : -1);
     const data = JSON.stringify(
         {
             'devices_ids': form[0].value.replace('[', '').replace(']', '').split(',').map(Number),
             "action_id": parseInt(form[1].value, 10),
             'hour_type': parseInt(form[2].value, 10),
-            'time_offset': (($('#change-sign').html() === "+") ? 1 : -1) * moment.duration(form[3].value, 'HH:mm').asMinutes()
+            'time_offset': sign * moment.duration(form[3].value, 'HH:mm').asMinutes()
         });
     $.ajax({
         url         : "addSchedule",
@@ -130,6 +131,10 @@ function hide_front_form(){
         $('.front-form').css({display: 'none'})
     });
 }
+$(document).keydown(function(e) {
+    if ( e.key === "Escape")
+        hide_front_form();
+});
 function delete_task(task_id) {
     const data = JSON.stringify(
         {
@@ -169,3 +174,11 @@ function delete_task(task_id) {
          }
      });
  }
+
+ $('#hour-type-combobox').on('change', function(e){
+     if ($(this).val() === '6'){
+        $('#change-sign').hide();
+     }else{
+         $('#change-sign').show();
+     }
+ });

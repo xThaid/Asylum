@@ -51,7 +51,7 @@ add_blinds_schedule_schema = Schema(
                                And(int, lambda x: names.devices.get(x))
                            ]),
         'action_id': And(int, lambda x: names.actions.get(x)),
-        'hour_type': And(int, lambda x: names.actions.get(x)),
+        'hour_type': And(int, lambda x: names.hour_types.get(x)),
         'time_offset': int
     }
 )
