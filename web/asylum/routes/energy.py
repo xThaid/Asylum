@@ -1,5 +1,6 @@
 from flask import render_template, jsonify, make_response
 from datetime import datetime, timedelta
+import operator
 import time
 
 from asylum.core import energy_data
@@ -7,7 +8,6 @@ from asylum.core.page_model import PageModel
 from asylum.core.chart_data import ChartData
 from asylum.core.auth import authorize
 from asylum.models.energy import Energy
-
 
 
 def init_energy_routes(app):
@@ -21,7 +21,6 @@ def init_energy_routes(app):
 
         start_time = datetime.now().replace(hour=0, minute=0, second=0)
         data = Energy.get_last_rows(start_time.timestamp())
-
         grouped_data = []
         for x in range(datetime.now().hour + 1):
             grouped_data.append([])
@@ -71,7 +70,7 @@ def init_energy_routes(app):
         stored_delta = export_delta * 0.8 - import_delta
 
         chart_time_separation = 5
-        chart_points_count = int(time_from_midnight / (60 * chart_time_separation))
+        chart_points_count = int(time_from_midnight / (60 * chart_time_separation)) + 1
 
         chart_time_points = [(start_time + timedelta(minutes=x*chart_time_separation))
                              for x in range(chart_points_count)]
@@ -81,6 +80,7 @@ def init_energy_routes(app):
             grouped_data.append([])
         curr_time = 0
         next_time = start_time + timedelta(minutes=chart_time_separation)
+
         for entry in data:
             while entry.time >= next_time.timestamp():
                 curr_time += 1
@@ -95,18 +95,17 @@ def init_energy_routes(app):
             'use': [],
             'store': []
         }
-        wh_to_w = 60 / chart_time_separation
         if len(data) > 0:
-            for x in range(len(grouped_data) - 1):
-                if len(grouped_data[x + 1]) > 0 and len(grouped_data[x]) > 0:
+            for x in grouped_data:
+                if len(x) > 0:
                     chart_power['export']\
-                        .append((grouped_data[x + 1][0].export - grouped_data[x][0].export) * wh_to_w)
+                        .append(sum(map(lambda x: x.power_export, x)) / len(x))
                     chart_power['import']\
-                        .append((grouped_data[x + 1][0].import_ - grouped_data[x][0].import_) * wh_to_w)
+                        .append(sum(map(lambda x: x.power_import, x)) / len(x))
                     chart_power['production']\
-                        .append((grouped_data[x + 1][0].production - grouped_data[x][0].production) * wh_to_w)
+                        .append(sum(map(lambda x: x.power_production, x)) / len(x))
 
-                    chart_power['use'].append(abs(chart_power['production'][-1] - chart_power['export'][-1]))
+                    chart_power['use'].append(chart_power['production'][-1] - chart_power['export'][-1])
                     chart_power['store'].append(chart_power['export'][-1] * 0.8 - chart_power['import'][-1])
                     chart_power['consumption'].append(chart_power['use'][-1] + chart_power['import'][-1])
                 else:
@@ -123,10 +122,18 @@ def init_energy_routes(app):
             .add_dataset('Magazynowanie', chart_power['store'], [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
-        max_production = filter(lambda x: x is not None, chart_power['production'])
-        max_production = 0 if len(list(max_production)) == 0 else max(max_production)
-        max_consumption = filter(lambda x: x is not None, chart_power['consumption'])
-        max_consumption = 0 if len(list(max_consumption)) == 0 else max(max_consumption)
+        power_production_list = list(filter(lambda x: x is not None, list(map(lambda x: x.power_production, data))))
+        power_import_list = list(filter(lambda x: x is not None, list(map(lambda x: x.power_import, data))))
+        power_export_list = list(filter(lambda x: x is not None, list(map(lambda x: x.power_export, data))))
+
+        if len(power_production_list) == 0:
+            max_production = 0
+            max_consumption = 0
+        else:
+            max_production = max(power_production_list)
+            max_consumption = max(list(map(
+                operator.add, list(map(operator.sub, power_production_list, power_export_list)), power_import_list
+            )))
 
         data_model = {
             'power_production_average': int(production_delta * 3600 / time_from_midnight),
@@ -147,7 +154,6 @@ def init_energy_routes(app):
             'energy_stored_total': stored_delta / 1000,
             'chart_data': chart_data
         }
-
         return render_template('energy.html', page_model=page_model, data_model=data_model)
 
     @app.route('/energy/getCurrentPowerData', methods=['GET'])
