@@ -1,7 +1,6 @@
 from flask import render_template, jsonify, make_response
 from datetime import datetime, timedelta
 import operator
-import time
 
 from asylum.core import energy_data
 from asylum.core.page_model import PageModel
@@ -99,14 +98,14 @@ def init_energy_routes(app):
             for x in grouped_data:
                 if len(x) > 0:
                     chart_power['export']\
-                        .append(sum(map(lambda x: x.power_export, x)) / len(x))
+                        .append(int(sum(map(lambda x: x.power_export, x)) / len(x)))
                     chart_power['import']\
-                        .append(sum(map(lambda x: x.power_import, x)) / len(x))
+                        .append(int(sum(map(lambda x: x.power_import, x)) / len(x)))
                     chart_power['production']\
-                        .append(sum(map(lambda x: x.power_production, x)) / len(x))
+                        .append(int(sum(map(lambda x: x.power_production, x)) / len(x)))
 
-                    chart_power['use'].append(chart_power['production'][-1] - chart_power['export'][-1])
-                    chart_power['store'].append(chart_power['export'][-1] * 0.8 - chart_power['import'][-1])
+                    chart_power['use'].append(max(0, chart_power['production'][-1] - chart_power['export'][-1]))
+                    chart_power['store'].append(int(chart_power['export'][-1] * 0.8 - chart_power['import'][-1]))
                     chart_power['consumption'].append(chart_power['use'][-1] + chart_power['import'][-1])
                 else:
                     for y in chart_power:

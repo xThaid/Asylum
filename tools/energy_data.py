@@ -9,9 +9,9 @@ cfg = config.config
 
 def get_flara_data():
     try:
-        res = requests.get(cfg['SUBSYSTEMS']['flara_url'] + "list_en.html").text
+        res = requests.get(cfg['SUBSYSTEMS']['flara_url'] + "list_en.html", timeout=1).text
         if res != "<tr class='msgfail'><td>Devices not found.</td></tr>":
-            res = requests.get(cfg['SUBSYSTEMS']['flara_url'] + "FF00000080087B2E00010102000001EF/data_en.html").text
+            res = requests.get(cfg['SUBSYSTEMS']['flara_url'] + "FF00000080087B2E00010102000001EF/data_en.html", timeout=1).text
             return {
                 'power': int(re.search("(?<=Active power</div><div class='pvalue vok'>)[0-9]*", res).group()),
                 'total_energy': int(float(re.search("(?<=Total energy</div><div class='pvalue vok'>)[0-9.]*", res)
@@ -26,7 +26,7 @@ def get_flara_data():
 
 def get_emeter_data():
     try:
-        emeter_reading = requests.get(cfg['SUBSYSTEMS']['emeter_url']).json()
+        emeter_reading = requests.get(cfg['SUBSYSTEMS']['emeter_url'], timeout=1).json()
 
         power_index = ('7', '8', '9')
         power_import = 0
@@ -58,10 +58,10 @@ def get_data():
         return None
 
     return {
-        'power_consumption': emeter_data['power_import'] + flara_data['power'] - emeter_data['power_export'],
+        'power_consumption': max(0, emeter_data['power_import'] + flara_data['power'] - emeter_data['power_export']),
         'power_production': flara_data['power'],
         'total_energy_production': flara_data['total_energy'],
-        'power_use': flara_data['power'] - emeter_data['power_export'],
+        'power_use': max(0, flara_data['power'] - emeter_data['power_export']),
         'power_import': emeter_data['power_import'],
         'power_export': emeter_data['power_export'],
         'power_store': int(emeter_data['power_export'] * 0.8 - emeter_data['power_import']),

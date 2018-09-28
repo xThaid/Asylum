@@ -74,13 +74,22 @@ $('.peity-bar-orange').peity('bar',{
 function updateCell(name, value){
     let maxPower = 4000;
     let peityValue = value;
-    if(value < 0){
-        $('#' + name + '_peity').peity('donut',{
-            fill: ["#eeeeee", "#E1A500"],
-            radius: 40,
-            innerRadius: 33
-        });
-        peityValue = maxPower + value;
+    if(name === 'summary_power_store') {
+        let storePeity = $('#summary_power_store_peity');
+        if (value < 0 ) {
+            storePeity.peity('donut', {
+                fill: ["#eeeeee", "#E1A500"],
+                radius: 40,
+                innerRadius: 33
+            });
+            peityValue = maxPower + value;
+        }else{
+            storePeity.peity('donut', {
+                fill: ["#E1A500", "#eeeeee"],
+                radius: 40,
+                innerRadius: 33
+            });
+        }
     }
     $('#' + name + '_peity').text(peityValue + "/" + maxPower).change();
     $('#' + name).text(value);
