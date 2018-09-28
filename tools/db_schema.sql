@@ -20,6 +20,9 @@ CREATE TABLE energy(
   production INTEGER NOT NULL,
   import INTEGER NOT NULL,
   export INTEGER NOT NULL,
+  power_production INTEGER NOT NULL,
+  power_import INTEGER NOT NULL,
+  power_export INTEGER NOT NULL
 
   CONSTRAINT time_unique UNIQUE (time)
 );

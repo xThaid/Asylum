@@ -8,6 +8,9 @@ class Energy(db.Model):
     production = db.Column(db.Integer, nullable=False)
     import_ = db.Column('import', db.Integer, nullable=False)
     export = db.Column(db.Integer, nullable=False)
+    power_production = db.Column(db.Integer, nullable=False)
+    power_import = db.Column(db.Integer, nullable=False)
+    power_export = db.Column(db.Integer, nullable=False)
 
     @staticmethod
     def get_last_rows(from_date, count=None):
