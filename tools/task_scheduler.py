@@ -22,7 +22,7 @@ def calcHours(day):
     hours[3] = sun['noon']
     hours[4] = sun['sunset']
     hours[5] = sun['dusk']
-    hours[6] = datetime.datetime.combine(day, datetime.datetime.min.time())
+    hours[6] = datetime.datetime.combine(day, datetime.time())
     return hours
 
 
@@ -33,7 +33,7 @@ tommorowHours = calcHours(today + datetime.timedelta(days=1))
 conn = db.create_connection()
 try:
     cur = conn.cursor()
-    cur.execute("SELECT * FROM blinds_schedule")
+    cur.execute("SELECT id, device, action, hour_type, time_offset FROM blinds_schedule")
 
     schedules = cur.fetchall()
 
@@ -41,12 +41,12 @@ try:
         sched_id, device_id, action_id, hour_type, time_offset = sched
 
         task = cur.execute("SELECT * FROM blinds_task WHERE schedule_id = ?",
-                           (sched_id)).fetchall()
+                           (sched_id,)).fetchall()
         if not task:
-            offset = datetime.timedelta(seconds=time_offset)
+            offset = datetime.timedelta(minutes=time_offset)
             time = todayHours[hour_type] + offset
 
-            if time < datetime.datetime.now():
+            if time.timestamp() < datetime.datetime.now().timestamp():
                 time = tommorowHours[hour_type] + offset
 
             cur.execute("INSERT INTO blinds_task (time, device, action, schedule_id, timeout) \
