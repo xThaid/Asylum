@@ -418,7 +418,7 @@ body{
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    height:  30px;
+    height: 40px;
 }
 .front-form{
     position: fixed;
@@ -506,6 +506,7 @@ body{
 .card-chart {
     height: 400px;
     width: calc(100% - 50px) !important;
+    padding-top: 30px !important;
 }
 .footer{
     height: 50px;
