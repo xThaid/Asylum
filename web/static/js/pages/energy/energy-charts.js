@@ -38,39 +38,6 @@ function genChart(data) {
     });
 }
 
-$('.peity-donut-green').peity('donut',{
-    fill: ["#28B779", "#eeeeee"],
-    radius: 40,
-    innerRadius: 33
-});
-$('.peity-donut-red').peity('donut',{
-    fill: ["#DA542E", "#eeeeee"],
-    radius: 40,
-    innerRadius: 33
-});
-$('.peity-donut-orange').peity('donut',{
-    fill: ["#E1A500", "#eeeeee"],
-    radius: 40,
-    innerRadius: 33
-});
-
-
-$('.peity-bar-green').peity('bar',{
-    fill: ["#28B779"],
-    width: 80,
-    height:80
-});
-$('.peity-bar-red').peity('bar',{
-    fill: ["#DA542E"],
-    width: 80,
-    height:80
-});
-$('.peity-bar-orange').peity('bar',{
-    fill: ["#E1A500"],
-    width: 80,
-    height:80
-});
-
 function updateCell(name, value){
     let maxPower = 4000;
     let peityValue = value;
@@ -115,6 +82,37 @@ function update_data(){
     setTimeout(update_data, 1000);
 }
 
-jQuery(document).ready(function(){
-	update_data()
-});
+function createPeity(){
+    $('.peity-donut-green').peity('donut',{
+    fill: ["#28B779", "#eeeeee"],
+    radius: 40,
+    innerRadius: 33
+    });
+    $('.peity-donut-red').peity('donut',{
+        fill: ["#DA542E", "#eeeeee"],
+        radius: 40,
+        innerRadius: 33
+    });
+    $('.peity-donut-orange').peity('donut',{
+        fill: ["#E1A500", "#eeeeee"],
+        radius: 40,
+        innerRadius: 33
+    });
+
+
+    $('.peity-bar-green').peity('bar',{
+        fill: ["#28B779"],
+        width: 80,
+        height:80
+    });
+    $('.peity-bar-red').peity('bar',{
+        fill: ["#DA542E"],
+        width: 80,
+        height:80
+    });
+    $('.peity-bar-orange').peity('bar',{
+        fill: ["#E1A500"],
+        width: 80,
+        height:80
+    });
+};

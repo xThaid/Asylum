@@ -3,6 +3,16 @@
 
 <head>
     {%  include 'shared/head.html' %}
+    <script type="text/javascript" src="/static/assets/libs/Chart.js/Chart.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/jquery.peity/jquery.peity.min.js"></script>
+    <script type="text/javascript" src="/static/js/pages/energy/energy-charts.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            genChart({{ data_model['chart_data']|safe }});
+            createPeity();
+            update_data();
+        });
+    </script>
 </head>
 <body>
     {#%  include 'shared/preloader.html' %#}
@@ -229,18 +239,5 @@
             {% include 'shared/footer.html' %}
         </div>
     </div>
-
-
-    <script type="text/javascript" src="/static/assets/libs/jquery/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="/static/assets/libs/popper/umd/popper.min.js"></script>
-    <script type="text/javascript" src="/static/assets/libs/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/assets/libs/Chart.js/Chart.min.js"></script>
-    <script type="text/javascript" src="/static/assets/libs/jquery.peity/jquery.peity.min.js"></script>
-    <script type="text/javascript" src="/static/js/start.js"></script>
-    <script type="text/javascript" src="/static/js/pages/energy/energy-charts.js"></script>
-    <script type="text/javascript">
-        genChart({{ data_model['chart_data']|safe }})
-    </script>
-
 </body>
 </html>

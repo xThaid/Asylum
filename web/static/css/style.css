@@ -518,3 +518,7 @@ body{
     padding-right: 30px;
     font-size: 14px;
 }
+
+.peity-bar-green, .peity-bar-orange, .peity-bar-red, .peity-donut-green, .peity-donut-orange, .peity-donut-red{
+    display: none;
+}
