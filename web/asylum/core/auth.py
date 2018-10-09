@@ -1,6 +1,7 @@
 import jwt
-from flask import current_app, request
 import datetime
+from flask import current_app, request
+from sqlalchemy import  func
 from functools import wraps
 
 from asylum.core import web_response
@@ -28,7 +29,7 @@ def register(username, name, password, role):
 
 def login(username, password):
     try:
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(func.lower(User.username) == func.lower(username)).first()
         if user and user.verify_password(password):
             token = encode_auth_token(user)
             return web_response.login_success(['Authorization', 'Bearer ' + token.decode('utf-8')])
