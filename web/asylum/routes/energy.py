@@ -68,7 +68,7 @@ def init_energy_routes(app):
         use_delta = production_delta - export_delta
         stored_delta = export_delta * 0.8 - import_delta
 
-        chart_time_separation = 5
+        chart_time_separation = 4
         chart_points_count = int(time_from_midnight / (60 * chart_time_separation)) + 1
 
         chart_time_points = [(start_time + timedelta(minutes=x*chart_time_separation))
@@ -98,11 +98,11 @@ def init_energy_routes(app):
             for x in grouped_data:
                 if len(x) > 0:
                     chart_power['export']\
-                        .append(int(sum(map(lambda x: x.power_export, x)) / len(x)))
+                        .append(int(max(map(lambda x: x.power_export, x))))
                     chart_power['import']\
-                        .append(int(sum(map(lambda x: x.power_import, x)) / len(x)))
+                        .append(int(max(map(lambda x: x.power_import, x))))
                     chart_power['production']\
-                        .append(int(sum(map(lambda x: x.power_production, x)) / len(x)))
+                        .append(int(max(map(lambda x: x.power_production, x))))
 
                     chart_power['use'].append(max(0, chart_power['production'][-1] - chart_power['export'][-1]))
                     chart_power['store'].append(int(chart_power['export'][-1] * 0.8 - chart_power['import'][-1]))
