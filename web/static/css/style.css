@@ -497,6 +497,8 @@ body{
 .card-peity-legend {
     width: inherit;
     color: #3E5569;
+    background: #eeeeee;
+    z-index: 100;
 }
 
 .card-chart {
