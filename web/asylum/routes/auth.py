@@ -1,10 +1,9 @@
-from flask import render_template, request, current_app
-import jwt
+from flask import render_template, request
 
 from asylum.core import auth, web_response
 from asylum.core import validate_json
 from asylum.core.page_model import PageModel
-from asylum.core.auth import authorize
+from asylum.core.auth import authorize, unauthorize
 
 
 def init_auth_routes(app):
@@ -32,6 +31,7 @@ def init_auth_routes(app):
         return render_template('auth/register.html', page_model=page_model)
 
     @app.route('/auth/login', methods=['POST'])
+    @unauthorize
     def login():
         json = request.get_json()
 
@@ -41,10 +41,11 @@ def init_auth_routes(app):
         return auth.login(json['login'], json['password'])
 
     @app.route('/auth/login', methods=['GET'])
-    @authorize('none')
-    def login_page(context):
+    @unauthorize
+    def login_page():
         return render_template('auth/login.html')
 
     @app.route('/auth/logout', methods=['GET'])
-    def logout():
+    @authorize('guest', 'user', 'admin')
+    def logout(context):
         return web_response.logout()

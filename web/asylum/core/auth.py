@@ -58,36 +58,34 @@ def encode_auth_token(user):
     )
 
 
+def unauthorize(f):
+    @wraps(f)
+    def decorator(*args, **kws):
+        if 'Authorization' not in request.cookies:
+            return f(*args, **kws)
+
+        data = request.cookies['Authorization']
+        token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
+
+        try:
+            jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
+        except:
+            return f(*args, **kws)
+
+        return web_response.redirect_to('home')
+    return decorator
+
+
 def authorize(*roles):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kws):
-            if 'none' in roles:
-                context = {
-                    "user": {
-                        'id': -1,
-                        'name': 'none',
-                        'role': 'none'
-                    }}
-
-                if 'Authorization' not in request.cookies:
-                    return f(context, *args, **kws)
-
-                data = request.cookies['Authorization']
-                token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
-
-                try:
-                    jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
-                except:
-                    return f(context, *args, **kws)
-
-                return web_response.redirect_to('home')
-
             if 'Authorization' not in request.cookies:
                 return web_response.redirect_to('login')
 
             data = request.cookies['Authorization']
             token = str.replace(str(data), 'Bearer ', '').encode('utf-8')
+
             try:
                 context = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])['context']
             except:
@@ -97,7 +95,5 @@ def authorize(*roles):
                 return web_response.redirect_to('login')
 
             return f(context, *args, **kws)
-
         return decorated_function
-
     return decorator
