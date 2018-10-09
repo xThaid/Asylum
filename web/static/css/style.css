@@ -38,6 +38,8 @@ body{
 #page-wrapper{
     min-height: calc(100% - 132px);
     width: calc(100% - 250px);
+    display: flex;
+    flex-flow: column nowrap;
 }
 #page-container{
     width: 100%;
@@ -504,4 +506,14 @@ body{
 .card-chart {
     height: 400px;
     width: calc(100% - 50px) !important;
+}
+.footer{
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-right: 30px;
+    font-size: 14px;
 }
