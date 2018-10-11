@@ -16,6 +16,8 @@ def init_energy_routes(app):
     def energy(context):
         page_model = PageModel('Energia', context['user'])\
             .add_breadcrumb_page('Energia', '/energy')\
+            .add_tab('Statystyki')\
+            .add_tab('Wykresy') \
             .to_dict()
 
         start_time = datetime.now().replace(hour=0, minute=0, second=0)
@@ -45,13 +47,13 @@ def init_energy_routes(app):
                 imp = (group[-1].import_ - group[0].import_) / 1000
                 exp = (group[-1].export - group[0].export) / 1000
 
-            productions.append(prod)
-            imports.append(imp)
-            exports.append(exp)
+            productions.append(round(prod, 2))
+            imports.append(round(imp, 2))
+            exports.append(round(exp, 2))
 
-            consumptions.append(prod - exp + imp)
-            uses.append(prod - exp)
-            storeds.append(exp * 0.8 - imp)
+            consumptions.append(round(prod - exp + imp, 2))
+            uses.append(round(prod - exp, 2))
+            storeds.append(round(exp * 0.8 - imp, 2))
 
         time_from_midnight = datetime.now().timestamp() - datetime.now().replace(hour=0, minute=0, second=0).timestamp()
         if time_from_midnight == 0:
@@ -111,7 +113,7 @@ def init_energy_routes(app):
                     for y in chart_power:
                         chart_power[y].append(None)
 
-        chart_data = ChartData()\
+        power_chart_data = ChartData()\
             .set_labels([x.strftime('%H:%M') for x in chart_time_points])\
             .add_dataset('Produkcja', chart_power['production'], [25, 180, 25, 1], [50, 200, 50, 0.2]) \
             .add_dataset('Zużycie', chart_power['consumption'],  [210, 15, 15, 1], [230, 30, 30, 0.2]) \
@@ -119,6 +121,22 @@ def init_energy_routes(app):
             .add_dataset('Pobieranie', chart_power['import'], [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
             .add_dataset('Oddawanie', chart_power['export'], [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
             .add_dataset('Magazynowanie', chart_power['store'], [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
+            .to_json()
+        energy_chart_labels = []
+        for x in range(datetime.now().hour + 1):
+            temp = ""
+            if x < 10:
+                temp = "0"
+            energy_chart_labels.append(temp + str(x) + ":00")
+
+        energy_chart_data = ChartData()\
+            .set_labels(energy_chart_labels)\
+            .add_dataset('Produkcja', productions, [25, 180, 25, 1], [50, 200, 50, 0.2]) \
+            .add_dataset('Zużycie', consumptions,  [210, 15, 15, 1], [230, 30, 30, 0.2]) \
+            .add_dataset('Wykorzystanie', uses, [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
+            .add_dataset('Pobieranie', imports, [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
+            .add_dataset('Oddawanie', exports, [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
+            .add_dataset('Magazynowanie', storeds, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
         power_production_list = list(filter(lambda x: x is not None, list(map(lambda x: x.power_production, data))))
@@ -151,7 +169,8 @@ def init_energy_routes(app):
             'energy_export_total': export_delta / 1000,
             'energy_stored': storeds,
             'energy_stored_total': stored_delta / 1000,
-            'chart_data': chart_data
+            'power_chart_data': power_chart_data,
+            'energy_chart_data': energy_chart_data
         }
         return render_template('energy.html', page_model=page_model, data_model=data_model)
 

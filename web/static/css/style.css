@@ -32,7 +32,7 @@ body{
     justify-content: flex-start;
     align-items: stretch;
     flex-wrap: nowrap;
-    background: #eeeeee;
+    background: #e0e0e0;
 }
 
 #page-wrapper{
@@ -142,12 +142,12 @@ body{
     height: 68px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     padding: 0 20px 0 20px;
 }
 #breadcrumb{
     list-style: none;
-    margin: 0;
+    margin: 0 0 0 auto;
     font-size: 11px;
 }
 #breadcrumb > li + li:before {
@@ -168,13 +168,14 @@ body{
 .page-title{
     display: inline;
     padding: 0;
-    margin: 0;
     font-size: 18px;
     font-weight: 600;
+    margin: 0 auto 0 0;
 }
 .card{
     background: white;
     margin-bottom: 20px;
+    border-color: lightgray;
 }
 .card-large{
     padding: 20px;
@@ -242,7 +243,7 @@ body{
     justify-content: space-evenly;
 
     height: 100%;
-    border-right: 1px solid #eeeeee;
+    border-right: 1px solid #e0e0e0;
 }
 .form-body{
     width: 400px;
@@ -499,7 +500,7 @@ body{
 .card-peity-legend {
     width: inherit;
     color: #3E5569;
-    background: #eeeeee;
+    background: #e0e0e0;
     z-index: 100;
 }
 
@@ -520,5 +521,32 @@ body{
 }
 
 .peity-bar-green, .peity-bar-orange, .peity-bar-red, .peity-donut-green, .peity-donut-orange, .peity-donut-red{
+    display: none;
+}
+
+.tab-button{
+    background: #e0e0e0;
+    border: lightgray 1px solid;
+    width: 100px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    margin-left: -1px;
+    cursor: pointer;
+}
+.tab-button:hover{
+    background: white;
+    border-color: darkgray;
+    z-index: 10000;
+}
+.tab-button-active{
+    background: white;
+    border-color: darkgray;
+    z-index: 10000;
+    cursor: default;
+}
+.tab-page{
     display: none;
 }

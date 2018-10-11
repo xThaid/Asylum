@@ -1,8 +1,8 @@
 
-function genChart(data) {
+function genPowerChart(data) {
     Chart.defaults.global.elements.point.radius = 0;
     let ctx = document.getElementById("power-today-chart").getContext('2d');
-    window.myChart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'line',
         data: data,
         options: {
@@ -21,6 +21,45 @@ function genChart(data) {
                     ticks: {
                         callback: function(value) {
                             return value + ' W';
+                        },
+                        beginAtZero: true,
+                        autoSkip: true,
+                        maxTicksLimit: 10
+                    },
+                }],
+                xAxes:[{
+                    ticks:{
+                        autoSkip: true,
+                        maxTicksLimit: 24
+                    }
+                }]
+            }
+        }
+    });
+}
+
+function genEnergyChart(data) {
+    Chart.defaults.global.elements.point.radius = 0;
+    let ctx = document.getElementById("energy-today-chart").getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            legend: {
+                display: true
+            },
+             tooltips: {
+                callbacks: {
+                  label: (item) => `${item.yLabel} kWh`,
+                },
+              },
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' kWh';
                         },
                         beginAtZero: true,
                         autoSkip: true,
