@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+    <script type="text/javascript" src="/static/assets/libs/jquery.peity/jquery.peity.min.js"></script>
+    <script type="text/javascript" src="/static/js/pages/energy/now.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/moment/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/datatimepicker/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="/static/js/pages/energy/history_picker.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            createPeity();
+            //update_data();
+            createDatepicker("2018-09-08");
+            enablePickerNavigation();
+        });
+    </script>
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+                <fieldset class="card-peity-fieldset" style="margin-top: -20px;">
+                    <legend class="card-peity-legend">Moc chwilowa</legend>
+                    <div class="card-peity-row" style="width: 700px;">
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc produkowana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="production_current_peity" class="peity-donut-green">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="production_current" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc pobierana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="summary_power_import_peity" class="peity-donut-orange">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_power_import" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc oddawana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="summary_power_export_peity" class="peity-donut-orange">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_power_export" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc zużywana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="consumption_current_peity" class="peity-donut-red">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="consumption_current" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc wykorzystywana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="summary_power_use_peity" class="peity-donut-orange">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_power_use" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Moc magazynowana</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span id="summary_power_store_peity" class="peity-donut-orange">0/4000</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_power_store" class="card-peity-number">0</div>
+                                    <div class="card-peity-unit">[W]</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                 <fieldset class="card-peity-fieldset">
+                     <legend class="card-peity-legend">Historia</legend>
+                     <div style="display: flex; flex-flow: row wrap;">
+                         <div class="panel panel-small">
+                            <a href="history/day">
+                                <div class="panel-title">Obecny dzień</div>
+                            </a>
+                        </div>
+                        <div class="panel panel-small">
+                            <a href="history/month">
+                                <div class="panel-title">Obecny miesiąc</div>
+                            </a>
+                        </div>
+                        <div class="panel panel-small">
+                            <a href="history/year">
+                                <div class="panel-title">Obecny rok</div>
+                            </a>
+                        </div>
+                        <div class="panel panel-small">
+                            <a href="history/all">
+                                <div class="panel-title">Od początku</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-flow: row nowrap;">
+                        <div class="form-group">
+                            <div class="input-group" id="datetimepicker-day" data-target-input="nearest">
+                                <input id="energy-history-input-day" class="energy-history-input" type="text" data-target="#datetimepicker-day" style="display: none;"/>
+                                <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-day" data-toggle="datetimepicker" onclick="pickerClick('day')">
+                                    <div class="panel-title">Dzień</div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <div class="input-group" id="datetimepicker-month" data-target-input="nearest">
+                                <input id="energy-history-input-month" class="energy-history-input" type="text" data-target="#datetimepicker-month" style="display: none;"/>
+                                <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-month" data-toggle="datetimepicker" onclick="pickerClick('month')">
+                                    <div class="panel-title">Miesiąc</div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            <div class="input-group" id="datetimepicker-year" data-target-input="nearest">
+                                <input id="energy-history-input-year" type="text" data-target="#datetimepicker-year" style="display: none;"/>
+                                <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-year" data-toggle="datetimepicker" onclick="pickerClick('year')">
+                                    <div class="panel-title">Rok</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </fieldset>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+</body>
+</html>

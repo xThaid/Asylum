@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+    <script type="text/javascript" src="/static/assets/libs/Chart.js/Chart.min.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/jquery.peity/jquery.peity.min.js"></script>
+    <script type="text/javascript" src="/static/js/pages/energy/history.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            {% if data_model['isDayHistory'] == true %}
+                genPowerChart({{ data_model['power_chart_data']|safe }});
+            {% endif %}
+            genEnergyChart({{ data_model['energy_chart_data']|safe }});
+            createPeity();
+        });
+    </script>
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+                <div class="tab-page" id="tab1" style="display: block !important;">
+                    <div class="card-peity-row" style="width: 700px;">
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Wyprodukowano</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-green">{{ data_model['energy_production'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="production_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_production_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Zużyto</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-red">{{ data_model['energy_consumption'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="consumption_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_consumption_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Wykorzystano</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-orange">{{ data_model['energy_use'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_energy_use" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_use_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Pobrano</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-orange">{{ data_model['energy_import'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_energy_import" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_import_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Oddano</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-orange">{{ data_model['energy_export'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_energy_export" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_export_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Zmagazynowano</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-body-left">
+                                    <span class="peity-bar-orange">{{ data_model['energy_stored'] | join(', ') }}</span>
+                                </div>
+                                <div class="card-peity-body-right">
+                                    <div id="summary_energy_store" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_stored_total']|float) }}</div>
+                                    <div class="card-peity-unit">[kWh]</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% if not data_model['isDayHistory'] %}
+                <div class="tab-page" id="tab3" style="display: none !important;">
+                    <div class="card card-large" style="width: 900px;">
+                        <div class="card-title">
+                            <h3>Maksymalna moc</h3>
+                        </div>
+                         <div class="card-content" style="border-right: none; flex-direction: column">
+                             <table class="table table-striped">
+                                 <thead>
+                                 <tr>
+                                     <th scope="col">Nazwa</th>
+                                     <th scope="col">Wartość</th>
+                                     <th scope="col">Data</th>
+                                  </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr>
+                                     <th style="font-weight: normal;">Produkowana</th>
+                                     <td>{{ data_model['records']['max_power']['production']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['production']['day'] }}">{{ data_model['records']['max_power']['production']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Zużywana</th>
+                                     <td>{{ data_model['records']['max_power']['consumption']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['consumption']['day'] }}">{{ data_model['records']['max_power']['consumption']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Wykorzystywana</th>
+                                     <td>{{ data_model['records']['max_power']['use']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['use']['day'] }}">{{ data_model['records']['max_power']['use']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Pobierana</th>
+                                     <td>{{ data_model['records']['max_power']['import']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['import']['day'] }}">{{ data_model['records']['max_power']['import']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Oddawana</th>
+                                     <td>{{ data_model['records']['max_power']['export']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['export']['day'] }}">{{ data_model['records']['max_power']['export']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Magazynowana</th>
+                                     <td>{{ data_model['records']['max_power']['store']['value']|int }} W</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_power']['store']['day'] }}">{{ data_model['records']['max_power']['store']['day'] }}</a></td>
+                                 </tr>
+                                 </tbody>
+                             </table>
+                         </div>
+                    </div>
+                    <div class="card card-large" style="width: 900px;">
+                        <div class="card-title">
+                            <h3>Maksymalna energia</h3>
+                        </div>
+                         <div class="card-content" style="border-right: none; flex-direction: column">
+                             <table class="table table-striped">
+                                 <thead>
+                                 <tr>
+                                     <th scope="col">Nazwa</th>
+                                     <th scope="col">Wartość</th>
+                                     <th scope="col">Data</th>
+                                  </tr>
+                                 </thead>
+                                 <tbody>
+                                 <tr>
+                                     <th style="font-weight: normal;">Wyprodukowana</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['production']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['production']['day'] }}">{{ data_model['records']['max_energy']['production']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Zużyta</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['consumption']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['consumption']['day'] }}">{{ data_model['records']['max_energy']['consumption']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Wykorzystana</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['use']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['use']['day'] }}">{{ data_model['records']['max_energy']['use']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Pobrana</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['import']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['import']['day'] }}">{{ data_model['records']['max_energy']['import']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Oddana</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['export']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['export']['day'] }}">{{ data_model['records']['max_energy']['export']['day'] }}</a></td>
+                                 </tr>
+                                 <tr>
+                                     <th style="font-weight: normal;">Zmagazynowana</th>
+                                     <td>{{ '%0.2f'| format(data_model['records']['max_energy']['store']['value']|float) }} kWh</td>
+                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['store']['day'] }}">{{ data_model['records']['max_energy']['store']['day'] }}</a></td>
+                                 </tr>
+                                 </tbody>
+                             </table>
+                         </div>
+                     </div>
+                </div>
+            {% endif %}
+                <div class="tab-page" id="tab2" style="width: calc(100% - 50px) !important;">
+                    {% if data_model['isDayHistory'] == true %}
+                    <div class="card card-large card-chart" style="width: 100% !important;">
+                        <div class="card-title">
+                            <h3>Wykresy mocy</h3>
+                        </div>
+                    <canvas id="power-today-chart"></canvas>
+                    </div>
+                    {% endif %}
+                    <div class="card card-large card-chart" style="width: 100% !important;">
+                        <div class="card-title">
+                            <h3>Wykresy energii</h3>
+                        </div>
+                    <canvas id="energy-today-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+</body>
+</html>

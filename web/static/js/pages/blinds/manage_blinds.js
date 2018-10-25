@@ -2,6 +2,7 @@ $(document).ready( function () {
     $('#zero_config').DataTable();
     $('#datetimepicker5').datetimepicker({
         format: 'DD-MM-YYYY HH:mm',
+        locale: 'pl-pl',
         minDate: moment(moment().add(1, 'minutes').format("DD-MM-YYYY HH:mm"), "DD-MM-YYYY HH::mm"),
                 icons: {
                     time: "fas fa-clock",
@@ -13,6 +14,7 @@ $(document).ready( function () {
         $('#datetimepicker6').datetimepicker({
             defaultDate: moment('00:00', 'HH:mm'),
             format: 'HH:mm',
+            locale: 'pl-pl',
                 icons: {
                     time: "fas fa-clock",
                     date: "fa fa-calendar",
