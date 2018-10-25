@@ -1,6 +1,5 @@
 import db
 from datetime import datetime, date, time
-import sqlite3
 
 sql_select_energy = """SELECT
     id,
@@ -35,7 +34,7 @@ sql_insert_daily = """INSERT INTO energy_daily (
 
 
 def main():
-    db_con = sqlite3.connect("asylum.sqlite") #db.create_connection()
+    db_con = db.create_connection()
     last = db_con.execute(sql_select_energy_daily).fetchone()
 
     last_production_offset = last_import_offset = last_export_offset = 0
