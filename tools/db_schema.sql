@@ -14,15 +14,22 @@ CREATE TABLE user (
   password_hash TEXT NOT NULL
 );
 
+CREATE TABLE user_mac_address(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  mac_address TEXT UNIQUE NOT NULL,
+  user_id INTEGER DEFAULT NULL,
+  FOREIGN KEY(user_id) REFERENCES user(id)
+);
+
 CREATE TABLE energy(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+  time INTEGER NOT NULL,
   production INTEGER NOT NULL,
   import INTEGER NOT NULL,
   export INTEGER NOT NULL,
   power_production INTEGER NOT NULL,
   power_import INTEGER NOT NULL,
-  power_export INTEGER NOT NULL
+  power_export INTEGER NOT NULL,
 
   CONSTRAINT time_unique UNIQUE (time)
 );
@@ -59,6 +66,23 @@ CREATE TABLE blinds_schedule(
   time_offset INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   FOREIGN KEY(user_id) REFERENCES user(id)
+);
+
+CREATE TABLE energy_daily(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  day_ordinal INTEGER NOT NULL,
+  production INTEGER NOT NULL,
+  import INTEGER NOT NULL,
+  export INTEGER NOT NULL,
+  production_offset INTEGER NOT NULL,
+  import_offset INTEGER NOT NULL,
+  export_offset INTEGER NOT NULL,
+  max_power_production INTEGER NOT NULL,
+  max_power_import INTEGER NOT NULL,
+  max_power_export INTEGER NOT NULL,
+  max_power_consumption INTEGER NOT NULL,
+  max_power_use INTEGER NOT NULL,
+  max_power_store INTEGER NOT NULL
 );
 
 COMMIT;

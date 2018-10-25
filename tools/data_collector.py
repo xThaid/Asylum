@@ -6,11 +6,11 @@ from sqlite3 import Error
 def main():
 
     db_conn = db.create_connection()
+    cursor = db_conn.cursor()
     data = energy_data.get_data()
 
     if data is not None:
         try:
-            cursor = db_conn.cursor()
             sql = "INSERT INTO energy (production, import, export, power_production, power_import, power_export) \
                 VALUES (?, ?, ?, ?, ?, ?)"
             cursor.execute(sql, (
@@ -22,11 +22,11 @@ def main():
                 data['power_export']
             ))
             db_conn.commit()
-            cursor.close()
         except Error as e:
             print(e)
-        finally:
-            db_conn.close()
+
+        cursor.close()
+        db_conn.close()
 
 
 if __name__ == '__main__':
