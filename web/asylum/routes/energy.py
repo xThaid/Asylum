@@ -31,10 +31,12 @@ def init_energy_routes(app):
     def energy_history_redirect(context):
         return redirect(url_for("energy_now"), code=302)
 
-    @app.route('/energy/history/day', defaults={'date': datetime.datetime.now().strftime('%Y-%m-%d')})
+    @app.route('/energy/history/day', defaults={'date': None})
     @app.route('/energy/history/day/<string:date>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_day(context, date):
+        if date is None:
+            date = datetime.datetime.now().strftime('%Y-%m-%d')
         try:
             start_time = datetime.datetime.strptime(date, '%Y-%m-%d')
         except ValueError:
@@ -199,10 +201,12 @@ def init_energy_routes(app):
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/month', defaults={'date': datetime.datetime.now().strftime('%Y-%m')})
+    @app.route('/energy/history/month', defaults={'date': None})
     @app.route('/energy/history/month/<string:date>')
     @authorize('guest', 'user', 'admin')
     def energy_history_month(context, date):
+        if date is None:
+            date = datetime.datetime.now().strftime('%Y-%m')
         try:
             from_date = datetime.datetime.strptime(date, '%Y-%m').date()
             to_date = add_month(from_date) - datetime.timedelta(days=1)
@@ -350,10 +354,12 @@ def init_energy_routes(app):
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/year', defaults={'date': datetime.datetime.now().strftime('%Y')})
+    @app.route('/energy/history/year', defaults={'date': None})
     @app.route('/energy/history/year/<string:date>')
     @authorize('guest', 'user', 'admin')
     def energy_history_year(context, date):
+        if date is None:
+            date = datetime.datetime.now().strftime('%Y')
         try:
             from_date = datetime.datetime.strptime(date, '%Y').date()
             to_date = from_date.replace(year=from_date.year + 1) - datetime.timedelta(days=1)
