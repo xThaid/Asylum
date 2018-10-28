@@ -9,8 +9,13 @@ function genPowerChart(data) {
                 display: true
             },
              tooltips: {
+                intersect: false,
+                 mode: 'index',
+                 position: 'nearest',
                 callbacks: {
-                  label: (item) => `${item.yLabel} W`,
+                  label: function(tooltipItem){
+                      return data['datasets'][tooltipItem.datasetIndex]['label'] + ": "+ tooltipItem.yLabel + ' W';
+                  }
                 },
               },
             maintainAspectRatio: false,
