@@ -405,6 +405,7 @@ body{
     align-items: flex-start;
     font-size:  40px;
     padding-right: 8px;
+    margin-bottom: 6px;
 }
 .panel-title {
     height: 50%;
@@ -412,7 +413,6 @@ body{
     justify-content: center;
     align-items: flex-start;
     font-size: 16px;
-    padding-top: 5px;
 
 }
 .card-title{
@@ -569,7 +569,9 @@ body{
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 5px;
+}
+.panel-small:hover{
+    color: white;
 }
 .panel-datapicker{
     background: #b74a26;
