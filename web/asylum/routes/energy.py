@@ -31,25 +31,41 @@ def init_energy_routes(app):
     def energy_history_redirect(context):
         return redirect(url_for("energy_now"), code=302)
 
-    @app.route('/energy/history/day', defaults={'date': None})
-    @app.route('/energy/history/day/<string:date>',)
+    @app.route('/energy/history/day', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/history/day_<string:page>', defaults={'date': None})
+    @app.route('/energy/history/day/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/history/day/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
-    def energy_history_day(context, date):
+    def energy_history_day(context, date, page):
         if date is None:
-            date = datetime.datetime.now().strftime('%Y-%m-%d')
+            date_temp = datetime.datetime.now().strftime('%Y-%m-%d')
+            tab_url = "day"
+        else:
+            date_temp = date
+            tab_url = date
         try:
-            start_time = datetime.datetime.strptime(date, '%Y-%m-%d')
+            start_time = datetime.datetime.strptime(date_temp, '%Y-%m-%d')
         except ValueError:
             return redirect(url_for('energy_history_day'), code=302)
 
         if MIN_DATE > start_time.date() or start_time.date() > datetime.date.today():
             return redirect(url_for('energy_history_day'), code=302)
 
-        page_model = PageModel('Energia - historia dnia ' + date, context['user']) \
+        if page not in ['energy', 'charts']:
+            return redirect(url_for('energy_history_day', date=date), code=302)
+
+        active_tab_index = 0
+        if page == 'energy':
+            active_tab_index = 1
+        elif page == 'charts':
+            active_tab_index = 2
+
+        page_model = PageModel('Energia - historia dnia ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia dnia', '/energy/history/day') \
-            .add_tab('Energia') \
-            .add_tab('Wykresy') \
+            .add_tab('Energia', tab_url) \
+            .add_tab('Wykresy', tab_url + '_charts') \
+            .activate_tab(active_tab_index) \
             .to_dict()
 
         data = Energy.get_last_rows(start_time.timestamp(), (start_time + datetime.timedelta(days=1)).timestamp())
@@ -197,18 +213,25 @@ def init_energy_routes(app):
             'energy_stored_total': stored_delta / 1000,
             'power_chart_data': power_chart_data,
             'energy_chart_data': energy_chart_data,
-            'isDayHistory': True
+            'is_day_history': True,
+            'active_tab': active_tab_index
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/month', defaults={'date': None})
-    @app.route('/energy/history/month/<string:date>')
+    @app.route('/energy/history/month', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/history/month_<string:page>', defaults={'date': None})
+    @app.route('/energy/history/month/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/history/month/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
-    def energy_history_month(context, date):
+    def energy_history_month(context, date, page):
         if date is None:
-            date = datetime.datetime.now().strftime('%Y-%m')
+            date_temp = datetime.datetime.now().strftime('%Y-%m')
+            tab_url = 'month'
+        else:
+            date_temp = date
+            tab_url = date
         try:
-            from_date = datetime.datetime.strptime(date, '%Y-%m').date()
+            from_date = datetime.datetime.strptime(date_temp, '%Y-%m').date()
             to_date = add_month(from_date) - datetime.timedelta(days=1)
         except ValueError:
             return redirect(url_for('energy_history_month'), code=302)
@@ -216,12 +239,24 @@ def init_energy_routes(app):
         if MIN_DATE.year > from_date.year or (MIN_DATE.year == from_date.year and MIN_DATE.month > from_date.month) or from_date > datetime.date.today():
             return redirect(url_for('energy_history_month'), code=302)
 
-        page_model = PageModel('Energia - historia miesiąca ' + date, context['user']) \
+        if page not in ['energy', 'charts', 'records']:
+            return redirect(url_for('energy_history_month', date=date), code=302)
+
+        active_tab_index = 0
+        if page == 'energy':
+            active_tab_index = 1
+        elif page == 'charts':
+            active_tab_index = 2
+        elif page == 'records':
+            active_tab_index = 3
+
+        page_model = PageModel('Energia - historia miesiąca ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia miesiąca', '') \
-            .add_tab('Energia') \
-            .add_tab('Wykresy') \
-            .add_tab('Rekordy') \
+            .add_tab('Energia', tab_url) \
+            .add_tab('Wykresy', tab_url + '_charts') \
+            .add_tab('Rekordy', tab_url + '_records') \
+            .activate_tab(active_tab_index) \
             .to_dict()
 
         query_result = EnergyDaily.get_last_rows(from_date - datetime.timedelta(days=1), to_date)
@@ -350,18 +385,25 @@ def init_energy_routes(app):
             'power_chart_data': None,
             'energy_chart_data': energy_chart_data,
             'isDayHistory': False,
-            'records': records
+            'records': records,
+            'active_tab': active_tab_index
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/year', defaults={'date': None})
-    @app.route('/energy/history/year/<string:date>')
+    @app.route('/energy/history/year', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/history/year_<string:page>', defaults={'date': None})
+    @app.route('/energy/history/year/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/history/year/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
-    def energy_history_year(context, date):
+    def energy_history_year(context, date, page):
         if date is None:
-            date = datetime.datetime.now().strftime('%Y')
+            date_temp = datetime.datetime.now().strftime('%Y')
+            tab_url = 'year'
+        else:
+            date_temp = date
+            tab_url = date
         try:
-            from_date = datetime.datetime.strptime(date, '%Y').date()
+            from_date = datetime.datetime.strptime(date_temp, '%Y').date()
             to_date = from_date.replace(year=from_date.year + 1) - datetime.timedelta(days=1)
         except ValueError:
             return redirect(url_for('energy_history_year'), code=302)
@@ -369,12 +411,24 @@ def init_energy_routes(app):
         if MIN_DATE.year > from_date.year or from_date.year > datetime.date.today().year:
             return redirect(url_for('energy_history_year'), code=302)
 
-        page_model = PageModel('Energia - historia roku ' + date, context['user']) \
+        if page not in ['energy', 'charts', 'records']:
+            return redirect(url_for('energy_history_year', date=date), code=302)
+
+        active_tab_index = 0
+        if page == 'energy':
+            active_tab_index = 1
+        elif page == 'charts':
+            active_tab_index = 2
+        elif page == 'records':
+            active_tab_index = 3
+
+        page_model = PageModel('Energia - historia roku ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia roku', '') \
-            .add_tab('Energia') \
-            .add_tab('Wykresy') \
-            .add_tab('Rekordy') \
+            .add_tab('Energia', tab_url) \
+            .add_tab('Wykresy', tab_url + '_charts') \
+            .add_tab('Rekordy', tab_url + '_records') \
+            .activate_tab(active_tab_index) \
             .to_dict()
 
         query_result = EnergyDaily.get_last_rows(from_date - datetime.timedelta(days=1), to_date)
@@ -546,7 +600,8 @@ def init_energy_routes(app):
             'power_chart_data': None,
             'energy_chart_data': energy_chart_data,
             'isDayHistory': False,
-            'records': records
+            'records': records,
+            'active_tab': active_tab_index
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 

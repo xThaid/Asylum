@@ -1,14 +1,14 @@
 function createDatepicker(minDate) {
 
     $('#datetimepicker-year').datetimepicker({
-        maxDate: moment().format("YYYY-MM-DD"),
-        minDate: moment(minDate, "YYYY-MM-DD"),
+        maxDate: moment().format("YYYY"),
+        minDate: moment(minDate, "YYYY"),
         format: 'YYYY',
         locale: 'pl-pl'
     });
     $('#datetimepicker-month').datetimepicker({
-        maxDate: moment().format("YYYY-MM-DD"),
-        minDate: moment(minDate, "YYYY-MM-DD"),
+        maxDate: moment().format("YYYY-MM"),
+        minDate: moment(minDate, "YYYY-MM"),
         format: 'YYYY-MM',
         locale: 'pl-pl'
     });

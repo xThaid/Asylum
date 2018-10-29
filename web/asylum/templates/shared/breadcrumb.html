@@ -1,12 +1,13 @@
+<script>
+$(document).ready(function () {
+    backToTab({{ page_model['tabs']|safe }})
+});
+</script>
 <div id="page-breadcrumb">
     <h4 class="page-title">{{ page_model['page_name'] }}</h4>
     <div class="tabs-group">
     {% for tab in page_model['tabs'] %}
-        {% if loop.index == 1 %}
-            <div id="tab-button{{ loop.index }}" class="tab-button tab-button-active" onclick="changeTab({{ loop.index }})">{{ tab }}</div>
-        {% else %}
-            <div id="tab-button{{ loop.index }}" class="tab-button" onclick="changeTab({{ loop.index }})">{{ tab }}</div>
-        {% endif %}
+        <div id="tab-button{{ loop.index }}" class="tab-button {% if loop.index == page_model['active_tab'] %}tab-button-active{% endif %}" onclick="changeTab({{ loop.index }}, {{ "'" + tab["url"] + "'" }})">{{ tab['name'] }}</div>
     {% endfor %}
     </div>
     <ol id="breadcrumb">

@@ -10,6 +10,7 @@ class PageModel:
             }
         ]
         self.tabs = []
+        self.active_tab = 0
 
     def add_breadcrumb_page(self, name, href):
         self.breadcrumb.append(
@@ -20,8 +21,15 @@ class PageModel:
         )
         return self
 
-    def add_tab(self, name):
-        self.tabs.append(name)
+    def add_tab(self, name, url):
+        self.tabs.append({
+            'name': name,
+            'url': url
+        })
+        return self
+
+    def activate_tab(self, tab_index):
+        self.active_tab = tab_index
         return self
 
     def to_dict(self):
