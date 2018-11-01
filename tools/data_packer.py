@@ -49,6 +49,8 @@ def main():
         energy_data = db_con.execute(sql_select_energy, (0, )).fetchall()
         start_day = datetime.fromtimestamp(energy_data[0][1]).date().toordinal()
 
+    print("Zaczynamy od ", str(date.fromordinal(start_day)))
+
     days = {}
     for x in range(start_day, date.today().toordinal()):
         days[x] = []
@@ -75,7 +77,7 @@ def main():
             max_power_store = int(max(max_power_store, power_export * 0.8 - power_import))
 
         production = import_ = export = 0
-        if day:
+        if datas:
             production = datas[-1][2] - datas[0][2]
             import_ = datas[-1][3] - datas[0][3]
             export = datas[-1][4] - datas[0][4]
@@ -91,6 +93,7 @@ def main():
             day,
             production,
             import_,
+    print()
             export,
             last_production_offset,
             last_import_offset,

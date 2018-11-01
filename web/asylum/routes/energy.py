@@ -9,7 +9,7 @@ from asylum.core.chart_data import ChartData
 from asylum.core.page_model import PageModel
 from asylum.models.energy import Energy, EnergyDaily
 
-MIN_DATE = datetime.date(2018, 9, 9)
+MIN_DATE = datetime.date(2018, 6, 21)
 
 
 def init_energy_routes(app):
