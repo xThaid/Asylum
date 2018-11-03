@@ -1,5 +1,6 @@
 import re
 import requests
+import json
 import config
 
 ENERGY_IMPORT_OFFSET = 471851
@@ -27,6 +28,8 @@ def get_flara_data():
 def get_emeter_data():
     try:
         emeter_reading = requests.get(cfg['SUBSYSTEMS']['emeter_url'], timeout=1).json()
+        f = open("/run/pi/meter", "w")
+        f.write(json.dumps(emeter_reading))
 
         power_index = ('7', '8', '9')
         power_import = 0
