@@ -60,7 +60,7 @@ def main():
         if day_number in days:
             days[day_number].append(entry)
 
-    for day, datas in days.items():
+    for day, datas in sorted(days.items()):
         max_power_production = 0
         max_power_import = 0
         max_power_export = 0
@@ -93,7 +93,6 @@ def main():
             day,
             production,
             import_,
-    print()
             export,
             last_production_offset,
             last_import_offset,
