@@ -15,8 +15,12 @@ class Energy(db.Model):
     power_export = db.Column(db.Integer, nullable=False)
 
     @staticmethod
-    def get_last_rows(from_date, to_date):
+    def get_last_rows(from_date, to_date, limit=None, desc=False):
         query = __class__.query.filter(and_(__class__.time >= from_date, __class__.time < to_date))
+        if desc:
+            query = query.order_by(Energy.time.desc())
+        if limit is not None:
+            query = query.limit(limit)
         return query.all()
 
     def __repr__(self):

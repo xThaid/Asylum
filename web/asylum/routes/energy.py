@@ -275,16 +275,34 @@ def init_energy_routes(app):
 
         for x in query_result[1:]:
             index = datetime.date.fromordinal(x.day_ordinal).day - 1
-            productions_per_day[index] = (round(x.production / 1000, 2))
-            consumptions_per_day[index] = (round((x.import_ + x.production - x.export) / 1000, 2))
-            uses_per_day[index] = (round((x.production - x.export) / 1000, 2))
-            imports_per_day[index] = (round(x.import_ / 1000, 2))
-            exports_per_day[index] = (round(x.export / 1000, 2))
-            storeds_per_day[index] = (round(((x.export * 0.8) - x.import_) / 1000, 2))
+            productions_per_day[index] = round(x.production / 1000, 2)
+            consumptions_per_day[index] = round((x.import_ + x.production - x.export) / 1000, 2)
+            uses_per_day[index] = round((x.production - x.export) / 1000, 2)
+            imports_per_day[index] = round(x.import_ / 1000, 2)
+            exports_per_day[index] = round(x.export / 1000, 2)
+            storeds_per_day[index] = round(((x.export * 0.8) - x.import_) / 1000, 2)
 
-        production_total = round((query_result[-1].production_offset - query_result[0].production_offset) / 1000, 2)
-        import_total = round((query_result[-1].import_offset - query_result[0].import_offset) / 1000, 2)
-        export_total = round((query_result[-1].export_offset - query_result[0].export_offset) / 1000, 2)
+        daily_production = 0
+        daily_import = 0
+        daily_export = 0
+
+        if add_month(from_date) > datetime.date.today():
+            daily_frist = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
+            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(),datetime.datetime.now().timestamp(), 1, True)
+            daily_production = daily_last[0].production - daily_frist[0].production
+            daily_import = daily_last[0].import_ - daily_frist[0].import_
+            daily_export = daily_last[0].export - daily_frist[0].export
+            index = datetime.date.today().day - 1
+            productions_per_day[index] = round(daily_production / 1000, 2)
+            consumptions_per_day[index] = round((daily_import + daily_production - daily_export) / 1000, 2)
+            uses_per_day[index] = round((daily_production - daily_export) / 1000, 2)
+            imports_per_day[index] = round(daily_import / 1000, 2)
+            exports_per_day[index] = round(daily_export / 1000, 2)
+            storeds_per_day[index] = round(((daily_export * 0.8) - daily_import) / 1000, 2)
+
+        production_total = round((query_result[-1].production_offset - query_result[0].production_offset + daily_production) / 1000, 2)
+        import_total = round((query_result[-1].import_offset - query_result[0].import_offset + daily_import) / 1000, 2)
+        export_total = round((query_result[-1].export_offset - query_result[0].export_offset + daily_export) / 1000, 2)
         uses_total = production_total - export_total
         consumption_total = import_total + uses_total
         stored_total = round(export_total * 0.8 - import_total, 2)
@@ -450,8 +468,8 @@ def init_energy_routes(app):
                 productions_per_month[month_index] = round((x.production_offset - previous_month.production_offset) / 1000, 2)
                 imports_per_month[month_index] = round((x.import_offset - previous_month.import_offset) / 1000, 2)
                 exports_per_month[month_index] = round((x.export_offset - previous_month.export_offset) / 1000, 2)
-                uses_per_month[month_index] = productions_per_month[month_index] - exports_per_month[month_index]
-                consumptions_per_month[month_index] = imports_per_month[month_index] + uses_per_month[month_index]
+                uses_per_month[month_index] = round(productions_per_month[month_index] - exports_per_month[month_index], 2)
+                consumptions_per_month[month_index] = round(imports_per_month[month_index] + uses_per_month[month_index], 2)
                 storeds_per_month[month_index] = round(exports_per_month[month_index] * 0.8 - imports_per_month[month_index], 2)
                 previous_month = x
 
@@ -460,13 +478,31 @@ def init_energy_routes(app):
             productions_per_month[month_index] = round((query_result[-1].production_offset - previous_month.production_offset) / 1000, 2)
             imports_per_month[month_index] = round((query_result[-1].import_offset - previous_month.import_offset) / 1000, 2)
             exports_per_month[month_index] = round((query_result[-1].export_offset - previous_month.export_offset) / 1000, 2)
-            uses_per_month[month_index] = productions_per_month[month_index] - exports_per_month[month_index]
-            consumptions_per_month[month_index] = imports_per_month[month_index] + uses_per_month[month_index]
+            uses_per_month[month_index] = round(productions_per_month[month_index] - exports_per_month[month_index], 2)
+            consumptions_per_month[month_index] = round(imports_per_month[month_index] + uses_per_month[month_index], 2)
             storeds_per_month[month_index] = round(exports_per_month[month_index] * 0.8 - imports_per_month[month_index], 2)
 
-        production_total = round((query_result[-1].production_offset - (query_result[0].production_offset if not from_date.year == 2018 else 0)) / 1000, 2)
-        import_total = round((query_result[-1].import_offset - (query_result[0].import_offset if not from_date.year == 2018 else 0)) / 1000, 2)
-        export_total = round((query_result[-1].export_offset - (query_result[0].export_offset if not from_date.year == 2018 else 0)) / 1000, 2)
+        daily_production = 0
+        daily_import = 0
+        daily_export = 0
+
+        if from_date.replace(year=from_date.year + 1) > datetime.date.today():
+            daily_frist = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
+            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
+            daily_production = daily_last[0].production - daily_frist[0].production
+            daily_import = daily_last[0].import_ - daily_frist[0].import_
+            daily_export = daily_last[0].export - daily_frist[0].export
+            index = datetime.date.today().month - 1
+            productions_per_month[index] = round((daily_production / 1000) + productions_per_month[index], 2)
+            consumptions_per_month[index] = round(((daily_import + daily_production - daily_export) / 1000) + consumptions_per_month[index], 2)
+            uses_per_month[index] = round(((daily_production - daily_export) / 1000) + uses_per_month[index], 2)
+            imports_per_month[index] = round((daily_import / 1000) + imports_per_month[index], 2)
+            exports_per_month[index] = round((daily_export / 1000) + exports_per_month[index], 2)
+            storeds_per_month[index] = round((((daily_export * 0.8) - daily_import) / 1000) + storeds_per_month[index], 2)
+
+        production_total = round((query_result[-1].production_offset - (query_result[0].production_offset if not from_date.year == 2018 else 0) + daily_production) / 1000, 2)
+        import_total = round((query_result[-1].import_offset - (query_result[0].import_offset if not from_date.year == 2018 else 0) + daily_import) / 1000, 2)
+        export_total = round((query_result[-1].export_offset - (query_result[0].export_offset if not from_date.year == 2018 else 0) + daily_export) / 1000, 2)
         uses_total = production_total - export_total
         consumption_total = import_total + uses_total
         stored_total = round(export_total * 0.8 - import_total, 2)
