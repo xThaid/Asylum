@@ -271,7 +271,7 @@ def init_energy_routes(app):
         uses_per_day = [0] * days_in_month
         imports_per_day = [0] * days_in_month
         exports_per_day = [0] * days_in_month
-        storeds_per_day = [0] * days_in_month
+        storeds_per_day = [None] * days_in_month
 
         for x in query_result[1:]:
             index = datetime.date.fromordinal(x.day_ordinal).day - 1
@@ -288,7 +288,7 @@ def init_energy_routes(app):
 
         if add_month(from_date) > datetime.date.today():
             daily_frist = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
-            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(),datetime.datetime.now().timestamp(), 1, True)
+            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
             daily_production = daily_last[0].production - daily_frist[0].production
             daily_import = daily_last[0].import_ - daily_frist[0].import_
             daily_export = daily_last[0].export - daily_frist[0].export
@@ -300,11 +300,11 @@ def init_energy_routes(app):
             exports_per_day[index] = round(daily_export / 1000, 2)
             storeds_per_day[index] = round(((daily_export * 0.8) - daily_import) / 1000, 2)
 
-        production_total = round((query_result[-1].production_offset - query_result[0].production_offset + daily_production) / 1000, 2)
-        import_total = round((query_result[-1].import_offset - query_result[0].import_offset + daily_import) / 1000, 2)
-        export_total = round((query_result[-1].export_offset - query_result[0].export_offset + daily_export) / 1000, 2)
-        uses_total = production_total - export_total
-        consumption_total = import_total + uses_total
+        production_total = round(((query_result[-1].production_offset - query_result[0].production_offset + daily_production) if not len(query_result) == 0 else daily_production) / 1000, 2)
+        import_total = round(((query_result[-1].import_offset - query_result[0].import_offset + daily_import) if not len(query_result) == 0 else daily_import) / 1000, 2)
+        export_total = round(((query_result[-1].export_offset - query_result[0].export_offset + daily_export) if not len(query_result) == 0 else daily_export) / 1000, 2)
+        uses_total = round(production_total - export_total, 2)
+        consumption_total = round(import_total + uses_total, 2)
         stored_total = round(export_total * 0.8 - import_total, 2)
 
         chart_labels = []
@@ -321,12 +321,21 @@ def init_energy_routes(app):
             .add_dataset('Magazynowanie', storeds_per_day, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
-        max_productions = []
-        max_consumptions = []
-        max_imports = []
-        max_exports = []
-        max_uses = []
-        max_stores = []
+        if len(query_result) < 2:
+            max_productions = [0]
+            max_consumptions = [0]
+            max_imports = [0]
+            max_exports = [0]
+            max_uses = [0]
+            max_stores = [0]
+        else:
+            max_productions = []
+            max_consumptions = []
+            max_imports = []
+            max_exports = []
+            max_uses = []
+            max_stores = []
+
         for x in range(1, len(query_result)):
             max_productions.append(query_result[x].max_power_production)
             max_imports.append(query_result[x].max_power_import)
@@ -384,8 +393,8 @@ def init_energy_routes(app):
                     'day': chart_labels[uses_per_day.index(max(uses_per_day))],
                 },
                 'store': {
-                    'value': max(storeds_per_day),
-                    'day': chart_labels[storeds_per_day.index(max(storeds_per_day))],
+                    'value': max(filter(lambda x: x is not None, storeds_per_day)),
+                    'day': chart_labels[storeds_per_day.index(max(filter(lambda x: x is not None,storeds_per_day)))],
                 },
             }
         }
