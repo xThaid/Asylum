@@ -119,32 +119,32 @@
                                  <tr>
                                      <th style="font-weight: normal;">Produkowana</th>
                                      <td>{{ data_model['records']['max_power']['production']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['production']['day'] }}">{{ data_model['records']['max_power']['production']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['production']['day'] }}">{{ data_model['records']['max_power']['production']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Zużywana</th>
                                      <td>{{ data_model['records']['max_power']['consumption']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['consumption']['day'] }}">{{ data_model['records']['max_power']['consumption']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['consumption']['day'] }}">{{ data_model['records']['max_power']['consumption']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Wykorzystywana</th>
                                      <td>{{ data_model['records']['max_power']['use']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['use']['day'] }}">{{ data_model['records']['max_power']['use']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['use']['day'] }}">{{ data_model['records']['max_power']['use']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Pobierana</th>
                                      <td>{{ data_model['records']['max_power']['import']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['import']['day'] }}">{{ data_model['records']['max_power']['import']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['import']['day'] }}">{{ data_model['records']['max_power']['import']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Oddawana</th>
                                      <td>{{ data_model['records']['max_power']['export']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['export']['day'] }}">{{ data_model['records']['max_power']['export']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['export']['day'] }}">{{ data_model['records']['max_power']['export']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Magazynowana</th>
                                      <td>{{ data_model['records']['max_power']['store']['value']|int }} W</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_power']['store']['day'] }}">{{ data_model['records']['max_power']['store']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_power']['store']['day'] }}">{{ data_model['records']['max_power']['store']['day'] }}</a></td>
                                  </tr>
                                  </tbody>
                              </table>
@@ -167,32 +167,32 @@
                                  <tr>
                                      <th style="font-weight: normal;">Wyprodukowana</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['production']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['production']['day'] }}">{{ data_model['records']['max_energy']['production']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['production']['day'] }}">{{ data_model['records']['max_energy']['production']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Zużyta</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['consumption']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['consumption']['day'] }}">{{ data_model['records']['max_energy']['consumption']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['consumption']['day'] }}">{{ data_model['records']['max_energy']['consumption']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Wykorzystana</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['use']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['use']['day'] }}">{{ data_model['records']['max_energy']['use']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['use']['day'] }}">{{ data_model['records']['max_energy']['use']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Pobrana</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['import']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['import']['day'] }}">{{ data_model['records']['max_energy']['import']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['import']['day'] }}">{{ data_model['records']['max_energy']['import']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Oddana</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['export']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['export']['day'] }}">{{ data_model['records']['max_energy']['export']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['export']['day'] }}">{{ data_model['records']['max_energy']['export']['day'] }}</a></td>
                                  </tr>
                                  <tr>
                                      <th style="font-weight: normal;">Zmagazynowana</th>
                                      <td>{{ '%0.2f'| format(data_model['records']['max_energy']['store']['value']|float) }} kWh</td>
-                                     <td><a href="../history/day/{{ data_model['records']['max_energy']['store']['day'] }}">{{ data_model['records']['max_energy']['store']['day'] }}</a></td>
+                                     <td><a href="/energy/history/day/{{ data_model['records']['max_energy']['store']['day'] }}">{{ data_model['records']['max_energy']['store']['day'] }}</a></td>
                                  </tr>
                                  </tbody>
                              </table>
