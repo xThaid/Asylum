@@ -24,7 +24,10 @@ def init_energy_routes(app):
         page_model = PageModel('Energia - strona główna', context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .to_dict()
-        return render_template('energy/now.html', page_model=page_model)
+        data_model = {
+            'MIN_DATE': MIN_DATE.strftime('%Y-%m-%d')
+        }
+        return render_template('energy/now.html', page_model=page_model, data_model=data_model)
 
     @app.route('/energy/history')
     @authorize('guest', 'user', 'admin')
