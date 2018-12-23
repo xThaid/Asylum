@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+                <div style="display:inline-block">
+                Status flary:
+                {% if data_model['flara_status'] == true %}
+                    <i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i>
+                {% else %}
+                    <i class="mdi mdi-close-circle" style="color:#DC143C"></i>
+                {% endif %}
+                </div>
+                <div style="display:inline-block">
+                Status e-metera:
+                {% if data_model['emeter_status'] == true %}
+                    <i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i>
+                {% else %}
+                    <i class="mdi mdi-close-circle" style="color:#DC143C"></i>
+                {% endif %}
+                </div>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+</body>
+</html>

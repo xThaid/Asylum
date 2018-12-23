@@ -4,6 +4,7 @@ from asylum import config
 
 ENERGY_IMPORT_OFFSET = 471851
 ENERGY_EXPORT_OFFSET = 1124061
+ENERGY_PRODUCTION_OFFSET = 1080118640
 cfg = config.config
 
 
@@ -15,7 +16,7 @@ def get_flara_data():
             return {
                 'power': int(re.search("(?<=Active power</div><div class='pvalue vok'>)[0-9]*", res).group()),
                 'total_energy': int(float(re.search("(?<=Total energy</div><div class='pvalue vok'>)[0-9.]*", res)
-                                          .group()) * 1000)
+                                          .group()) * 1000 - ENERGY_PRODUCTION_OFFSET)
             }
         else:
             return None
@@ -68,3 +69,13 @@ def get_data():
         'total_energy_import': emeter_data['total_energy_import'],
         'total_energy_export': emeter_data['total_energy_export']
     }
+
+
+def test_flara_connection():
+    data = get_flara_data()
+    return data is not None
+
+
+def test_emeter_connection():
+    data = get_emeter_data()
+    return data is not None
