@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 logger = log.setupLogger('asylumd')
 
-SHUTTER_REPEAT_COUNT = 5
+SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 10, 7]
 GATE_REPEAT_COUNT = 3
 
 
@@ -29,12 +29,12 @@ class Arduino:
         logger.debug(self.serial.readline())
         return "pong"
 
-    def shutterAction(self, id, action, repeatCount=SHUTTER_REPEAT_COUNT):
+    def shutterAction(self, id, action):
         logger.debug("called shutter %d with action %d", id, action)
         data = "1"
         data += (str(id))
         data += (str(action))
-        data += (str(repeatCount))
+        data += (str(SHUTTER_REPEAT_COUNT[id]))
         self.serial.write((data + '\n').encode())
         logger.debug(self.serial.readline())
         logger.debug(self.serial.readline())
