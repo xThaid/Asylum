@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 logger = log.setupLogger('asylumd')
 
-SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 10, 7]
+SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 9, 7]
 GATE_REPEAT_COUNT = 3
 
 
