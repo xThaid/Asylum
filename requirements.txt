@@ -17,3 +17,4 @@ PyJWT==1.6.4
 schema==0.6.8
 SQLAlchemy==1.2.10
 Werkzeug==0.14.1
+gunicorn==19.9.0
