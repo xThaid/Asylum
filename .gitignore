@@ -3,5 +3,5 @@ db
 *.sqlite
 .idea
 __pycache__
-web/static/assets
+asylum/web/static/assets
 config.ini
