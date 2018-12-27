@@ -10,7 +10,7 @@ from asylum import config
 from asylum.asylumd import jsonrpc
 
 
-logger = log.setupLogger('asylumd')
+logger = log.setup_logger('asylumd')
 
 SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 9, 7]
 GATE_REPEAT_COUNT = 3

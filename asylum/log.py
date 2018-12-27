@@ -4,7 +4,7 @@ from asylum import config
 
 
 def setup_logger(name, fileLevel=logging.DEBUG):
-    dir = config.config['LOGGING']['log_dir']
+    dir = config['LOGGING']['log_dir']
 
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)

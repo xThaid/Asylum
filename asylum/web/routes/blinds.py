@@ -1,6 +1,8 @@
 from flask import render_template, request
 from datetime import timedelta
 
+from asylum.asylumd import asylumd_client
+
 from asylum.web.core import web_response
 from asylum.web.core import names
 from asylum.web.core import validate_json
@@ -170,3 +172,9 @@ def init_blinds_routes(app):
             return web_response.database_error()
 
         return web_response.blinds_schedule_deleted()
+
+    @app.route('/blinds/<int:blind_id>/<int:action_id>', methods=['GET'])
+    @authorize('admin')
+    def blinds_action(context, blind_id, action_id):
+        asylumd_client.shutterAction(blind_id, action_id)
+        return 'Jest ok'
