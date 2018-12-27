@@ -2,6 +2,7 @@ import serial
 import socket
 import sys
 import os
+import shutil
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -61,6 +62,8 @@ class Server:
 
         self.server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.server.bind(socket_loc)
+        os.chmod(socket_loc, 0o775)
+        shutil.chown(socket_loc, group=33)
 
     def addMethod(self, f, is_notification=False):
         def decorated_function(*args, **kwargs):
