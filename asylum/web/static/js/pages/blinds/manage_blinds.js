@@ -120,6 +120,16 @@ $(document).ready( function () {
          return false;
     });
 
+    $("#blinds_action_open" ).click(function() {
+        execute_instant_action(1);
+    });
+    $("#blinds_action_close" ).click(function() {
+        execute_instant_action(2);
+    });
+    $("#blinds_action_stop" ).click(function() {
+        execute_instant_action(3);
+    });
+
     $(document).keydown(function(e) {
         if ( e.key === "Escape")
             hide_front_form();
@@ -187,3 +197,22 @@ function delete_task(task_id) {
      });
  }
 
+ function execute_instant_action(action_id) {
+     const data = JSON.stringify(
+         {
+             'device_ids': $("#device_ids").val().replace('[', '').replace(']', '').split(',').map(Number),
+             "action_id": action_id
+         });
+     $.ajax({
+         url: "instantAction",
+         type: "POST",
+         contentType: 'application/json',
+         dataType: 'json',
+         data: data,
+         success: function (response) {
+         },
+         error: function (response) {
+             toastr[response.responseJSON.status](response.responseJSON.message, "Nie wykonano zadania");
+         }
+     });
+ }

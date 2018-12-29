@@ -68,6 +68,16 @@ delete_schedule_schema = Schema(
     }
 )
 
+blind_instant_action_schema = Schema(
+    {
+        'device_ids': And(lambda x: len(x) > 0,
+                           [
+                               And(int, lambda x: names.devices.get(x))
+                           ]),
+        'action_id': And(int, lambda x: names.actions.get(x)),
+    }
+)
+
 login_schema = Schema(
     {
         'login': str,

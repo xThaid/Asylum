@@ -173,8 +173,15 @@ def init_blinds_routes(app):
 
         return web_response.blinds_schedule_deleted()
 
-    @app.route('/blinds/<int:blind_id>/<int:action_id>', methods=['GET'])
-    @authorize('admin')
-    def blinds_action(context, blind_id, action_id):
-        asylumd_client.shutterAction(blind_id, action_id)
-        return 'Jest ok'
+    @app.route('/blinds/manage/instantAction', methods=['POST'])
+    @authorize('user', 'admin')
+    def blinds_instant_action(context):
+        json = request.get_json()
+
+        if not validate_json.validate(validate_json.blind_instant_action_schema, json):
+            return web_response.bad_request()
+
+        for device_id in json['device_ids']:
+            asylumd_client.shutterAction(device_id - 1, json['action_id'] - 1)
+
+        return web_response.blinds_action_executed()

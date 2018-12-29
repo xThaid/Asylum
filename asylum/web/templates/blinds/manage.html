@@ -11,6 +11,7 @@
 </head>
 <body>
     <div id="main-wrapper">
+        <input id="device_ids" type="hidden" value="{{ data_model['devices'] }}">
         <div id="add-task" class="front-form">
              <div class="form-body card" >
                 <form class="form" id="form-add-task">
@@ -78,6 +79,17 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
+                <div style="display: flex; flex-flow: row nowrap; margin-bottom: 30px">
+                    <div id="blinds_action_open" class="panel panel-big">
+                        <div class="panel-title">Otwórz</div>
+                    </div>
+                    <div id="blinds_action_stop" class="panel panel-big">
+                        <div class="panel-title">Zatrzymaj</div>
+                    </div>
+                    <div id="blinds_action_close" class="panel panel-big">
+                        <div class="panel-title">Zamknij</div>
+                    </div>
+                </div>
                 <div class="card card-large" style="width: 900px;">
                     <div class="card-title">
                         <h3>Zaplanowane zadania</h3>

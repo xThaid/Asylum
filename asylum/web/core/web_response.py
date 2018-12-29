@@ -59,6 +59,15 @@ def blinds_schedule_deleted():
     ), 200)
 
 
+def blinds_action_executed():
+    return make_response(jsonify(
+        {
+            'status': 'success',
+            'message': 'Akcja została wykonana!'
+        }
+    ), 200)
+
+
 def user_added():
     return make_response(jsonify(
         {

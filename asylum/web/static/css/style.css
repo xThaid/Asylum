@@ -570,6 +570,15 @@ body{
     align-items: center;
     justify-content: center;
 }
+
+.panel-big {
+    height: 60px;
+    background: #2255A4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .panel-small:hover{
     color: white;
 }
