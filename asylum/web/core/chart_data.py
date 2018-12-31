@@ -1,5 +1,5 @@
 import json
-
+import datetime
 
 class ChartData:
     def __init__(self):
@@ -32,3 +32,28 @@ class ChartData:
             'labels': self.labels,
             'datasets': self.datasets
         })
+
+
+class EnergyRecords:
+    def __init__(self):
+        self.power = {}
+        self.energy = {}
+
+    def add_power_record(self, name, record_data):
+        self.power[name] = prepare_record_entry(record_data)
+        return self
+
+    def add_energy_record(self, name, record_data):
+        self.energy[name] = prepare_record_entry(record_data)
+        return self
+
+    def build(self):
+        return {'max_power': self.power, 'max_energy': self.energy}
+
+
+def prepare_record_entry(record_entry):
+    entry = {
+        'value': record_entry[0],
+        'day': datetime.date.fromordinal(record_entry[1]).strftime('%Y-%m-%d'),
+    }
+    return entry

@@ -24,7 +24,7 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-                <div class="tab-page" id="tab1" {% if data_model['active_tab'] == 1 %} style="display: block !important;" {% endif %}>
+                <div class="tab-page" id="tab1" {% if data_model['active_tab'] == 'energy' %} style="display: block !important;" {% endif %}>
                     <div class="card-peity-row" style="width: 700px;">
                         <div class="card card-peity">
                             <div class="card-peity-title">Wyprodukowano</div>
@@ -101,7 +101,7 @@
                     </div>
                 </div>
             {% if not data_model['is_day_history'] %}
-                <div class="tab-page" id="tab3" {% if data_model['active_tab'] == 3 %} style="display: block !important;" {% endif %}>
+                <div class="tab-page" id="tab3" {% if data_model['active_tab'] == 'records' %} style="display: block !important;" {% endif %}>
                     <div class="card card-large" style="width: 900px;">
                         <div class="card-title">
                             <h3>Maksymalna moc</h3>
@@ -200,7 +200,7 @@
                      </div>
                 </div>
             {% endif %}
-                <div class="tab-page" id="tab2" {% if data_model['active_tab'] == 2 %} style="display: block !important; width: calc(100% - 50px) !important;" {% else %}style="width: calc(100% - 50px) !important;"{% endif %}>
+                <div class="tab-page" id="tab2" {% if data_model['active_tab'] == 'charts' %} style="display: block !important; width: calc(100% - 50px) !important;" {% else %}style="width: calc(100% - 50px) !important;"{% endif %}>
                     {% if data_model['is_day_history'] == true %}
                     <div class="card card-large card-chart" style="width: 100% !important;">
                         <div class="card-title">

@@ -1,11 +1,11 @@
 import datetime
+from calendar import monthrange
 
 from flask import render_template, jsonify, make_response, redirect, url_for
 
 from asylum.energy import energy_data
 from asylum.web.core.auth import authorize
-from asylum.web.core.utilities import add_month
-from asylum.web.core.chart_data import ChartData
+from asylum.web.core.chart_data import ChartData, EnergyRecords
 from asylum.web.core.page_model import PageModel
 from asylum.web.models.energy import Energy, EnergyDaily
 
@@ -217,7 +217,7 @@ def init_energy_routes(app):
             'power_chart_data': power_chart_data,
             'energy_chart_data': energy_chart_data,
             'is_day_history': True,
-            'active_tab': active_tab_index
+            'active_tab': page
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
@@ -235,7 +235,6 @@ def init_energy_routes(app):
             tab_url = date
         try:
             from_date = datetime.datetime.strptime(date_temp, '%Y-%m').date()
-            to_date = add_month(from_date) - datetime.timedelta(days=1)
         except ValueError:
             return redirect(url_for('energy_history_month'), code=302)
 
@@ -245,179 +244,23 @@ def init_energy_routes(app):
         if page not in ['energy', 'charts', 'records']:
             return redirect(url_for('energy_history_month', date=date), code=302)
 
-        active_tab_index = 0
-        if page == 'energy':
-            active_tab_index = 1
-        elif page == 'charts':
-            active_tab_index = 2
-        elif page == 'records':
-            active_tab_index = 3
-
+        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
         page_model = PageModel('Energia - historia miesiąca ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia miesiąca', '') \
             .add_tab('Energia', tab_url) \
             .add_tab('Wykresy', tab_url + '_charts') \
             .add_tab('Rekordy', tab_url + '_records') \
-            .activate_tab(active_tab_index) \
+            .activate_tab(tab_mapping[page]) \
             .to_dict()
 
-        query_result = EnergyDaily.get_last_rows(from_date - datetime.timedelta(days=1), to_date)
-
-        days_in_month = (to_date - from_date).days + 1
-
-        productions_per_day = [0] * days_in_month
-        consumptions_per_day = [0] * days_in_month
-        uses_per_day = [0] * days_in_month
-        imports_per_day = [0] * days_in_month
-        exports_per_day = [0] * days_in_month
-        storeds_per_day = [None] * days_in_month
-
-        for x in query_result[1:]:
-            index = datetime.date.fromordinal(x.day_ordinal).day - 1
-            productions_per_day[index] = round(x.production / 1000, 2)
-            consumptions_per_day[index] = round((x.import_ + x.production - x.export) / 1000, 2)
-            uses_per_day[index] = round((x.production - x.export) / 1000, 2)
-            imports_per_day[index] = round(x.import_ / 1000, 2)
-            exports_per_day[index] = round(x.export / 1000, 2)
-            storeds_per_day[index] = round(((x.export * 0.8) - x.import_) / 1000, 2)
-
-        daily_production = 0
-        daily_import = 0
-        daily_export = 0
-
-        if add_month(from_date) > datetime.date.today():
-            daily_frist = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
-            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
-            daily_production = daily_last[0].production - daily_frist[0].production
-            daily_import = daily_last[0].import_ - daily_frist[0].import_
-            daily_export = daily_last[0].export - daily_frist[0].export
-            index = datetime.date.today().day - 1
-            productions_per_day[index] = round(daily_production / 1000, 2)
-            consumptions_per_day[index] = round((daily_import + daily_production - daily_export) / 1000, 2)
-            uses_per_day[index] = round((daily_production - daily_export) / 1000, 2)
-            imports_per_day[index] = round(daily_import / 1000, 2)
-            exports_per_day[index] = round(daily_export / 1000, 2)
-            storeds_per_day[index] = round(((daily_export * 0.8) - daily_import) / 1000, 2)
-
-        production_total = round(((query_result[-1].production_offset - query_result[0].production_offset + daily_production) if not len(query_result) == 0 else daily_production) / 1000, 2)
-        import_total = round(((query_result[-1].import_offset - query_result[0].import_offset + daily_import) if not len(query_result) == 0 else daily_import) / 1000, 2)
-        export_total = round(((query_result[-1].export_offset - query_result[0].export_offset + daily_export) if not len(query_result) == 0 else daily_export) / 1000, 2)
-        uses_total = round(production_total - export_total, 2)
-        consumption_total = round(import_total + uses_total, 2)
-        stored_total = round(export_total * 0.8 - import_total, 2)
-
-        chart_labels = []
-        for x in range(days_in_month):
-            chart_labels.append(from_date + datetime.timedelta(days=x))
-
-        energy_chart_data = ChartData() \
-            .set_labels([x.strftime('%d') for x in chart_labels]) \
-            .add_dataset('Produkcja', productions_per_day, [25, 180, 25, 1], [50, 200, 50, 0.2]) \
-            .add_dataset('Zużycie', consumptions_per_day, [210, 15, 15, 1], [230, 30, 30, 0.2]) \
-            .add_dataset('Wykorzystanie', uses_per_day, [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
-            .add_dataset('Pobieranie', imports_per_day, [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
-            .add_dataset('Oddawanie', exports_per_day, [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
-            .add_dataset('Magazynowanie', storeds_per_day, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
-            .to_json()
-
-        if len(query_result) < 2:
-            max_productions = [0]
-            max_consumptions = [0]
-            max_imports = [0]
-            max_exports = [0]
-            max_uses = [0]
-            max_stores = [0]
-        else:
-            max_productions = []
-            max_consumptions = []
-            max_imports = []
-            max_exports = []
-            max_uses = []
-            max_stores = []
-
-        for x in range(1, len(query_result)):
-            max_productions.append(query_result[x].max_power_production)
-            max_imports.append(query_result[x].max_power_import)
-            max_exports.append(query_result[x].max_power_export)
-            max_consumptions.append(query_result[x].max_power_consumption)
-            max_uses.append(query_result[x].max_power_use)
-            max_stores.append(query_result[x].max_power_store)
-
-        records = {
-            'max_power': {
-                'production': {
-                    'value': max(max_productions),
-                    'day': chart_labels[max_productions.index(max(max_productions))],
-                },
-                'consumption': {
-                    'value': max(max_consumptions),
-                    'day': chart_labels[max_consumptions.index(max(max_consumptions))],
-                },
-                'import': {
-                    'value': max(max_imports),
-                    'day': chart_labels[max_imports.index(max(max_imports))],
-                },
-                'export': {
-                    'value': max(max_exports),
-                    'day': chart_labels[max_exports.index(max(max_exports))],
-                },
-                'use': {
-                    'value': max(max_uses),
-                    'day': chart_labels[max_uses.index(max(max_uses))],
-                },
-                'store': {
-                    'value': max(max_stores),
-                    'day': chart_labels[max_stores.index(max(max_stores))],
-                },
-            },
-            'max_energy': {
-                'production': {
-                    'value': max(productions_per_day),
-                    'day': chart_labels[productions_per_day.index(max(productions_per_day))]
-                },
-                'consumption': {
-                    'value': max(consumptions_per_day),
-                    'day': chart_labels[consumptions_per_day.index(max(consumptions_per_day))],
-                },
-                'import': {
-                    'value': max(imports_per_day),
-                    'day': chart_labels[imports_per_day.index(max(imports_per_day))],
-                },
-                'export': {
-                    'value': max(exports_per_day),
-                    'day': chart_labels[exports_per_day.index(max(exports_per_day))],
-                },
-                'use': {
-                    'value': max(uses_per_day),
-                    'day': chart_labels[uses_per_day.index(max(uses_per_day))],
-                },
-                'store': {
-                    'value': max(filter(lambda x: x is not None, storeds_per_day)),
-                    'day': chart_labels[storeds_per_day.index(max(filter(lambda x: x is not None,storeds_per_day)))],
-                },
-            }
-        }
-
-        data_model = {
-            'energy_production': productions_per_day,
-            'energy_production_total': production_total,
-            'energy_consumption': consumptions_per_day,
-            'energy_consumption_total': consumption_total,
-            'energy_use': uses_per_day,
-            'energy_use_total': uses_total,
-            'energy_import': imports_per_day,
-            'energy_import_total': import_total,
-            'energy_export': exports_per_day,
-            'energy_export_total': export_total,
-            'energy_stored': storeds_per_day,
-            'energy_stored_total': stored_total,
+        data_model = aggregate_energy_data(from_date, 'month')
+        data_model.update({
             'power_chart_data': None,
-            'energy_chart_data': energy_chart_data,
             'isDayHistory': False,
-            'records': records,
-            'active_tab': active_tab_index
-        }
+            'active_tab': page
+        })
+
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
     @app.route('/energy/history/year', defaults={'date': None, 'page': 'energy'})
@@ -434,7 +277,6 @@ def init_energy_routes(app):
             tab_url = date
         try:
             from_date = datetime.datetime.strptime(date_temp, '%Y').date()
-            to_date = from_date.replace(year=from_date.year + 1) - datetime.timedelta(days=1)
         except ValueError:
             return redirect(url_for('energy_history_year'), code=302)
 
@@ -444,219 +286,52 @@ def init_energy_routes(app):
         if page not in ['energy', 'charts', 'records']:
             return redirect(url_for('energy_history_year', date=date), code=302)
 
-        active_tab_index = 0
-        if page == 'energy':
-            active_tab_index = 1
-        elif page == 'charts':
-            active_tab_index = 2
-        elif page == 'records':
-            active_tab_index = 3
-
+        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
         page_model = PageModel('Energia - historia roku ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia roku', '') \
             .add_tab('Energia', tab_url) \
             .add_tab('Wykresy', tab_url + '_charts') \
             .add_tab('Rekordy', tab_url + '_records') \
-            .activate_tab(active_tab_index) \
+            .activate_tab(tab_mapping[page]) \
             .to_dict()
 
-        query_result = EnergyDaily.get_last_rows(from_date - datetime.timedelta(days=1), to_date)
-
-        productions_per_month = [0] * 12
-        consumptions_per_month = [0] * 12
-        uses_per_month = [0] * 12
-        imports_per_month = [0] * 12
-        exports_per_month = [0] * 12
-        storeds_per_month = [0] * 12
-
-        previous_month = query_result[0]
-        for x in query_result[1:]:
-            if datetime.date.fromordinal(x.day_ordinal + 1).day == 1:
-                month_index = datetime.date.fromordinal(x.day_ordinal).month - 1
-                productions_per_month[month_index] = round((x.production_offset - previous_month.production_offset) / 1000, 2)
-                imports_per_month[month_index] = round((x.import_offset - previous_month.import_offset) / 1000, 2)
-                exports_per_month[month_index] = round((x.export_offset - previous_month.export_offset) / 1000, 2)
-                uses_per_month[month_index] = round(productions_per_month[month_index] - exports_per_month[month_index], 2)
-                consumptions_per_month[month_index] = round(imports_per_month[month_index] + uses_per_month[month_index], 2)
-                storeds_per_month[month_index] = round(exports_per_month[month_index] * 0.8 - imports_per_month[month_index], 2)
-                previous_month = x
-
-        month_index = datetime.date.fromordinal(query_result[-1].day_ordinal).month - 1
-        if not (month_index == (datetime.date.fromordinal(previous_month.day_ordinal).month - 1)):
-            productions_per_month[month_index] = round((query_result[-1].production_offset - previous_month.production_offset) / 1000, 2)
-            imports_per_month[month_index] = round((query_result[-1].import_offset - previous_month.import_offset) / 1000, 2)
-            exports_per_month[month_index] = round((query_result[-1].export_offset - previous_month.export_offset) / 1000, 2)
-            uses_per_month[month_index] = round(productions_per_month[month_index] - exports_per_month[month_index], 2)
-            consumptions_per_month[month_index] = round(imports_per_month[month_index] + uses_per_month[month_index], 2)
-            storeds_per_month[month_index] = round(exports_per_month[month_index] * 0.8 - imports_per_month[month_index], 2)
-
-        daily_production = 0
-        daily_import = 0
-        daily_export = 0
-
-        if from_date.replace(year=from_date.year + 1) > datetime.date.today():
-            daily_frist = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
-            daily_last = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
-            daily_production = daily_last[0].production - daily_frist[0].production
-            daily_import = daily_last[0].import_ - daily_frist[0].import_
-            daily_export = daily_last[0].export - daily_frist[0].export
-            index = datetime.date.today().month - 1
-            productions_per_month[index] = round((daily_production / 1000) + productions_per_month[index], 2)
-            consumptions_per_month[index] = round(((daily_import + daily_production - daily_export) / 1000) + consumptions_per_month[index], 2)
-            uses_per_month[index] = round(((daily_production - daily_export) / 1000) + uses_per_month[index], 2)
-            imports_per_month[index] = round((daily_import / 1000) + imports_per_month[index], 2)
-            exports_per_month[index] = round((daily_export / 1000) + exports_per_month[index], 2)
-            storeds_per_month[index] = round((((daily_export * 0.8) - daily_import) / 1000) + storeds_per_month[index], 2)
-
-        production_total = round((query_result[-1].production_offset - (query_result[0].production_offset if not from_date.year == 2018 else 0) + daily_production) / 1000, 2)
-        import_total = round((query_result[-1].import_offset - (query_result[0].import_offset if not from_date.year == 2018 else 0) + daily_import) / 1000, 2)
-        export_total = round((query_result[-1].export_offset - (query_result[0].export_offset if not from_date.year == 2018 else 0) + daily_export) / 1000, 2)
-        uses_total = production_total - export_total
-        consumption_total = import_total + uses_total
-        stored_total = round(export_total * 0.8 - import_total, 2)
-
-        chart_labels = []
-        for x in range(12):
-            chart_labels.append(str(x + 1))
-
-        energy_chart_data = ChartData() \
-            .set_labels(chart_labels) \
-            .add_dataset('Produkcja', productions_per_month, [25, 180, 25, 1], [50, 200, 50, 0.2]) \
-            .add_dataset('Zużycie', consumptions_per_month, [210, 15, 15, 1], [230, 30, 30, 0.2]) \
-            .add_dataset('Wykorzystanie', uses_per_month, [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
-            .add_dataset('Pobieranie', imports_per_month, [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
-            .add_dataset('Oddawanie', exports_per_month, [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
-            .add_dataset('Magazynowanie', storeds_per_month, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
-            .to_json()
-
-        max_productions = []
-        max_consumptions = []
-        max_imports = []
-        max_exports = []
-        max_uses = []
-        max_stores = []
-
-        productions_per_day = []
-        consumptions_per_day = []
-        uses_per_day = []
-        imports_per_day = []
-        exports_per_day = []
-        storeds_per_day = []
-
-        days = []
-
-        for x in query_result:
-            max_productions.append(x.max_power_production)
-            max_consumptions.append(x.max_power_consumption)
-            max_imports.append(x.max_power_import)
-            max_exports.append(x.max_power_export)
-            max_uses.append(x.max_power_use)
-            max_stores.append(x.max_power_store)
-
-            productions_per_day.append(x.production / 1000)
-            imports_per_day.append(x.import_ / 1000)
-            exports_per_day.append(x.export / 1000)
-            uses_per_day.append((x.production - x.export) / 1000)
-            consumptions_per_day.append((x.import_ / 1000) + uses_per_day[-1])
-            storeds_per_day.append((x.export * 0.8 - x.import_) / 1000)
-
-            days.append(datetime.date.fromordinal(x.day_ordinal).strftime('%Y-%m-%d'))
-
-        max_production = max(max_productions)
-        max_consumption = max(max_consumptions)
-        max_import = max(max_imports)
-        max_export = max(max_exports)
-        max_store = max(max_stores)
-        max_use = max(max_uses)
-
-        max_energy_production = max(productions_per_day)
-        max_energy_consumption = max(consumptions_per_day)
-        max_energy_import = max(imports_per_day)
-        max_energy_export = max(exports_per_day)
-        max_energy_use = max(uses_per_day)
-        max_energy_store = max(storeds_per_day)
-
-        records = {
-            'max_power': {
-                'production': {
-                    'value': max_production,
-                    'day': days[max_productions.index(max_production)],
-                },
-                'consumption': {
-                    'value': max_consumption,
-                    'day': days[max_consumptions.index(max_consumption)],
-                },
-                'import': {
-                    'value': max_import,
-                    'day': days[max_imports.index(max_import)],
-                },
-                'export': {
-                    'value': max_export,
-                    'day': days[max_exports.index(max_export)],
-                },
-                'use': {
-                    'value': max_use,
-                    'day': days[max_uses.index(max_use)],
-                },
-                'store': {
-                    'value': max_store,
-                    'day': days[max_stores.index(max_store)],
-                },
-            },
-            'max_energy': {
-                'production': {
-                    'value': max_energy_production,
-                    'day': days[productions_per_day.index(max_energy_production)]
-                },
-                'consumption': {
-                    'value': max_energy_consumption,
-                    'day': days[consumptions_per_day.index(max_energy_consumption)]
-                },
-                'import': {
-                    'value': max_energy_import,
-                    'day': days[imports_per_day.index(max_energy_import)]
-                },
-                'export': {
-                    'value': max_energy_export,
-                    'day': days[exports_per_day.index(max_energy_export)]
-                },
-                'use': {
-                    'value': max_energy_use,
-                    'day': days[uses_per_day.index(max_energy_use)]
-                },
-                'store': {
-                    'value': max_energy_store,
-                    'day': days[storeds_per_day.index(max_energy_store)]
-                },
-            }
-        }
-
-        data_model = {
-            'energy_production': productions_per_month,
-            'energy_production_total': production_total,
-            'energy_consumption': consumptions_per_month,
-            'energy_consumption_total': consumption_total,
-            'energy_use': uses_per_month,
-            'energy_use_total': uses_total,
-            'energy_import': imports_per_month,
-            'energy_import_total': import_total,
-            'energy_export': exports_per_month,
-            'energy_export_total': export_total,
-            'energy_stored': storeds_per_month,
-            'energy_stored_total': stored_total,
+        data_model = aggregate_energy_data(from_date, 'year')
+        data_model.update({
             'power_chart_data': None,
-            'energy_chart_data': energy_chart_data,
             'isDayHistory': False,
-            'records': records,
-            'active_tab': active_tab_index
-        }
+            'active_tab': page
+        })
+
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/all')
+    @app.route('/energy/history/all', defaults={'page': 'energy'})
+    @app.route('/energy/history/all_<string:page>',)
     @authorize('guest', 'user', 'admin')
-    def energy_history_all(context):
-        return redirect(url_for("energy_history_year"), code=302)
+    def energy_history_all(context, page):
+        if page not in ['energy', 'charts', 'records']:
+            return redirect(url_for('energy_history_all'), code=302)
+
+        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
+        page_model = PageModel('Energia - cała historia ', context['user']) \
+            .add_breadcrumb_page('Energia', '/energy/now') \
+            .add_breadcrumb_page('Cała historia', '') \
+            .add_tab('Energia', 'all') \
+            .add_tab('Wykresy', 'all' + '_charts') \
+            .add_tab('Rekordy', 'all' + '_records') \
+            .activate_tab(tab_mapping[page]) \
+            .to_dict()
+
+        MONTHLY = True
+
+        data_model = aggregate_energy_data(MIN_DATE, 'all_monthly' if MONTHLY else 'all')
+        data_model.update({
+            'power_chart_data': None,
+            'isDayHistory': False,
+            'active_tab': page
+        })
+
+        return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
     @app.route('/energy/getCurrentPowerData', methods=['GET'])
     @authorize('guest', 'user', 'admin')
@@ -674,3 +349,203 @@ def init_energy_routes(app):
             'export': current_data['power_export'],
             'store': current_data['power_store']
         })
+
+    def aggregate_energy_data(from_date, type):
+        if type == 'month':
+            to_date = from_date.replace(day=monthrange(from_date.year, from_date.month)[1])
+        elif type == 'year':
+            to_date = from_date.replace(year=from_date.year + 1) - datetime.timedelta(days=1)
+        elif type == 'all' or type == 'all_monthly':
+            to_date = datetime.date.today()
+
+        raw_data = EnergyDaily.get_last_rows(from_date - datetime.timedelta(days=1), to_date)
+
+        # We have to make sure that very first day of measurements is also counted
+        if raw_data[0].id == 1:
+            dummy_day_data = EnergyDaily()
+            dummy_day_data.day_ordinal = raw_data[0].day_ordinal - 1
+            dummy_day_data.production = 0
+            dummy_day_data.import_ = 0
+            dummy_day_data.export = 0
+            dummy_day_data.production_offset = 0
+            dummy_day_data.import_offset = 0
+            dummy_day_data.export_offset = 0
+            dummy_day_data.max_power_production = 0
+            dummy_day_data.max_power_import = 0
+            dummy_day_data.max_power_export = 0
+            dummy_day_data.max_power_consumption = 0
+            dummy_day_data.max_power_use = 0
+            dummy_day_data.max_power_store = 0
+            raw_data.insert(0, dummy_day_data)
+
+        # Add data from current day
+        current_day_first_entry = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1)
+        current_day_last_entry = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
+        if len(current_day_first_entry) != 0:
+            current_day_data = EnergyDaily()
+            current_day_data.day_ordinal = datetime.date.today().toordinal()
+            current_day_data.production = current_day_last_entry[0].production - current_day_first_entry[0].production
+            current_day_data.import_ = current_day_last_entry[0].import_ - current_day_first_entry[0].import_
+            current_day_data.export = current_day_last_entry[0].export - current_day_first_entry[0].export
+            current_day_data.production_offset = current_day_last_entry[0].production
+            current_day_data.import_offset = current_day_last_entry[0].import_
+            current_day_data.export_offset = current_day_last_entry[0].export
+            current_day_data.max_power_production = 0
+            current_day_data.max_power_import = 0
+            current_day_data.max_power_export = 0
+            current_day_data.max_power_consumption = 0
+            current_day_data.max_power_use = 0
+            current_day_data.max_power_store = 0
+            if (type == 'month' and from_date.month == datetime.date.today().month) or \
+               (type == 'year' and from_date.year == datetime.date.today().year) or \
+               (type == 'all' or type == 'all_monthly'):
+                raw_data.append(current_day_data)
+
+        # Calculate total energy
+        total_energy_production = round((raw_data[-1].production_offset - raw_data[0].production_offset) / 1000, 2)
+        total_energy_import = round((raw_data[-1].import_offset - raw_data[0].import_offset) / 1000, 2)
+        total_energy_export = round((raw_data[-1].export_offset - raw_data[0].export_offset) / 1000, 2)
+        total_energy_use = round(total_energy_production - total_energy_export, 2)
+        total_energy_consumption = round(total_energy_import + total_energy_use, 2)
+        total_energy_store = round(total_energy_export * 0.8 - total_energy_import, 2)
+
+        # Aggregate data
+        if type == 'month':
+            aggregation_size = to_date.day - from_date.day + 1
+        elif type == 'year':
+            aggregation_size = 12
+        elif type == 'all':
+            aggregation_size = to_date.year - from_date.year + 1
+        elif type == 'all_monthly':
+            aggregation_size = (to_date.year - from_date.year + 1) * 12
+
+        aggregated_production = [0] * aggregation_size
+        aggregated_import = [0] * aggregation_size
+        aggregated_export = [0] * aggregation_size
+        aggregated_consumption = [0] * aggregation_size
+        aggregated_use = [0] * aggregation_size
+        aggregated_store = [0] * aggregation_size
+
+        max_production_power = (0, 0)
+        max_import_power = (0, 0)
+        max_export_power = (0, 0)
+        max_consumption_power = (0, 0)
+        max_use_power = (0, 0)
+        max_store_power = (0, 0)
+
+        max_daily_production = (0, 0)
+        max_daily_import = (0, 0)
+        max_daily_export = (0, 0)
+        max_daily_consumption = (0, 0)
+        max_daily_use = (0, 0)
+        max_daily_store = (0, 0)
+
+        previous_data = raw_data[0]
+        for x in raw_data[1:]:
+            next_day_date = datetime.date.fromordinal(x.day_ordinal + 1)
+            if (x.day_ordinal == raw_data[-1].day_ordinal) or \
+               (type == 'month') or \
+               (type == 'year' and next_day_date.day == 1) or \
+               (type == 'all' and next_day_date.day == 1 and next_day_date.month == 1) or \
+               (type == 'all_monthly' and next_day_date.day == 1):
+                current_day_date = datetime.date.fromordinal(x.day_ordinal)
+                if type == 'month':
+                    idx = current_day_date.day - 1
+                elif type == 'year':
+                    idx = current_day_date.month - 1
+                elif type == 'all':
+                    idx = current_day_date.year - from_date.year
+                elif type == 'all_monthly':
+                    idx = (current_day_date.year - from_date.year) * 12 + current_day_date.month - 1
+
+                if type == 'month':
+                    aggregated_production[idx] = round(x.production / 1000, 2)
+                    aggregated_import[idx] = round(x.import_ / 1000, 2)
+                    aggregated_export[idx] = round(x.export / 1000, 2)
+                else:
+                    aggregated_production[idx] = round((x.production_offset - previous_data.production_offset) / 1000, 2)
+                    aggregated_import[idx] = round((x.import_offset - previous_data.import_offset) / 1000, 2)
+                    aggregated_export[idx] = round((x.export_offset - previous_data.export_offset) / 1000, 2)
+
+                aggregated_use[idx] = round(aggregated_production[idx] - aggregated_export[idx], 2)
+                aggregated_consumption[idx] = round(aggregated_import[idx] + aggregated_use[idx], 2)
+                aggregated_store[idx] = round(aggregated_export[idx] * 0.8 - aggregated_import[idx], 2)
+                previous_data = x
+
+            # Calculate daily records
+            max_production_power = max(max_production_power, (x.max_power_production, x.day_ordinal))
+            max_import_power = max(max_import_power, (x.max_power_import, x.day_ordinal))
+            max_export_power = max(max_export_power, (x.max_power_export, x.day_ordinal))
+            max_consumption_power = max(max_consumption_power, (x.max_power_consumption, x.day_ordinal))
+            max_use_power = max(max_use_power, (x.max_power_use, x.day_ordinal))
+            max_store_power = max(max_store_power, (x.max_power_store, x.day_ordinal))
+
+            daily_production = round(x.production / 1000, 2)
+            daily_import = round(x.import_ / 1000, 2)
+            daily_export = round(x.export / 1000, 2)
+            daily_use = round(daily_production - daily_export, 2)
+            daily_consumption = round(daily_import + daily_use, 2)
+            daily_store = round(daily_export * 0.8 - daily_import, 2)
+
+            max_daily_production = max(max_daily_production, (daily_production, x.day_ordinal))
+            max_daily_import = max(max_daily_import, (daily_import, x.day_ordinal))
+            max_daily_export = max(max_daily_export, (daily_export, x.day_ordinal))
+            max_daily_consumption = max(max_daily_consumption, (daily_consumption, x.day_ordinal))
+            max_daily_use = max(max_daily_use, (daily_use, x.day_ordinal))
+            max_daily_store = max(max_daily_store, (daily_store, x.day_ordinal))
+
+        chart_labels = []
+        for x in range(aggregation_size):
+            if type == 'month':
+                label = from_date.replace(day=x + 1).strftime('%d')
+            elif type == 'year':
+                label = from_date.replace(month=x + 1).strftime('%m')
+            elif type == 'all':
+                label = from_date.replace(year=from_date.year + x).strftime('%Y')
+            elif type == 'all_monthly':
+                label = from_date.replace(year=from_date.year + int(x / 12), month=x % 12 + 1).strftime('%m.%y')
+            chart_labels.append(label)
+
+        energy_chart_data = ChartData() \
+            .set_labels(chart_labels) \
+            .add_dataset('Produkcja', aggregated_production, [25, 180, 25, 1], [50, 200, 50, 0.2]) \
+            .add_dataset('Zużycie', aggregated_consumption, [210, 15, 15, 1], [230, 30, 30, 0.2]) \
+            .add_dataset('Wykorzystanie', aggregated_use, [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
+            .add_dataset('Pobieranie', aggregated_import, [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
+            .add_dataset('Oddawanie', aggregated_export, [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
+            .add_dataset('Magazynowanie', aggregated_store, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
+            .to_json()
+
+        records = EnergyRecords() \
+            .add_power_record('production', max_production_power) \
+            .add_power_record('import', max_import_power) \
+            .add_power_record('export', max_export_power) \
+            .add_power_record('consumption', max_consumption_power) \
+            .add_power_record('use', max_use_power) \
+            .add_power_record('store', max_store_power) \
+            .add_energy_record('production', max_daily_production) \
+            .add_energy_record('import', max_daily_import) \
+            .add_energy_record('export', max_daily_export) \
+            .add_energy_record('consumption', max_daily_consumption) \
+            .add_energy_record('use', max_daily_use) \
+            .add_energy_record('store', max_daily_store) \
+            .build()
+
+        data_model = {
+            'energy_production': aggregated_production,
+            'energy_production_total': total_energy_production,
+            'energy_consumption': aggregated_consumption,
+            'energy_consumption_total': total_energy_consumption,
+            'energy_use': aggregated_use,
+            'energy_use_total': total_energy_use,
+            'energy_import': aggregated_import,
+            'energy_import_total': total_energy_import,
+            'energy_export': aggregated_export,
+            'energy_export_total': total_energy_export,
+            'energy_stored': aggregated_store,
+            'energy_stored_total': total_energy_store,
+            'energy_chart_data': energy_chart_data,
+            'records': records,
+        }
+
+        return data_model

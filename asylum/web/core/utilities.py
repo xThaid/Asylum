@@ -14,10 +14,3 @@ def strftime_to_unixtime(strftime, format_str):
         return [time.mktime(datetime.datetime.strptime(o, format_str).timetuple()) for o in strftime]
     else:
         return time.mktime(datetime.datetime.strptime(strftime, format_str).timetuple())
-
-
-def add_month(data):
-    if data.month == 12:
-        return datetime.date(data.year + 1, 1, 1)
-    else:
-        return datetime.date(data.year, data.month + 1, 1)
