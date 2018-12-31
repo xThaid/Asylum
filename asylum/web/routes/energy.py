@@ -383,6 +383,7 @@ def init_energy_routes(app):
         current_day_last_entry = Energy.get_last_rows(datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp(), datetime.datetime.now().timestamp(), 1, True)
         if len(current_day_first_entry) != 0:
             current_day_data = EnergyDaily()
+            current_day_data.id = 0
             current_day_data.day_ordinal = datetime.date.today().toordinal()
             current_day_data.production = current_day_last_entry[0].production - current_day_first_entry[0].production
             current_day_data.import_ = current_day_last_entry[0].import_ - current_day_first_entry[0].import_
@@ -438,7 +439,7 @@ def init_energy_routes(app):
         max_daily_export = (0, 0)
         max_daily_consumption = (0, 0)
         max_daily_use = (0, 0)
-        max_daily_store = (0, 0)
+        max_daily_store = (-1000, 0)
 
         previous_data = raw_data[0]
         for x in raw_data[1:]:

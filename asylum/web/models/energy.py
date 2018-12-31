@@ -54,4 +54,4 @@ class EnergyDaily(db.Model):
 
     def __repr__(self):
         return ('EnergyDaily<id:%i ,day: %s, production: %i' %
-                (self.id, str(datetime.date.fromordinal(self.day_ordinal)), self.production)) + '>'
+                (int(self.id), str(datetime.date.fromordinal(self.day_ordinal)), int(self.production))) + '>'
