@@ -42,7 +42,7 @@ def init_auth_routes(app):
     @app.route('/auth/login', methods=['GET'])
     @unauthorize
     def login_page():
-        resp = auth.try_to_autologin(request.environ['REMOTE_ADDR'])
+        resp = auth.try_to_autologin(request.environ['HTTP_X_FORWARDED_FOR'])
         if resp is not None:
             return resp
 
