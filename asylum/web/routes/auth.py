@@ -42,7 +42,7 @@ def init_auth_routes(app):
     @app.route('/auth/login', methods=['GET'])
     @unauthorize
     def login_page():
-        resp = auth.try_to_autologin(request.environ['HTTP_X_FORWARDED_FOR'])
+        resp = auth.try_to_autologin(request.environ['HTTP_X_FORWARDED_FOR']) if 'HTTP_X_FORWARDED_FOR' in request.environ else None
         if resp is not None:
             return resp
 

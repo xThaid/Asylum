@@ -1,6 +1,5 @@
 import jwt
 import datetime
-import ipaddress
 from functools import wraps
 
 from flask import current_app, request
@@ -44,9 +43,6 @@ def login(username, password):
 
 
 def try_to_autologin(ip_address):
-    if not ipaddress.ip_address(ip_address).is_private:
-        return None
-
     addr = get_MAC_address(ip_address)
     if addr is None:
         return None

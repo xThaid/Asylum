@@ -1,5 +1,6 @@
 from flask import render_template, request
 
+from asylum.helpers import get_MAC_address
 from asylum.web.core import validate_json, web_response
 from asylum.web.core.page_model import PageModel
 from asylum.web.core.auth import authorize
@@ -22,17 +23,24 @@ def init_users_routes(app):
             .filter(MacAddress.user_id == user_id)\
             .all()
 
-        mac_addresses = [{
-            'id': x.id,
-            'address': x.mac_address
-        } for x in query_result]
+        curr = get_MAC_address(request.environ['HTTP_X_FORWARDED_FOR']) if 'HTTP_X_FORWARDED_FOR' in request.environ else None
+        if curr is None:
+            curr = ''
+
+        data_model = {
+            'current': curr,
+            'addresses':
+            [{
+                'id': x.id,
+                'address': x.mac_address
+            } for x in query_result]}
 
         page_model = PageModel('Adresy MAC', context['user'])\
             .add_breadcrumb_page('Adresy MAC', '')\
             .to_dict()
 
         return render_template('users.html',
-                                data_model=mac_addresses,
+                                data_model=data_model,
                                 page_model=page_model)
 
     @app.route('/users/addMacAddress', methods=['POST'], defaults={'user_id': None})
