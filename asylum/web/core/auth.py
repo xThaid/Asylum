@@ -1,13 +1,16 @@
 import jwt
 import datetime
-from flask import current_app, request
-from sqlalchemy import func
+import ipaddress
 from functools import wraps
 
+from flask import current_app, request
+from sqlalchemy import func
+
+from asylum.helpers import get_MAC_address
 from asylum.web.core import web_response
 
 from asylum.web.models import db
-from asylum.web.models.user import User
+from asylum.web.models.user import User, MacAddress
 
 
 def register(username, name, password, role):
@@ -40,10 +43,25 @@ def login(username, password):
         return web_response.database_error()
 
 
+def try_to_autologin(ip_address):
+    if not ipaddress.ip_address(ip_address).is_private:
+        return None
+
+    addr = get_MAC_address(ip_address)
+    if addr is None:
+        return None
+    mac_address = MacAddress.query.filter(func.lower(MacAddress.mac_address) == func.lower(addr)).first()
+    if not mac_address:
+        return None
+
+    token = encode_auth_token(mac_address.user)
+    return web_response.auto_login(['Authorization', 'Bearer ' + token.decode('utf-8')])
+
+
 def encode_auth_token(user):
     payload = {
         'iat': datetime.datetime.utcnow(),
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=10),
         'sub': user.id,
         "context": {
             "user": {

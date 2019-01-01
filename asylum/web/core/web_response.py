@@ -14,6 +14,15 @@ def redirect_to(function_name):
     return redirect(url_for(function_name), code=302)
 
 
+def ok_request():
+    return make_response(jsonify(
+        {
+            'status': 'success',
+            'message': 'Ok'
+        }
+    ), 201)
+
+
 def bad_request():
     return make_response(jsonify(
         {
@@ -102,6 +111,12 @@ def login_success(cookie):
             'message': 'Zalogowano!'
         }
     ), 200)
+    res.set_cookie(*cookie, secure=False, httponly=True, samesite='strict')
+    return res
+
+
+def auto_login(cookie):
+    res = make_response(redirect(url_for('home'), code=302))
     res.set_cookie(*cookie, secure=False, httponly=True, samesite='strict')
     return res
 

@@ -20,3 +20,15 @@ class User(db.Model):
     def __repr__(self):
         return ('User<id:%i ,username: %s, name: %s, role: %s' %
                 (self.id, self.username, self.name, self.role)) + '>'
+
+
+class MacAddress(db.Model):
+    __tablename__ = 'user_mac_address'
+    id = db.Column(db.Integer, primary_key=True)
+    mac_address = db.Column(db.String(64), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+
+    def __repr__(self):
+        return ('Mac Address<id:%i ,user id: %s, mac address: %s' %
+                (self.id, self.user_id, self.mac_address)) + '>'

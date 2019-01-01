@@ -84,3 +84,15 @@ login_schema = Schema(
         'password': str
     }
 )
+
+add_mac_address_schema = Schema(
+    {
+        'mac_address': lambda x: re.match('^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$', x) is not None
+    }
+)
+
+delete_mac_address_schema = Schema(
+    {
+        'mac_address_id': int
+    }
+)

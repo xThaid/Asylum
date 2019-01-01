@@ -24,8 +24,8 @@ function completeRequestCallback(response) {
     }
 }
 $(document).ready(function(){
-    $('form').submit(function () {
-        const form =   $('form').serializeArray();
+    $('.form').submit(function () {
+        const form = $('.form').serializeArray();
         const data = JSON.stringify(
             {
                 "login": form[0].value,

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+    <script type="text/javascript" src="/static/assets/libs/moment/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/datatimepicker/tempusdominus-bootstrap-4.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $('#add_mac_address_button').click(function () {
+                const data = JSON.stringify(
+                    {
+                        "mac_address": $("#mac_address_input").val()
+                    });
+                $.ajax({
+                    url         : window.location.pathname +"/addMacAddress",
+                    type        : "POST",
+                    contentType : 'application/json',
+                    dataType    : 'json',
+                    data        : data,
+                    complete: function(){
+                        location.reload();
+                        $('#mac_address_input').val('');
+                    }
+                });
+            });
+        });
+        function delete_mac_address(address_id) {
+            const data = JSON.stringify(
+                {
+                    "mac_address_id": address_id
+                });
+            $.ajax({
+                url         : window.location.pathname + "/deleteMacAddress",
+                type        : "POST",
+                contentType : 'application/json',
+                dataType    : 'json',
+                data        : data,
+                complete: function(){
+                    location.reload();
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+                <div>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Adres</th>
+                                <th scope="col">Usuń</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for x in data_model %}
+                            <tr>
+                            <th>{{ x.id }}</th>
+                            <td>{{ x.address }}</td>
+                            <td><div class="delete-button button" onclick="delete_mac_address({{ x.id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="display:block;">
+                    <input id="mac_address_input" type="text" class="form-control" placeholder="Adres MAC" style="display:inline-block;">
+                    <div id="add_mac_address_button" class="add-button button" style="display:inline-block; vertical-align: middle;"><i class="mdi mdi-plus-circle-outline"></i></div>
+                </div>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+</body>
+</html>

@@ -4,6 +4,7 @@ from . import blinds
 from . import home
 from . import locks
 from . import admin
+from . import users
 
 
 def init_routes(app):
@@ -13,3 +14,4 @@ def init_routes(app):
     locks.init_auth_routes(app)
     auth.init_auth_routes(app)
     admin.init_auth_routes(app)
+    users.init_users_routes(app)

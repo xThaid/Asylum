@@ -42,6 +42,10 @@ def init_auth_routes(app):
     @app.route('/auth/login', methods=['GET'])
     @unauthorize
     def login_page():
+        resp = auth.try_to_autologin(request.environ['REMOTE_ADDR'])
+        if resp is not None:
+            return resp
+
         return render_template('auth/login.html')
 
     @app.route('/auth/logout', methods=['GET'])
