@@ -7,12 +7,12 @@ def get_data():
         meteo_data = requests.get(config['SUBSYSTEMS']['meteo_url'], timeout=1).json()
 
         return {
-            'temperature': meteo_data[''],
-            'humidity': meteo_data[''],
-            'pressure': meteo_data[''],
-            'dust_PM10': meteo_data[''],
-            'dust_PM25': meteo_data[''],
-            'dust_PM100': meteo_data['']
+            'temperature': meteo_data['sitemp'],
+            'humidity': meteo_data['sihumidity'],
+            'pressure': meteo_data['bmppress'],
+            'dust_PM10': meteo_data['pms3'],
+            'dust_PM25': meteo_data['pms4'],
+            'dust_PM100': meteo_data['pms5']
         }
     except (requests.exceptions.RequestException, ValueError) as e:
         return None

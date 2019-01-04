@@ -3,7 +3,7 @@ from datetime import datetime, date, time
 from asylum import create_sqlite3_connection
 
 sql_select_meteo = """
-SELECT *,
+SELECT *
 FROM meteo
 WHERE time > ?
 """
@@ -33,7 +33,7 @@ INSERT INTO meteo_daily (
     dust_PM25_min,
     dust_PM25_avg,
     dust_PM25_max,
-    dust_PM100_min
+    dust_PM100_min,
     dust_PM100_avg,
     dust_PM100_max
     )
@@ -153,22 +153,22 @@ def main():
         db_con.execute(sql_insert_daily, (
             day,
             temperature_min,
-            temperature_avg,
+            int(temperature_avg),
             temperature_max,
             humidity_min,
-            humidity_avg,
+            int(humidity_avg),
             humidity_max,
             pressure_min,
-            pressure_avg,
+            int(pressure_avg),
             pressure_max,
             dust_PM10_min,
-            dust_PM10_avg,
+            int(dust_PM10_avg),
             dust_PM10_max,
             dust_PM25_min,
-            dust_PM25_avg,
+            int(dust_PM25_avg),
             dust_PM25_max,
             dust_PM100_min,
-            dust_PM100_avg,
+            int(dust_PM100_avg),
             dust_PM100_max
         ))
 
