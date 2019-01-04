@@ -9,7 +9,7 @@ def main():
     cursor = db_conn.cursor()
     data = meteo_data.get_data()
 
-    if data is not None:
+    if data is not None and data['cold_device'] == '0':
         try:
             sql = "INSERT INTO meteo (temperature, humidity, pressure, dust_PM10, dust_PM25, dust_PM100) \
                 VALUES (?, ?, ?, ?, ?, ?)"
