@@ -27,7 +27,7 @@ CREATE TABLE user_mac_address(
 
 CREATE TABLE energy(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  time INTEGER NOT NULL,
+  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   production INTEGER NOT NULL,
   import INTEGER NOT NULL,
   export INTEGER NOT NULL,
@@ -91,7 +91,7 @@ CREATE TABLE blinds_schedule(
 
 CREATE TABLE meteo(
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  time INTEGER NOT NULL,
+  time INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
   temperature INTEGER NOT NULL,
   humidity INTEGER NOT NULL,
   pressure INTEGER NOT NULL,
