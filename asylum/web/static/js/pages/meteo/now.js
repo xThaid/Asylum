@@ -181,9 +181,34 @@ function update_data(){
             updateCell('dust_PM100', response.dust_PM100 + " µg/m³");
             updateDustIndicator('dust_PM100', response.dust_PM100, 50);
             $("#change_dust_PM100").text((response.dust_PM100 * 100 / 50).toFixed(0) + " %");
+            updateDustValues();
         },
         error       : function() {
           setTimeout(update_data, 1000);
         }
     });
+}
+
+function updateDustValues(){
+  $.ajax({
+      url         : "getCurrentDustData",
+      type        : "GET",
+      contentType : 'application/json',
+      dataType    : 'json',
+      success     : function (response) {
+          updateCell('dust_PM10', response.dust_PM10 + " µg/m³");
+          updateDustIndicator('dust_PM10', response.dust_PM10, 15);
+          $("#change_dust_PM10").text((response.dust_PM10 * 100 / 15).toFixed(0) + " %");
+          updateCell('dust_PM25', response.dust_PM25 + " µg/m³");
+          updateDustIndicator('dust_PM25', response.dust_PM25, 25);
+          $("#change_dust_PM25").text((response.dust_PM25 * 100 / 25).toFixed(0) + " %");
+          updateCell('dust_PM100', response.dust_PM100 + " µg/m³");
+          updateDustIndicator('dust_PM100', response.dust_PM100, 50);
+          $("#change_dust_PM100").text((response.dust_PM100 * 100 / 50).toFixed(0) + " %");
+          setTimeout(updateDustValues, 1000);
+      },
+      error       : function() {
+        setTimeout(updateDustValues, 1000);
+      }
+  });
 }

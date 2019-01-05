@@ -20,6 +20,21 @@ def init_meteo_routes(app):
             .to_dict()
         return render_template('meteo/now.html', page_model=page_model)
 
+    @app.route('/meteo/getCurrentDustData', methods=['GET'])
+    @authorize('guest', 'user', 'admin')
+    def get_current_dust_data(context):
+        current_data = meteo_data.get_data()
+
+        if current_data is None:
+            return make_response('', 500)
+
+        return jsonify({
+            'dust_PM10': current_data['dust_PM10'],
+            'dust_PM25': current_data['dust_PM25'],
+            'dust_PM100': current_data['dust_PM100']
+        })
+
+
     @app.route('/meteo/getCurrentData', methods=['GET'])
     @authorize('guest', 'user', 'admin')
     def get_current_meteo_data(context):
