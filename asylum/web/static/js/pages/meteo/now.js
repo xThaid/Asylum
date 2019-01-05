@@ -112,7 +112,7 @@ function updatePressureIndicator(name, value){
 function updateChangeArrow(name, change, step, min){
   let arrowUp = '<i class="mdi mdi-arrow-up-bold meteo-arrow"></i>';
   let arrowDown = '<i class="mdi mdi-arrow-down-bold meteo-arrow"></i>';
-  let constant = '<i class="mdi mdi-checkbox-blank-circle-outline meteo-arrow"></i>';
+  let constant = '<i class="mdi mdi-bullseye meteo-arrow"></i>';
 
   let color = "";
   let arrows = "";

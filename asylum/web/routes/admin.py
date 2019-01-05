@@ -15,7 +15,7 @@ def init_auth_routes(app):
         page_model = PageModel('Panel Administracyjny', context['user'])\
             .add_breadcrumb_page('Panel Administracyjny', '/admin')\
             .to_dict()
-        return render_template('admin.html', page_model=page_model)
+        return render_template('admin/admin.html', page_model=page_model)
 
     @app.route('/admin/status', methods=['GET'])
     @authorize('admin')
