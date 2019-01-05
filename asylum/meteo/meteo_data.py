@@ -2,14 +2,13 @@ import requests
 
 from asylum import config
 
+
 def get_data():
     try:
         meteo_data = requests.get(config['SUBSYSTEMS']['meteo_url'], timeout=1).json()
 
-        if meteo_data['cold'] == "1":
-            return None
-
         return {
+            'cold_device': meteo_data['cold'],
             'temperature': meteo_data['sitemp'],
             'humidity': meteo_data['sihumidity'],
             'pressure': meteo_data['bmppress'],
@@ -19,6 +18,7 @@ def get_data():
         }
     except (requests.exceptions.RequestException, ValueError) as e:
         return None
+
 
 def test_meteo_connection():
     data = get_data()
