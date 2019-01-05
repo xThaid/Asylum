@@ -13,19 +13,24 @@
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
                 <div style="display:inline-block">
-                Status flary:
                 {% if data_model['flara_status'] == true %}
-                    <i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i>
+                    Status flary:<i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i>
                 {% else %}
-                    <i class="mdi mdi-close-circle" style="color:#DC143C"></i>
+                    Status flary:<i class="mdi mdi-close-circle" style="color:#DC143C"></i>
                 {% endif %}
                 </div>
                 <div style="display:inline-block">
-                Status e-metera:
                 {% if data_model['emeter_status'] == true %}
-                    <i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i>
+                    <a href="status/emeter">Status e-metera:<i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i></a>
                 {% else %}
-                    <i class="mdi mdi-close-circle" style="color:#DC143C"></i>
+                    Status e-metera:<i class="mdi mdi-close-circle" style="color:#DC143C"></i>
+                {% endif %}
+                </div>
+                <div style="display:inline-block">
+                {% if data_model['meteo_status'] == true %}
+                    <a href="status/meteo">Status meteo:<i class="mdi mdi-checkbox-marked-circle" style="color:#0B6623"></i></a>
+                {% else %}
+                    Status meteo:<i class="mdi mdi-close-circle" style="color:#DC143C"></i>
                 {% endif %}
                 </div>
             </div>
