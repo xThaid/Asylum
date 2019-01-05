@@ -122,10 +122,10 @@ function updateChangeArrow(name, change, step, min){
     color = "orange";
   }else{
     if (change < 0){
-      if (-change <= step){
+      if (-change <= step + min){
         color = "red";
         arrows += arrowDown;
-      }else if (-change <= 2 * step){
+      }else if (-change <= 2 * step + min){
         color = "red";
         arrows += arrowDown;
         arrows += arrowDown;
@@ -136,10 +136,10 @@ function updateChangeArrow(name, change, step, min){
         arrows += arrowDown;
       }
     }else{
-      if (change <= step){
+      if (change <= step + min){
         color = "green";
         arrows += arrowUp;
-      }else if (change <= 2 * step){
+      }else if (change <= 2 * step + min){
         color = "green";
         arrows += arrowUp;
         arrows += arrowUp;
@@ -165,13 +165,13 @@ function update_data(){
         success     : function (response) {
             updateCell('temperature', (response.temperature / 10).toFixed(1) + " °C");
             updateTemperatureIndicator('temperature', response.temperature);
-            updateChangeArrow('temperature', response.temperature_delta, 2, 0);
+            updateChangeArrow('temperature', response.temperature_delta, 4, 1);
             updateCell('humidity', (response.humidity / 10).toFixed(1) + " %");
             updateHumidityIndicator('humidity', response.humidity);
-            updateChangeArrow('humidity', response.humidity_delta, 5, 0);
+            updateChangeArrow('humidity', response.humidity_delta, 10, 2);
             updateCell('pressure', (response.pressure / 10).toFixed(1) + " hPa");
             updatePressureIndicator('pressure', response.pressure);
-            updateChangeArrow('pressure', response.pressure_delta, 2, 0);
+            updateChangeArrow('pressure', response.pressure_delta, 4, 1);
             updateCell('dust_PM10', response.dust_PM10 + " µg/m³");
             updateDustIndicator('dust_PM10', response.dust_PM10, 15);
             $("#change_dust_PM10").text((response.dust_PM10 * 100 / 15).toFixed(0) + " %");

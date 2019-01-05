@@ -39,7 +39,7 @@ def init_meteo_routes(app):
     @authorize('guest', 'user', 'admin')
     def get_current_meteo_data(context):
         last_data = Meteo.query\
-        .filter(Meteo.time > ((datetime.now().timestamp()) - (30 * 60)))\
+        .filter(Meteo.time > ((datetime.now().timestamp()) - (60 * 60)))\
         .first()
 
         current_data = meteo_data.get_data()
