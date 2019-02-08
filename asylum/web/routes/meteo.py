@@ -38,22 +38,31 @@ def init_meteo_routes(app):
     @app.route('/meteo/getCurrentData', methods=['GET'])
     @authorize('guest', 'user', 'admin')
     def get_current_meteo_data(context):
-        last_data = Meteo.query\
-        .filter(Meteo.time > ((datetime.now().timestamp()) - (60 * 60)))\
-        .first()
-
         current_data = meteo_data.get_data()
 
         if current_data is None:
             return make_response('', 500)
 
+        temperature_delta = 0
+        humidity_delta = 0
+        pressure_delta = 0
+
+        last_data = Meteo.query\
+        .filter(Meteo.time > ((datetime.now().timestamp()) - (60 * 60)))\
+        .first()
+
+        if last_data is not None:
+            temperature_delta = int(current_data['temperature']) - last_data.temperature
+            humidity_delta = int(current_data['humidity']) - last_data.humidity
+            pressure_delta = int(current_data['pressure']) - last_data.pressure
+
         return jsonify({
             'temperature': current_data['temperature'],
-            'temperature_delta': int(current_data['temperature']) - last_data.temperature,
+            'temperature_delta': temperature_delta,
             'humidity': current_data['humidity'],
-            'humidity_delta': int(current_data['humidity']) - last_data.humidity,
+            'humidity_delta': humidity_delta,
             'pressure': current_data['pressure'],
-            'pressure_delta': int(current_data['pressure']) - last_data.pressure,
+            'pressure_delta': pressure_delta,
             'dust_PM10': current_data['dust_PM10'],
             'dust_PM25': current_data['dust_PM25'],
             'dust_PM100': current_data['dust_PM100']

@@ -12,7 +12,7 @@ function updateDustIndicator(name, value, norm){
     text = "DOBRA";
     color = "#D3D124";
   }else if(value < 3 * norm){
-    text = "PRZECIĘTNA";
+    text = "UMIARKOWANA";
     color = "#EFAE16";
   }else if(value < 4 * norm){
     text = "ZŁA";
@@ -69,10 +69,10 @@ function updateHumidityIndicator(name, value){
   }else if(value < 400){
     text = "NISKA";
     color = "#FFFF66";
-  }else if(value < 600){
+  }else if(value < 700){
     text = "UMIARKOWANA";
     color = "#00FF99";
-  }else if(value < 800){
+  }else if(value < 900){
     text = "WYSOKA";
     color = "#00CCFF";
   }else{
@@ -94,7 +94,7 @@ function updatePressureIndicator(name, value){
   }else if(value < 10000){
     text = "NISKIE";
     color = "#00CCFF";
-  }else if(value < 10150){
+  }else if(value < 10200){
     text = "UMIARKOWANE";
     color = "#00FF99";
   }else if(value < 10300){

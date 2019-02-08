@@ -35,9 +35,10 @@ INSERT INTO meteo_daily (
     dust_PM25_max,
     dust_PM100_min,
     dust_PM100_avg,
-    dust_PM100_max
+    dust_PM100_max,
+    is_data_correct
     )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
 
@@ -125,30 +126,32 @@ def main():
             dust_PM10_avg /= len(datas)
             dust_PM25_avg /= len(datas)
             dust_PM100_avg /= len(datas)
+            is_data_correct = True
         else:
-            temperature_min = last[2]
-            temperature_avg = last[3]
-            temperature_max = last[4]
+            temperature_min = 0
+            temperature_avg = 0
+            temperature_max = 0
 
-            humidity_min = last[5]
-            humidity_avg = last[6]
-            humidity_max = last[7]
+            humidity_min = 0
+            humidity_avg = 0
+            humidity_max = 0
 
-            pressure_min = last[8]
-            pressure_avg = last[9]
-            pressure_max = last[10]
+            pressure_min = 0
+            pressure_avg = 0
+            pressure_max = 0
 
-            dust_PM10_min = last[11]
-            dust_PM10_avg = last[12]
-            dust_PM10_max = last[13]
+            dust_PM10_min = 0
+            dust_PM10_avg = 0
+            dust_PM10_max = 0
 
-            dust_PM25_min = last[14]
-            dust_PM25_avg = last[15]
-            dust_PM25_max = last[16]
+            dust_PM25_min = 0
+            dust_PM25_avg = 0
+            dust_PM25_max = 0
 
-            dust_PM100_min = last[17]
-            dust_PM100_avg = last[18]
-            dust_PM100_max = last[19]
+            dust_PM100_min = 0
+            dust_PM100_avg = 0
+            dust_PM100_max = 0
+            is_data_correct = False
 
         db_con.execute(sql_insert_daily, (
             day,
@@ -169,7 +172,8 @@ def main():
             dust_PM25_max,
             dust_PM100_min,
             int(dust_PM100_avg),
-            dust_PM100_max
+            dust_PM100_max,
+            is_data_correct
         ))
 
     db_con.commit()

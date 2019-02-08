@@ -11,14 +11,22 @@ def get_data():
 
         relative_pressure = calc_relative_pressure(int(meteo_data['bmppress']), int(meteo_data['sitemp']) / 10)
 
+        is_data_correct = True
+
+        if meteo_data['cold'] == '1' \
+        or meteo_data['bmpcon'] == '0' \
+        or meteo_data['pmscon'] == '0' \
+        or meteo_data['sicon'] == '0':
+            is_data_correct = False
+
         return {
-            'cold_device': meteo_data['cold'],
-            'temperature': meteo_data['sitemp'],
-            'humidity': meteo_data['sihumidity'],
-            'pressure': relative_pressure,
-            'dust_PM10': meteo_data['pms3'],
-            'dust_PM25': meteo_data['pms4'],
-            'dust_PM100': meteo_data['pms5']
+            'is_data_correct': is_data_correct,
+            'temperature': int(meteo_data['sitemp']),
+            'humidity': int(meteo_data['sihumidity']),
+            'pressure': int(relative_pressure),
+            'dust_PM10': int(meteo_data['pms3']),
+            'dust_PM25': int(meteo_data['pms4']),
+            'dust_PM100': int(meteo_data['pms5'])
         }
     except (requests.exceptions.RequestException, ValueError) as e:
         return None

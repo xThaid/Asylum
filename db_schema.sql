@@ -122,7 +122,8 @@ CREATE TABLE meteo_daily(
   dust_PM25_max INTEGER NOT NULL,
   dust_PM100_min INTEGER NOT NULL,
   dust_PM100_avg INTEGER NOT NULL,
-  dust_PM100_max INTEGER NOT NULL
+  dust_PM100_max INTEGER NOT NULL,
+  is_data_correct BOOLEAN NOT NULL
 );
 
 COMMIT;
