@@ -4,9 +4,14 @@
 <head>
     {%  include 'shared/head.html' %}
     <script type="text/javascript" src="/static/js/pages/meteo/now.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/moment/moment-with-locales.js"></script>
+    <script type="text/javascript" src="/static/assets/libs/datatimepicker/tempusdominus-bootstrap-4.min.js"></script>
+    <script type="text/javascript" src="/static/js/history_picker.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             update_data();
+            createDatepicker("{{data_model['MIN_DATE'] }}");
+            enablePickerNavigation();
         });
     </script>
 </head>
@@ -100,6 +105,49 @@
                             </div>
                         </div>
                     </div>
+                </fieldset>
+                <fieldset class="card-peity-fieldset">
+                    <legend class="card-peity-legend">Historia</legend>
+                    <div style="display: flex; flex-flow: row wrap;">
+                        <a href="/meteo/day" class="panel panel-small">
+                            <div class="panel-title">Obecny dzień</div>
+                       </a>
+                       <a href="/meteo/month" class="panel panel-small">
+                           <div class="panel-title">Obecny miesiąc</div>
+                       </a>
+                       <a href="/meteo/year" class="panel panel-small">
+                           <div class="panel-title">Obecny rok</div>
+                       </a>
+                       <a href="/meteo/all" class="panel panel-small">
+                           <div class="panel-title">Od początku</div>
+                       </a>
+                   </div>
+                   <div style="display: flex; flex-flow: row nowrap;">
+                       <div class="form-group">
+                           <div class="input-group" id="datetimepicker-day" data-target-input="nearest">
+                               <input id="energy-history-input-day" class="energy-history-input" type="text" data-target="#datetimepicker-day" style="display: none;"/>
+                               <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-day" data-toggle="datetimepicker" onclick="pickerClick('day')">
+                                   <div class="panel-title">Dzień</div>
+                               </div>
+                           </div>
+                       </div>
+                        <div class="form-group">
+                           <div class="input-group" id="datetimepicker-month" data-target-input="nearest">
+                               <input id="energy-history-input-month" class="energy-history-input" type="text" data-target="#datetimepicker-month" style="display: none;"/>
+                               <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-month" data-toggle="datetimepicker" onclick="pickerClick('month')">
+                                   <div class="panel-title">Miesiąc</div>
+                               </div>
+                           </div>
+                       </div>
+                        <div class="form-group">
+                           <div class="input-group" id="datetimepicker-year" data-target-input="nearest">
+                               <input id="energy-history-input-year" type="text" data-target="#datetimepicker-year" style="display: none;"/>
+                               <div class="input-group-append panel-static panel-small panel-datapicker" data-target="#datetimepicker-year" data-toggle="datetimepicker" onclick="pickerClick('year')">
+                                   <div class="panel-title">Rok</div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
                 </fieldset>
             </div>
             {% include 'shared/footer.html' %}

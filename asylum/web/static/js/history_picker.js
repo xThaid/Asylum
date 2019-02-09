@@ -73,17 +73,17 @@ function pickerClick(type){
 function enablePickerNavigation() {
     $('#datetimepicker-year').on('datetimepicker.hide',function(){
         if($('#datetimepicker-year').data('ready') === true)
-            window.location.href = 'history/year/' + $('#energy-history-input-year').val();
+            window.location.href = 'year/' + $('#energy-history-input-year').val();
         }
     );
     $('#datetimepicker-month').on('datetimepicker.hide',function(){
         if($('#datetimepicker-month').data('ready') === true)
-            window.location.href = 'history/month/' + $('#energy-history-input-month').val();
+            window.location.href = 'month/' + $('#energy-history-input-month').val();
         }
     );
     $('#datetimepicker-day').on('datetimepicker.hide',function(){
         if($('#datetimepicker-day').data('ready') === true)
-            window.location.href = 'history/day/' + $('#energy-history-input-day').val();
+            window.location.href = 'day/' + $('#energy-history-input-day').val();
         }
     );
 }

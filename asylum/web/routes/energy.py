@@ -14,6 +14,7 @@ MIN_DATE = datetime.date(2018, 6, 21)
 
 def init_energy_routes(app):
     @app.route('/energy')
+    @app.route('/energy/')
     @authorize('guest', 'user', 'admin')
     def energy_redirect(context):
         return redirect(url_for('energy_now'), code=302)
@@ -29,15 +30,11 @@ def init_energy_routes(app):
         }
         return render_template('energy/now.html', page_model=page_model, data_model=data_model)
 
-    @app.route('/energy/history')
-    @authorize('guest', 'user', 'admin')
-    def energy_history_redirect(context):
-        return redirect(url_for("energy_now"), code=302)
 
-    @app.route('/energy/history/day', defaults={'date': None, 'page': 'energy'})
-    @app.route('/energy/history/day_<string:page>', defaults={'date': None})
-    @app.route('/energy/history/day/<string:date>', defaults={'page': 'energy'})
-    @app.route('/energy/history/day/<string:date>_<string:page>',)
+    @app.route('/energy/day', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/day_<string:page>', defaults={'date': None})
+    @app.route('/energy/day/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/day/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_day(context, date, page):
         if date is None:
@@ -65,7 +62,7 @@ def init_energy_routes(app):
 
         page_model = PageModel('Energia - historia dnia ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
-            .add_breadcrumb_page('Historia dnia', '/energy/history/day') \
+            .add_breadcrumb_page('Historia dnia', '/energy/day') \
             .add_tab('Energia', tab_url) \
             .add_tab('Wykresy', tab_url + '_charts') \
             .activate_tab(active_tab_index) \
@@ -221,10 +218,10 @@ def init_energy_routes(app):
         }
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/month', defaults={'date': None, 'page': 'energy'})
-    @app.route('/energy/history/month_<string:page>', defaults={'date': None})
-    @app.route('/energy/history/month/<string:date>', defaults={'page': 'energy'})
-    @app.route('/energy/history/month/<string:date>_<string:page>',)
+    @app.route('/energy/month', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/month_<string:page>', defaults={'date': None})
+    @app.route('/energy/month/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/month/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_month(context, date, page):
         if date is None:
@@ -263,10 +260,10 @@ def init_energy_routes(app):
 
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/year', defaults={'date': None, 'page': 'energy'})
-    @app.route('/energy/history/year_<string:page>', defaults={'date': None})
-    @app.route('/energy/history/year/<string:date>', defaults={'page': 'energy'})
-    @app.route('/energy/history/year/<string:date>_<string:page>',)
+    @app.route('/energy/year', defaults={'date': None, 'page': 'energy'})
+    @app.route('/energy/year_<string:page>', defaults={'date': None})
+    @app.route('/energy/year/<string:date>', defaults={'page': 'energy'})
+    @app.route('/energy/year/<string:date>_<string:page>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_year(context, date, page):
         if date is None:
@@ -305,8 +302,8 @@ def init_energy_routes(app):
 
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/energy/history/all', defaults={'page': 'energy'})
-    @app.route('/energy/history/all_<string:page>',)
+    @app.route('/energy/all', defaults={'page': 'energy'})
+    @app.route('/energy/all_<string:page>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_all(context, page):
         if page not in ['energy', 'charts', 'records']:

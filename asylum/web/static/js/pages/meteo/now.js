@@ -69,10 +69,10 @@ function updateHumidityIndicator(name, value){
   }else if(value < 400){
     text = "NISKA";
     color = "#FFFF66";
-  }else if(value < 700){
+  }else if(value < 600){
     text = "UMIARKOWANA";
     color = "#00FF99";
-  }else if(value < 900){
+  }else if(value < 800){
     text = "WYSOKA";
     color = "#00CCFF";
   }else{
@@ -158,7 +158,7 @@ function updateChangeArrow(name, change, step, min){
 
 function update_data(){
     $.ajax({
-        url         : "getCurrentData",
+        url         : "/meteo/getCurrentData",
         type        : "GET",
         contentType : 'application/json',
         dataType    : 'json',

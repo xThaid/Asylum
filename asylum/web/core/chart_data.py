@@ -1,5 +1,53 @@
 import json
 import datetime
+from sqlalchemy import and_
+
+def get_grouped_data(start_time, model, time_separation=4):
+
+    time_from_midnight = 24 * 60 * 60
+    if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
+        time_from_midnight = datetime.datetime.now().timestamp() - datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp()
+
+    if time_from_midnight == 0:
+        time_from_midnight = 1
+
+    points_count = int(time_from_midnight / (60 * time_separation)) + 1
+
+    time_points = [(start_time + datetime.timedelta(minutes=x * time_separation))
+                         for x in range(points_count)]
+
+
+    data = model.query.filter(and_(model.time >= start_time.timestamp(), model.time < (start_time + datetime.timedelta(days=1)).timestamp())).all()
+
+    if len(data) == 0:
+        return {
+            "time_points": time_points,
+            'grouped_data': None
+        }
+
+    grouped_data = []
+    if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
+        group_count = int(
+            (datetime.datetime.now().hour * 60 + datetime.datetime.now().minute) / time_separation) + 1
+    else:
+        group_count = int((24 * 60) / time_separation) + 1
+
+    for x in range(group_count):
+        grouped_data.append([])
+    curr_time = 0
+    next_time = start_time + datetime.timedelta(minutes=time_separation)
+
+    for entry in data:
+        while entry.time >= next_time.timestamp():
+            curr_time += 1
+            next_time = next_time + datetime.timedelta(minutes=time_separation)
+        grouped_data[curr_time].append(entry)
+
+    return {
+        "time_points": time_points,
+        "grouped_data": grouped_data
+    }
+
 
 class ChartData:
     def __init__(self):
@@ -11,6 +59,8 @@ class ChartData:
         return self
 
     def add_dataset(self, label, data, border_color, background_color, hidden=False, border_width=1):
+
+
         self.datasets.append({
             'label': label,
             'data': data,

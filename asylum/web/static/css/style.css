@@ -508,7 +508,8 @@ body{
 .card-chart {
     height: 400px;
     width: calc(100% - 50px) !important;
-    padding-top: 30px !important;
+    padding-top: 20px !important;
+    padding-bottom: 40px !important;
 }
 .footer{
     height: 50px;

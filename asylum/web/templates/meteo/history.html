@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+    <script type="text/javascript" src="/static/assets/libs/Chart.js/Chart.min.js"></script>
+    <script type="text/javascript" src="/static/js/pages/meteo/history.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            genTemperatureChart({{ data_model['temperature_chart_data']|safe }},{{data_model['average_values']['temperature']}});
+            genHumidityChart({{ data_model['humidity_chart_data']|safe }},{{data_model['average_values']['humidity']}});
+            genPressureChart({{ data_model['pressure_chart_data']|safe }},{{data_model['average_values']['pressure']}});
+            genDustChart({{ data_model['dust_chart_data']|safe }},{{data_model['average_values']['dust']}});
+        });
+    </script>
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+              <div class="tab-page" style="display: block !important; width: calc(100% - 50px) !important;">
+                  <div class="card card-large card-chart" style="width: 100% !important;">
+                      <div class="card-title">
+                          <h3>Wykres temperatury powietrza</h3>
+                      </div>
+                  <canvas id="temperature-chart"></canvas>
+                  </div>
+                  <div class="card card-large card-chart" style="width: 100% !important;">
+                      <div class="card-title">
+                          <h3>Wykres wilgotności powietrza</h3>
+                      </div>
+                  <canvas id="humidity-chart"></canvas>
+                  </div>
+                  <div class="card card-large card-chart" style="width: 100% !important;">
+                      <div class="card-title">
+                          <h3>Wykres ciśnienia atmosferycznego</h3>
+                      </div>
+                  <canvas id="pressure-chart"></canvas>
+                  </div>
+                  <div class="card card-large card-chart" style="width: 100% !important;">
+                      <div class="card-title">
+                          <h3>Wykres pyłu zawieszonego PM2.5</h3>
+                      </div>
+                  <canvas id="dust-chart"></canvas>
+                  </div>
+              </div>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+</body>
+</html>
