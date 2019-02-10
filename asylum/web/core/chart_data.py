@@ -2,50 +2,57 @@ import json
 import datetime
 from sqlalchemy import and_
 
-def get_grouped_data(start_time, model, time_separation=4):
+def group_data(start_time, model, time_separation):
 
     time_from_midnight = 24 * 60 * 60
-    if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
-        time_from_midnight = datetime.datetime.now().timestamp() - datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp()
+    datetime_now = datetime.datetime.now()
+
+    if (start_time + datetime.timedelta(days=1)) > datetime_now:
+        time_from_midnight = datetime_now.timestamp() - datetime_now.replace(hour=0, minute=0, second=0).timestamp()
 
     if time_from_midnight == 0:
         time_from_midnight = 1
 
-    points_count = int(time_from_midnight / (60 * time_separation)) + 1
-
-    time_points = [(start_time + datetime.timedelta(minutes=x * time_separation))
-                         for x in range(points_count)]
-
+    time_points = []
+    for y in time_separation:
+        points_count = int(time_from_midnight / (60 * y)) + 1
+        time_points.append([(start_time + datetime.timedelta(minutes=x * y))
+                             for x in range(points_count - 1)])
 
     data = model.query.filter(and_(model.time >= start_time.timestamp(), model.time < (start_time + datetime.timedelta(days=1)).timestamp())).all()
 
     if len(data) == 0:
         return {
             "time_points": time_points,
-            'grouped_data': None
+            'groups': None,
+            'non_grouped': None
         }
 
+
     grouped_data = []
-    if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
-        group_count = int(
-            (datetime.datetime.now().hour * 60 + datetime.datetime.now().minute) / time_separation) + 1
-    else:
-        group_count = int((24 * 60) / time_separation) + 1
-
-    for x in range(group_count):
+    for y in range(len(time_separation)):
         grouped_data.append([])
-    curr_time = 0
-    next_time = start_time + datetime.timedelta(minutes=time_separation)
+        if start_time + datetime.timedelta(days=1) > datetime_now:
+            group_count = int((datetime_now.hour * 60 + datetime_now.minute) / time_separation[y]) + 1
+        else:
+            group_count = int((24 * 60) / time_separation[y]) + 1
 
-    for entry in data:
-        while entry.time >= next_time.timestamp():
-            curr_time += 1
-            next_time = next_time + datetime.timedelta(minutes=time_separation)
-        grouped_data[curr_time].append(entry)
+        for x in range(group_count):
+            grouped_data[y].append([])
+
+        curr_time = 0
+        next_time = start_time + datetime.timedelta(minutes=time_separation[y])
+
+        for entry in data:
+            while entry.time >= next_time.timestamp():
+                curr_time += 1
+                next_time = next_time + datetime.timedelta(minutes=time_separation[y])
+            grouped_data[y][curr_time].append(entry)
 
     return {
         "time_points": time_points,
-        "grouped_data": grouped_data
+        "groups": grouped_data,
+        'non_grouped': data
     }
 
 

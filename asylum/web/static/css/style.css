@@ -181,13 +181,32 @@ body{
 .card-large{
     padding: 20px;
 }
+
 .card-large .card-title h3{
     height: 15px;
     font-size: 18px;
     font-weight: bold;
     color: #3E5569;
     display: inline;
+    margin-bottom: 20px;
+    margin-top:5px;
 }
+
+@-moz-document url-prefix() {
+  .card-large .card-title h3{
+      height: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #3E5569;
+      display: inline;
+      margin-top: -15px; !important
+      margin-bottom: -10px; !important
+  }
+  canvas{
+    margin-top: -20px;
+  }
+}
+
 .card-large .card-title h4{
     height: 15px;
     font-size: 15px;
@@ -498,6 +517,7 @@ body{
     box-shadow: darkgray 1px 1px 5px;
     margin-bottom: 20px;
 }
+
 .card-peity-legend {
     width: inherit;
     color: #3E5569;
@@ -508,9 +528,18 @@ body{
 .card-chart {
     height: 400px;
     width: calc(100% - 50px) !important;
-    padding-top: 20px !important;
-    padding-bottom: 40px !important;
+    padding-top: 30px !important;
+    padding-bottom: 10px;
 }
+@-moz-document url-prefix() {
+  .card-chart {
+      height: 400px;
+      width: calc(100% - 50px) !important;
+      padding-top: 0px;
+      padding-bottom: 10px;
+  }
+}
+
 .footer{
     height: 50px;
     width: 100%;

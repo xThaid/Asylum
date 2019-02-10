@@ -7,6 +7,7 @@
     <script type="text/javascript" src="/static/js/pages/meteo/history.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            var None = null;
             genTemperatureChart({{ data_model['temperature_chart_data']|safe }},{{data_model['average_values']['temperature']}});
             genHumidityChart({{ data_model['humidity_chart_data']|safe }},{{data_model['average_values']['humidity']}});
             genPressureChart({{ data_model['pressure_chart_data']|safe }},{{data_model['average_values']['pressure']}});

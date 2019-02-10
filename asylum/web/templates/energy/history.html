@@ -30,10 +30,10 @@
                             <div class="card-peity-title">Wyprodukowano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-green">{{ data_model['energy_production'] | join(', ') }}</span>
+                                    <span class="peity-bar-green">{{ data_model['energy_hours']['production'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="production_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_production_total']|float) }}</div>
+                                    <div id="production_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['production']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -42,10 +42,10 @@
                             <div class="card-peity-title">Zużyto</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-red">{{ data_model['energy_consumption'] | join(', ') }}</span>
+                                    <span class="peity-bar-red">{{ data_model['energy_hours']['consumption'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="consumption_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_consumption_total']|float) }}</div>
+                                    <div id="consumption_energy" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['consumption']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -54,10 +54,10 @@
                             <div class="card-peity-title">Wykorzystano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_use'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['use'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_use" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_use_total']|float) }}</div>
+                                    <div id="summary_energy_use" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['use']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -66,10 +66,10 @@
                             <div class="card-peity-title">Pobrano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_import'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['<link rel="import" href="">'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_import" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_import_total']|float) }}</div>
+                                    <div id="summary_energy_import" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['import']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -78,10 +78,10 @@
                             <div class="card-peity-title">Oddano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_export'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['export'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_export" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_export_total']|float) }}</div>
+                                    <div id="summary_energy_export" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['export']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>
@@ -90,10 +90,10 @@
                             <div class="card-peity-title">Zmagazynowano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_stored'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['storeds'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
-                                    <div id="summary_energy_store" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_stored_total']|float) }}</div>
+                                    <div id="summary_energy_store" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['store']|float) }}</div>
                                     <div class="card-peity-unit">[kWh]</div>
                                 </div>
                             </div>

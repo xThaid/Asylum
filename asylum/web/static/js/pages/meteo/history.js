@@ -17,10 +17,12 @@ var chartColorPlugin = { beforeDraw: function (chart) {
         var partPercentage = 1.0 / (stop_dev - start_dev);
 
         for(var i=start;i<stop;i++){
+          /* Linie na granicach przedziałów
           if(i == Math.round(rules[ruleIndex].yAxisSegement / dev) && i > start){
             ctx.fillStyle = "rgba(100,100,100,1)";
-            //rysowanie linii//ctx.fillRect(xaxis.left, yaxis.top + (stop_dev - i) * (yaxis.height * partPercentage), xaxis.width, 10);
+            ctx.fillRect(xaxis.left, yaxis.top + (stop_dev - i) * (yaxis.height * partPercentage), xaxis.width, 10);
           }
+          */
           if(i<rules[ruleIndex].yAxisSegement / dev){
             ctx.fillStyle = rules[ruleIndex].backgroundColor;
           if(i==start){
@@ -36,11 +38,13 @@ var chartColorPlugin = { beforeDraw: function (chart) {
             i--;
           }
         }
-        var position = yaxis.height/(yaxis.ticksAsNumbers[0] - yaxis.ticksAsNumbers[yaxis.ticksAsNumbers.length - 1])
-        var pos2 = (yaxis.ticksAsNumbers[0]- chart.chart.options.linePosition)*position
+        if(chart.chart.options.linePosition !=null){
+          var position = yaxis.height/(yaxis.ticksAsNumbers[0] - yaxis.ticksAsNumbers[yaxis.ticksAsNumbers.length - 1]);
+          var pos2 = (yaxis.ticksAsNumbers[0]- chart.chart.options.linePosition)*position;
 
-        ctx.fillStyle = "rgba(255,0,0,1)";
-        ctx.fillRect(xaxis.left, yaxis.top + pos2, xaxis.width, 1.5);
+          ctx.fillStyle = "rgba(255,0,0,1)";
+          ctx.fillRect(xaxis.left, yaxis.top + pos2, xaxis.width, 1.5);
+      }
       } };
 
 function genTemperatureChart(data, average) {

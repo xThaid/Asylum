@@ -5,7 +5,8 @@ from flask import render_template, jsonify, make_response, redirect, url_for
 
 from asylum.energy import energy_data
 from asylum.web.core.auth import authorize
-from asylum.web.core.chart_data import ChartData, EnergyRecords
+from asylum.web.core.utilities import average_in, round_in, max_in
+from asylum.web.core.chart_data import ChartData, EnergyRecords, group_data
 from asylum.web.core.page_model import PageModel
 from asylum.web.models.energy import Energy, EnergyDaily
 
@@ -51,101 +52,33 @@ def init_energy_routes(app):
         if MIN_DATE > start_time.date() or start_time.date() > datetime.date.today():
             return redirect(url_for('energy_history_day'), code=302)
 
-        if page not in ['energy', 'charts']:
+        tabs = {
+            'energy': 1,
+            'charts': 2
+        }
+
+        if page not in tabs:
             return redirect(url_for('energy_history_day', date=date), code=302)
 
-        active_tab_index = 0
-        if page == 'energy':
-            active_tab_index = 1
-        elif page == 'charts':
-            active_tab_index = 2
+        grouped_data = group_data(start_time, Energy, [4, 60])
 
-        page_model = PageModel('Energia - historia dnia ' + date_temp, context['user']) \
-            .add_breadcrumb_page('Energia', '/energy/now') \
-            .add_breadcrumb_page('Historia dnia', '/energy/day') \
-            .add_tab('Energia', tab_url) \
-            .add_tab('Wykresy', tab_url + '_charts') \
-            .activate_tab(active_tab_index) \
-            .to_dict()
+        energy_total = {
+            'production': 0,
+            'consumption': 0,
+            'import': 0,
+            'export': 0,
+            'use': 0,
+            'store': 0
+        }
 
-        data = Energy.get_last_rows(start_time.timestamp(), (start_time + datetime.timedelta(days=1)).timestamp())
-        grouped_data = []
-        for x in range(datetime.datetime.now().hour + 1 if
-                       (start_time + datetime.timedelta(days=1)) > datetime.datetime.now() else 24):
-            grouped_data.append([])
-        curr_hour = 0
-        next_time = start_time + datetime.timedelta(hours=1)
-        for entry in data:
-            while entry.time >= next_time.timestamp():
-                curr_hour += 1
-                next_time = next_time + datetime.timedelta(hours=1)
-            grouped_data[curr_hour].append(entry)
-
-        productions = []
-        imports = []
-        exports = []
-        consumptions = []
-        uses = []
-        storeds = []
-        for group in grouped_data:
-            if len(group) == 0:
-                prod = imp = exp = 0
-            else:
-                prod = (group[-1].production - group[0].production) / 1000
-                imp = (group[-1].import_ - group[0].import_) / 1000
-                exp = (group[-1].export - group[0].export) / 1000
-
-            productions.append(round(prod, 2))
-            imports.append(round(imp, 2))
-            exports.append(round(exp, 2))
-
-            consumptions.append(round(prod - exp + imp, 2))
-            uses.append(round(prod - exp, 2))
-            storeds.append(round(exp * 0.8 - imp, 2))
-
-        if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
-            time_from_midnight = (datetime.datetime.now().timestamp() -
-                                  datetime.datetime.now().replace(hour=0, minute=0, second=0).timestamp())
-        else:
-            time_from_midnight = 24 * 60 * 60
-
-        if time_from_midnight == 0:
-            time_from_midnight = 1
-
-        if len(data) == 0:
-            production_delta = import_delta = export_delta = 0
-        else:
-            production_delta = data[-1].production - data[0].production
-            import_delta = data[-1].import_ - data[0].import_
-            export_delta = data[-1].export - data[0].export
-
-        consumption_delta = production_delta - export_delta + import_delta
-        use_delta = production_delta - export_delta
-        stored_delta = export_delta * 0.8 - import_delta
-
-        chart_time_separation = 4
-        chart_points_count = int(time_from_midnight / (60 * chart_time_separation)) + 1
-
-        chart_time_points = [(start_time + datetime.timedelta(minutes=x * chart_time_separation))
-                             for x in range(chart_points_count)]
-
-        grouped_data = []
-        if (start_time + datetime.timedelta(days=1)) > datetime.datetime.now():
-            power_chart_group_count = int(
-                (datetime.datetime.now().hour * 60 + datetime.datetime.now().minute) / chart_time_separation) + 1
-        else:
-            power_chart_group_count = int((24 * 60) / chart_time_separation) + 1
-
-        for x in range(power_chart_group_count):
-            grouped_data.append([])
-        curr_time = 0
-        next_time = start_time + datetime.timedelta(minutes=chart_time_separation)
-
-        for entry in data:
-            while entry.time >= next_time.timestamp():
-                curr_time += 1
-                next_time = next_time + datetime.timedelta(minutes=chart_time_separation)
-            grouped_data[curr_time].append(entry)
+        energy_hours ={
+            'production': [],
+            'consumption': [],
+            'import': [],
+            'export': [],
+            'use': [],
+            'store': []
+        }
 
         chart_power = {
             'production': [],
@@ -155,23 +88,43 @@ def init_energy_routes(app):
             'use': [],
             'store': []
         }
-        if len(data) > 0:
-            for x in grouped_data:
-                if len(x) > 0:
-                    chart_power['export'].append(int(max(map(lambda x: x.power_export, x))))
-                    chart_power['import'].append(int(max(map(lambda x: x.power_import, x))))
-                    chart_power['production'].append(int(max(map(lambda x: x.power_production, x))))
 
-                    chart_power['use'].append(max(0, int(max(map(lambda x: x.power_production - x.power_export, x)))))
-                    chart_power['store'].append(int(max(map(lambda x: (x.power_export * 0.8) - x.power_import, x))))
-                    chart_power['consumption'].append(int(max(
-                        map(lambda x: x.power_production - x.power_export + x.power_import, x))))
+        if grouped_data['groups'] is not None:
+            energy_total['production'] = grouped_data['non_grouped'][-1].production - grouped_data['non_grouped'][0].production
+            energy_total['import'] = grouped_data['non_grouped'][-1].import_ - grouped_data['non_grouped'][0].import_
+            energy_total['export'] = grouped_data['non_grouped'][-1].export - grouped_data['non_grouped'][0].export
+            energy_total['use'] = energy_total['production'] - energy_total['export']
+            energy_total['consumption'] = energy_total['use'] + energy_total['import']
+            energy_total['store'] = energy_total['export'] * 0.8 - energy_total['import']
+            for x in energy_total:
+                energy_total[x] /= 1000
+
+            for x in grouped_data['groups'][0]:
+                chart_power['export'].append(round_in(max_in(map(lambda x: x.power_export, x)), 0))
+                chart_power['import'].append(round_in(max_in(map(lambda x: x.power_import, x)), 0))
+                chart_power['production'].append(round_in(max_in(map(lambda x: x.power_production, x)), 0))
+                chart_power['use'].append(max_in([0,round_in(max_in(map(lambda x: x.power_production - x.power_export, x)), 0)]))
+                chart_power['store'].append(round_in(max_in(map(lambda x: (x.power_export * 0.8) - x.power_import, x)), 0))
+                chart_power['consumption'].append(round_in(max_in(map(lambda x: x.power_production - x.power_export + x.power_import, x)), 0))
+
+            for x in grouped_data['groups'][1]:
+                if len(x) != 0:
+                    energy_hours['production'].append(round((x[-1].production - x[0].production) / 1000, 2))
+                    energy_hours['import'].append(round((x[-1].import_ - x[0].import_) / 1000, 2))
+                    energy_hours['export'].append(round((x[-1].export - x[0].export) / 1000, 2))
+                    energy_hours['use'].append(round(energy_hours['production'][-1] - energy_hours['export'][-1], 2))
+                    energy_hours['store'].append(round(energy_hours['export'][-1] * 0.8  - energy_hours['import'][-1], 2))
+                    energy_hours['consumption'].append(round(energy_hours['use'][-1] + energy_hours['import'][-1], 2))
                 else:
-                    for y in chart_power:
-                        chart_power[y].append(None)
+                    energy_hours['production'].append(0)
+                    energy_hours['import'].append(0)
+                    energy_hours['export'].append(0)
+                    energy_hours['use'].append(0)
+                    energy_hours['store'].append(0)
+                    energy_hours['consumption'].append(0)
 
         power_chart_data = ChartData() \
-            .set_labels([x.strftime('%H:%M') for x in chart_time_points]) \
+            .set_labels([x.strftime('%H:%M') for x in grouped_data['time_points'][0]]) \
             .add_dataset('Produkcja', chart_power['production'], [25, 180, 25, 1], [50, 200, 50, 0.2]) \
             .add_dataset('Zużycie', chart_power['consumption'], [210, 15, 15, 1], [230, 30, 30, 0.2]) \
             .add_dataset('Wykorzystanie', chart_power['use'], [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
@@ -180,42 +133,33 @@ def init_energy_routes(app):
             .add_dataset('Magazynowanie', chart_power['store'], [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
-        energy_chart_labels = []
-        for x in range(datetime.datetime.now().hour + 1 if
-                       (start_time + datetime.timedelta(days=1)) > datetime.datetime.now() else 24):
-            temp = ""
-            if x < 10:
-                temp = "0"
-            energy_chart_labels.append(temp + str(x) + ":00")
-
         energy_chart_data = ChartData() \
-            .set_labels(energy_chart_labels) \
-            .add_dataset('Produkcja', productions, [25, 180, 25, 1], [50, 200, 50, 0.2]) \
-            .add_dataset('Zużycie', consumptions, [210, 15, 15, 1], [230, 30, 30, 0.2]) \
-            .add_dataset('Wykorzystanie', uses, [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
-            .add_dataset('Pobieranie', imports, [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
-            .add_dataset('Oddawanie', exports, [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
-            .add_dataset('Magazynowanie', storeds, [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
+            .set_labels([x.strftime('%H:%M') for x in grouped_data['time_points'][1]]) \
+            .add_dataset('Produkcja', energy_hours['production'], [25, 180, 25, 1], [50, 200, 50, 0.2]) \
+            .add_dataset('Zużycie', energy_hours['consumption'], [210, 15, 15, 1], [230, 30, 30, 0.2]) \
+            .add_dataset('Wykorzystanie',energy_hours['use'], [5, 5, 231, 1], [25, 25, 250, 0.2], True) \
+            .add_dataset('Pobieranie', energy_hours['import'], [100, 100, 5, 1], [230, 230, 30, 0.2], True) \
+            .add_dataset('Oddawanie', energy_hours['export'], [30, 190, 190, 1], [50, 210, 210, 0.2], True) \
+            .add_dataset('Magazynowanie', energy_hours['store'], [140, 30, 100, 1], [180, 60, 130, 0.2], True) \
             .to_json()
 
         data_model = {
-            'energy_production': productions,
-            'energy_production_total': production_delta / 1000,
-            'energy_consumption': consumptions,
-            'energy_consumption_total': consumption_delta / 1000,
-            'energy_use': uses,
-            'energy_use_total': use_delta / 1000,
-            'energy_import': imports,
-            'energy_import_total': import_delta / 1000,
-            'energy_export': exports,
-            'energy_export_total': export_delta / 1000,
-            'energy_stored': storeds,
-            'energy_stored_total': stored_delta / 1000,
+            'energy_total': energy_total,
+            'energy_hours': energy_hours,
             'power_chart_data': power_chart_data,
             'energy_chart_data': energy_chart_data,
             'is_day_history': True,
             'active_tab': page
         }
+
+        page_model = PageModel('Energia - historia dnia ' + date_temp, context['user']) \
+            .add_breadcrumb_page('Energia', '/energy/now') \
+            .add_breadcrumb_page('Historia dnia', '/energy/day') \
+            .add_tab('Energia', tab_url) \
+            .add_tab('Wykresy', tab_url + '_charts') \
+            .activate_tab(tabs[page]) \
+            .to_dict()
+
         return render_template('energy/history.html', data_model=data_model, page_model=page_model)
 
     @app.route('/energy/month', defaults={'date': None, 'page': 'energy'})
@@ -238,23 +182,26 @@ def init_energy_routes(app):
         if MIN_DATE.year > from_date.year or (MIN_DATE.year == from_date.year and MIN_DATE.month > from_date.month) or from_date > datetime.date.today():
             return redirect(url_for('energy_history_month'), code=302)
 
-        if page not in ['energy', 'charts', 'records']:
+        tabs = {
+            'energy': 1,
+            'charts': 2,
+            'records': 3
+        }
+
+        if page not in tabs:
             return redirect(url_for('energy_history_month', date=date), code=302)
 
-        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
         page_model = PageModel('Energia - historia miesiąca ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia miesiąca', '') \
             .add_tab('Energia', tab_url) \
             .add_tab('Wykresy', tab_url + '_charts') \
             .add_tab('Rekordy', tab_url + '_records') \
-            .activate_tab(tab_mapping[page]) \
+            .activate_tab(tabs[page]) \
             .to_dict()
 
         data_model = aggregate_energy_data(from_date, 'month')
         data_model.update({
-            'power_chart_data': None,
-            'isDayHistory': False,
             'active_tab': page
         })
 
@@ -280,23 +227,26 @@ def init_energy_routes(app):
         if MIN_DATE.year > from_date.year or from_date.year > datetime.date.today().year:
             return redirect(url_for('energy_history_year'), code=302)
 
-        if page not in ['energy', 'charts', 'records']:
+        tabs = {
+            'energy': 1,
+            'charts': 2,
+            'records': 3
+        }
+
+        if page not in tabs:
             return redirect(url_for('energy_history_year', date=date), code=302)
 
-        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
         page_model = PageModel('Energia - historia roku ' + date_temp, context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Historia roku', '') \
             .add_tab('Energia', tab_url) \
             .add_tab('Wykresy', tab_url + '_charts') \
             .add_tab('Rekordy', tab_url + '_records') \
-            .activate_tab(tab_mapping[page]) \
+            .activate_tab(tabs[page]) \
             .to_dict()
 
         data_model = aggregate_energy_data(from_date, 'year')
         data_model.update({
-            'power_chart_data': None,
-            'isDayHistory': False,
             'active_tab': page
         })
 
@@ -306,25 +256,27 @@ def init_energy_routes(app):
     @app.route('/energy/all_<string:page>',)
     @authorize('guest', 'user', 'admin')
     def energy_history_all(context, page):
-        if page not in ['energy', 'charts', 'records']:
+        tabs = {
+            'energy': 1,
+            'charts': 2,
+            'records': 3
+        }
+        if page not in tabs:
             return redirect(url_for('energy_history_all'), code=302)
 
-        tab_mapping = {'energy': 1, 'charts': 2, 'records': 3}
         page_model = PageModel('Energia - cała historia ', context['user']) \
             .add_breadcrumb_page('Energia', '/energy/now') \
             .add_breadcrumb_page('Cała historia', '') \
             .add_tab('Energia', 'all') \
             .add_tab('Wykresy', 'all' + '_charts') \
             .add_tab('Rekordy', 'all' + '_records') \
-            .activate_tab(tab_mapping[page]) \
+            .activate_tab(tabs[page]) \
             .to_dict()
 
         MONTHLY = True
 
         data_model = aggregate_energy_data(MIN_DATE, 'all_monthly' if MONTHLY else 'all')
         data_model.update({
-            'power_chart_data': None,
-            'isDayHistory': False,
             'active_tab': page
         })
 
@@ -400,12 +352,13 @@ def init_energy_routes(app):
                 raw_data.append(current_day_data)
 
         # Calculate total energy
-        total_energy_production = round((raw_data[-1].production_offset - raw_data[0].production_offset) / 1000, 2)
-        total_energy_import = round((raw_data[-1].import_offset - raw_data[0].import_offset) / 1000, 2)
-        total_energy_export = round((raw_data[-1].export_offset - raw_data[0].export_offset) / 1000, 2)
-        total_energy_use = round(total_energy_production - total_energy_export, 2)
-        total_energy_consumption = round(total_energy_import + total_energy_use, 2)
-        total_energy_store = round(total_energy_export * 0.8 - total_energy_import, 2)
+        energy_total = {}
+        energy_total['production'] = round((raw_data[-1].production_offset - raw_data[0].production_offset) / 1000, 2)
+        energy_total['import'] = round((raw_data[-1].import_offset - raw_data[0].import_offset) / 1000, 2)
+        energy_total['export'] = round((raw_data[-1].export_offset - raw_data[0].export_offset) / 1000, 2)
+        energy_total['use'] = round(energy_total['production'] - energy_total['export'], 2)
+        energy_total['consumption'] = round(energy_total['import'] + energy_total['use'], 2)
+        energy_total['store'] = round(energy_total['export'] * 0.8 - energy_total['import'], 2)
 
         # Aggregate data
         if type == 'month':
@@ -529,21 +482,22 @@ def init_energy_routes(app):
             .add_energy_record('store', max_daily_store) \
             .build()
 
+        energy_hours = {
+            'production': aggregated_production,
+            'consumption': aggregated_consumption,
+            'import': aggregated_import,
+            'export': aggregated_export,
+            'use': aggregated_use,
+            'store': aggregated_store
+        }
+
         data_model = {
-            'energy_production': aggregated_production,
-            'energy_production_total': total_energy_production,
-            'energy_consumption': aggregated_consumption,
-            'energy_consumption_total': total_energy_consumption,
-            'energy_use': aggregated_use,
-            'energy_use_total': total_energy_use,
-            'energy_import': aggregated_import,
-            'energy_import_total': total_energy_import,
-            'energy_export': aggregated_export,
-            'energy_export_total': total_energy_export,
-            'energy_stored': aggregated_store,
-            'energy_stored_total': total_energy_store,
+            'energy_total': energy_total,
+            'energy_hours': energy_hours,
             'energy_chart_data': energy_chart_data,
             'records': records,
+            'power_chart_data': None,
+            'isDayHistory': False
         }
 
         return data_model
