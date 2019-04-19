@@ -67,7 +67,7 @@ class Arduino:
         self.serial.write((data + '\n').encode())
         res = self.serial.readline()
         logger.debug(res)
-        return res
+        return res.decode()[:-2]
 
 
 class Server:

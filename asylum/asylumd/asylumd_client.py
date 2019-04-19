@@ -90,7 +90,7 @@ def main():
     elif sys.argv[1] == "gate":
         id = int(sys.argv[2])
         gateAction(id)
-    elif sys.argv[1] == 'redmem':
+    elif sys.argv[1] == 'readmem':
         type = int(sys.argv[2])
         id = int(sys.argv[3])
         readMemory(type, id)
