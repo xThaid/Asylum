@@ -13,7 +13,7 @@ from asylum.asylumd import jsonrpc
 
 logger = log.setup_logger('asylumd')
 
-SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 9, 7]
+SHUTTER_REPEAT_COUNT = [6, 5, 5, 5, 5, 5, 7, 7, 7]
 GATE_REPEAT_COUNT = 3
 
 
@@ -50,6 +50,24 @@ class Arduino:
         self.serial.write((data + '\n').encode())
         logger.debug(self.serial.readline())
         logger.debug(self.serial.readline())
+
+    def writeMemory(self, type, id, hex_data):
+        data = "3"
+        data += (str(type))
+        data += (str(id))
+        data += hex_data
+        self.serial.write((data + '\n').encode())
+        logger.debug(self.serial.readline())
+        logger.debug(self.serial.readline())
+
+    def readMemory(self, type, id):
+        data = "4"
+        data += (str(type))
+        data += (str(id))
+        self.serial.write((data + '\n').encode())
+        res = self.serial.readline()
+        logger.debug(res)
+        return res
 
 
 class Server:
@@ -95,6 +113,8 @@ def main():
     server.addMethod(arduino.ping)
     server.addMethod(arduino.shutterAction, True)
     server.addMethod(arduino.gateAction, True)
+    server.addMethod(arduino.writeMemory, True)
+    server.addMethod(arduino.readMemory)
     server.serve()
 
 

@@ -43,10 +43,44 @@ def gateAction(id):
     sendToServer(req)
 
 
+def writeMemory(type, id, data):
+    if type < 0 or type > 1 or id < 0 or id > 9:
+        return
+    if data < 0 or data > 0xFFFFFFFF:
+        return
+
+    hex_data = str.format('{:08X}', data)
+
+    req = jsonrpc.JsonRpcRequest(
+        method="writeMemory",
+        params=[type, id, hex_data])
+    sendToServer(req)
+
+
+def readMemory(type, id):
+    if type < 0 or type > 1 or id < 0 or id > 9:
+        return
+
+    req = jsonrpc.JsonRpcRequest(
+        method="readMemory",
+        params=[type, id],
+        id=0)
+    resp = sendToServer(req).result
+    if resp[0:2] == 'ok':
+        print(resp[3:])
+    else:
+        print(resp)
+
+
 def main():
     if len(sys.argv) < 2:
-            print("asylum_client.py ['ping'/'shutter'/'gate'] [id] [action]")
+            print("asylum_client.py ping")
+            print("asylum_client.py shutter [id] [action]")
+            print("asylum_client.py gate [id]")
+            print("asylum_client.py readmem [type] [id]")
+            print("asylum_client.py writemem [type] [id] [data]")
             sys.exit(1)
+
     if sys.argv[1] == 'ping':
         ping()
     elif sys.argv[1] == "shutter":
@@ -56,6 +90,15 @@ def main():
     elif sys.argv[1] == "gate":
         id = int(sys.argv[2])
         gateAction(id)
+    elif sys.argv[1] == 'redmem':
+        type = int(sys.argv[2])
+        id = int(sys.argv[3])
+        readMemory(type, id)
+    elif sys.argv[1] == 'writemem':
+        type = int(sys.argv[2])
+        id = int(sys.argv[3])
+        data = int(sys.argv[4], 0)
+        writeMemory(type, id, data)
 
 
 if __name__ == '__main__':
