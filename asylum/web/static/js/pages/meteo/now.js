@@ -30,22 +30,22 @@ function updateTemperatureIndicator(name, value){
   let color = "";
   let text = "";
 
-  if (value < -150){
+  if (value < -15){
     text = "BARDZO ZIMNO";
     color = "#0066CC";
-  }else if(value < -50){
+  }else if(value < -5){
     text = "ZIMNO";
     color = "#00CCFF";
-  }else if(value < 50){
+  }else if(value < 5){
     text = "CHŁODNO";
     color = "#00FF99";
-  }else if(value < 150){
+  }else if(value < 15){
     text = "UMIARKOWANIE";
     color = "#FFFF66";
-  }else if(value < 250){
+  }else if(value < 25){
     text = "CIEPŁO";
     color = "#FFCC00";
-  }else if(value < 350){
+  }else if(value < 35){
     text = "GORĄCO";
     color = "#FF6600";
   }
@@ -63,16 +63,16 @@ function updateHumidityIndicator(name, value){
   let color = "";
   let text = "";
 
-  if (value < 200){
+  if (value < 20){
     text = "BARDZO NISKA";
     color = "#FFCC00";
-  }else if(value < 400){
+  }else if(value < 40){
     text = "NISKA";
     color = "#FFFF66";
-  }else if(value < 600){
+  }else if(value < 60){
     text = "UMIARKOWANA";
     color = "#00FF99";
-  }else if(value < 800){
+  }else if(value < 80){
     text = "WYSOKA";
     color = "#00CCFF";
   }else{
@@ -88,16 +88,16 @@ function updatePressureIndicator(name, value){
   let color = "";
   let text = "";
 
-  if (value < 9900){
+  if (value < 990){
     text = "BARDZO NISKIE";
     color = "#0066CC";
-  }else if(value < 10000){
+  }else if(value < 1000){
     text = "NISKIE";
     color = "#00CCFF";
-  }else if(value < 10200){
+  }else if(value < 1020){
     text = "UMIARKOWANE";
     color = "#00FF99";
-  }else if(value < 10300){
+  }else if(value < 1030){
     text = "WYSOKIE";
     color = "#FFFF66";
   }else{
@@ -157,20 +157,21 @@ function updateChangeArrow(name, change, step, min){
 }
 
 function update_data(){
+    let mult = 1 / 100;
     $.ajax({
         url         : "/meteo/getCurrentData",
         type        : "GET",
         contentType : 'application/json',
         dataType    : 'json',
         success     : function (response) {
-            updateCell('temperature', (response.temperature / 100).toFixed(1) + " °C");
-            updateTemperatureIndicator('temperature', response.temperature);
+            updateCell('temperature', (response.temperature * mult).toFixed(1) + " °C");
+            updateTemperatureIndicator('temperature', response.temperature * mult);
             updateChangeArrow('temperature', response.temperature_delta, 4, 1);
-            updateCell('humidity', (response.humidity / 100).toFixed(1) + " %");
-            updateHumidityIndicator('humidity', response.humidity);
+            updateCell('humidity', (response.humidity * mult).toFixed(1) + " %");
+            updateHumidityIndicator('humidity', response.humidity * mult);
             updateChangeArrow('humidity', response.humidity_delta, 10, 2);
-            updateCell('pressure', (response.pressure / 100).toFixed(1) + " hPa");
-            updatePressureIndicator('pressure', response.pressure);
+            updateCell('pressure', (response.pressure * mult).toFixed(1) + " hPa");
+            updatePressureIndicator('pressure', response.pressure * mult);
             updateChangeArrow('pressure', response.pressure_delta, 4, 1);
             updateCell('dust_PM10', response.dust_PM10 + " µg/m³");
             updateDustIndicator('dust_PM10', response.dust_PM10, 15);
