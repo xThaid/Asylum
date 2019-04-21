@@ -101,9 +101,9 @@ def init_meteo_routes(app):
         }
         if grouped_data['groups'] is not None:
             for x in grouped_data['groups'][0]:
-                meteo_data['temperature'].append(round_in(average_in(map(lambda x: x.temperature / 10, x)), 1))
-                meteo_data['humidity'].append(round_in(average_in(map(lambda x: x.humidity / 10, x)), 1))
-                meteo_data['pressure'].append(round_in(average_in(map(lambda x: x.pressure / 10, x)), 1))
+                meteo_data['temperature'].append(round_in(average_in(map(lambda x: x.temperature / 100, x)), 1))
+                meteo_data['humidity'].append(round_in(average_in(map(lambda x: x.humidity / 100, x)), 1))
+                meteo_data['pressure'].append(round_in(average_in(map(lambda x: x.pressure / 100, x)), 1))
                 meteo_data['dust'].append(round_in(average_in(map(lambda x: x.dust_PM25, x)), 1))
 
         temperature_chart_data = ChartData() \

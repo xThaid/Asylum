@@ -9,7 +9,7 @@ def get_data():
     try:
         meteo_data = requests.get(config['SUBSYSTEMS']['meteo_url'], timeout=3).json()
 
-        relative_pressure = calc_relative_pressure(int(meteo_data['bmppress']), int(meteo_data['sitemp']) / 10)
+        relative_pressure = calc_relative_pressure(int(meteo_data['bmppress']), int(meteo_data['sitemp']) / 100)
 
         is_data_correct = True
 

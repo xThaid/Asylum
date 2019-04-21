@@ -163,13 +163,13 @@ function update_data(){
         contentType : 'application/json',
         dataType    : 'json',
         success     : function (response) {
-            updateCell('temperature', (response.temperature / 10).toFixed(1) + " °C");
+            updateCell('temperature', (response.temperature / 100).toFixed(1) + " °C");
             updateTemperatureIndicator('temperature', response.temperature);
             updateChangeArrow('temperature', response.temperature_delta, 4, 1);
-            updateCell('humidity', (response.humidity / 10).toFixed(1) + " %");
+            updateCell('humidity', (response.humidity / 100).toFixed(1) + " %");
             updateHumidityIndicator('humidity', response.humidity);
             updateChangeArrow('humidity', response.humidity_delta, 10, 2);
-            updateCell('pressure', (response.pressure / 10).toFixed(1) + " hPa");
+            updateCell('pressure', (response.pressure / 100).toFixed(1) + " hPa");
             updatePressureIndicator('pressure', response.pressure);
             updateChangeArrow('pressure', response.pressure_delta, 4, 1);
             updateCell('dust_PM10', response.dust_PM10 + " µg/m³");
