@@ -5,3 +5,4 @@ db
 __pycache__
 asylum/web/static/assets
 config.ini
+.vscode

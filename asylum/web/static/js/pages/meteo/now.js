@@ -166,13 +166,13 @@ function update_data(){
         success     : function (response) {
             updateCell('temperature', (response.temperature * mult).toFixed(1) + " °C");
             updateTemperatureIndicator('temperature', response.temperature * mult);
-            updateChangeArrow('temperature', response.temperature_delta, 4, 1);
+            updateChangeArrow('temperature', response.temperature_delta * mult, 0.4, 0.1);
             updateCell('humidity', (response.humidity * mult).toFixed(1) + " %");
             updateHumidityIndicator('humidity', response.humidity * mult);
-            updateChangeArrow('humidity', response.humidity_delta, 10, 2);
+            updateChangeArrow('humidity', response.humidity_delta * mult, 1, 0.2);
             updateCell('pressure', (response.pressure * mult).toFixed(1) + " hPa");
             updatePressureIndicator('pressure', response.pressure * mult);
-            updateChangeArrow('pressure', response.pressure_delta, 4, 1);
+            updateChangeArrow('pressure', response.pressure_delta * mult, 0.4, 0.1);
             updateCell('dust_PM10', response.dust_PM10 + " µg/m³");
             updateDustIndicator('dust_PM10', response.dust_PM10, 15);
             $("#change_dust_PM10").text((response.dust_PM10 * 100 / 15).toFixed(0) + " %");
