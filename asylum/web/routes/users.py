@@ -6,7 +6,7 @@ from asylum.web.core.page_model import PageModel
 from asylum.web.core.auth import authorize
 
 from asylum.web.models import db
-from asylum.web.models.user import MacAddress
+from asylum.web.models.user import MacAddress, User
 
 
 def init_users_routes(app):
@@ -27,13 +27,16 @@ def init_users_routes(app):
         if curr is None:
             curr = ''
 
+        user = User.query.filter(User.id == user_id).first()
+
         data_model = {
             'current': curr,
             'addresses':
             [{
                 'id': x.id,
                 'address': x.mac_address
-            } for x in query_result]}
+            } for x in query_result],
+            'api-key': user.api_key}
 
         page_model = PageModel('Adresy MAC', context['user'])\
             .add_breadcrumb_page('Adresy MAC', '')\

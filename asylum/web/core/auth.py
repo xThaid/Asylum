@@ -1,5 +1,6 @@
 import jwt
 import datetime
+import secrets
 from functools import wraps
 
 from flask import current_app, request
@@ -11,14 +12,18 @@ from asylum.web.core import web_response
 from asylum.web.models import db
 from asylum.web.models.user import User, MacAddress
 
+def gen_api_key():
+    return secrets.token_hex(16)
 
 def register(username, name, password, role):
     try:
         if not User.query.filter_by(username=username).first():
+            api_key = gen_api_key()
             db.session.add(User(
                 username=username,
                 name=name,
-                role=role
+                role=role,
+                api_key=api_key
             ).hash_password(password))
 
             db.session.commit()

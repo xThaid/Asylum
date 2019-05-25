@@ -3,6 +3,23 @@
 
 <head>
     {%  include 'shared/head.html' %}
+    <script type="text/javascript">
+        $(document).ready( function () {
+            $("#gate_action_open" ).click(function() {
+                $.ajax({
+                    url: "gateOpen",
+                    type: "POST",
+                    contentType: 'application/json',
+                    dataType: 'json',
+                    success: function (response) {
+                    },
+                    error: function (response) {
+                        toastr[response.responseJSON.status](response.responseJSON.message, "Nie wykonano zadania");
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
     {#%  include 'shared/preloader.html' %#}
@@ -12,7 +29,11 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-
+                <div style="display: flex; flex-flow: row nowrap; margin-bottom: 30px">
+                    <div id="gate_action_open" class="panel panel-big">
+                        <div class="panel-title">Otwórz bramę</div>
+                    </div>
+                </div>
             </div>
             {% include 'shared/footer.html' %}
         </div>

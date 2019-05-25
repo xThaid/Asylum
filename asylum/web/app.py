@@ -2,6 +2,7 @@ from flask import Flask
 
 from asylum import config
 from asylum.web import routes
+from asylum.web.api import api
 from asylum.web.models import db
 
 
@@ -15,3 +16,5 @@ app = Flask(__name__, static_folder='static')
 app.config.from_object(AppConfig)
 db.init_app(app)
 routes.init_routes(app)
+
+app.register_blueprint(api.bp)

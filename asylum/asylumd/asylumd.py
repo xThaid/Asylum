@@ -32,6 +32,7 @@ class Arduino:
         logger.debug(self.serial.readline())
         return "pong"
 
+    # action 0-open 1-close 2-stop
     def shutterAction(self, id, action):
         logger.debug("called shutter %d with action %d", id, action)
         data = "1"

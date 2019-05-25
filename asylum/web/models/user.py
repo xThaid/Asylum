@@ -9,6 +9,7 @@ class User(db.Model):
     name = db.Column(db.String(64), nullable=False)
     role = db.Column(db.String(64), nullable=False)
     password_hash = db.Column(db.String(64), nullable=False)
+    api_key = db.Column(db.String(32), nullable=False)
 
     def hash_password(self, password):
         self.password_hash = pbkdf2_sha256.hash(password)
