@@ -1,6 +1,6 @@
 import jwt
 import datetime
-import secrets
+from os import urandom
 from functools import wraps
 
 from flask import current_app, request
@@ -13,7 +13,7 @@ from asylum.web.models import db
 from asylum.web.models.user import User, MacAddress
 
 def gen_api_key():
-    return secrets.token_hex(16)
+    return urandom(16).hex()
 
 def register(username, name, password, role):
     try:
