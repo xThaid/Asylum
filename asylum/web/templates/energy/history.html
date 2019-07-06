@@ -66,7 +66,7 @@
                             <div class="card-peity-title">Pobrano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['<link rel="import" href="">'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['import'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
                                     <div id="summary_energy_import" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['import']|float) }}</div>
@@ -90,7 +90,7 @@
                             <div class="card-peity-title">Zmagazynowano</div>
                             <div class="card-peity-body">
                                 <div class="card-peity-body-left">
-                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['storeds'] | join(', ') }}</span>
+                                    <span class="peity-bar-orange">{{ data_model['energy_hours']['store'] | join(', ') }}</span>
                                 </div>
                                 <div class="card-peity-body-right">
                                     <div id="summary_energy_store" class="card-peity-number">{{ '%0.2f'| format(data_model['energy_total']['store']|float) }}</div>
