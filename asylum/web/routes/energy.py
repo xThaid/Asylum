@@ -112,7 +112,7 @@ def init_energy_routes(app):
                     energy_hours['production'].append(round((x[-1].production - x[0].production) / 1000, 2))
                     energy_hours['import'].append(round((x[-1].import_ - x[0].import_) / 1000, 2))
                     energy_hours['export'].append(round((x[-1].export - x[0].export) / 1000, 2))
-                    energy_hours['use'].append(round(energy_hours['production'][-1] - energy_hours['export'][-1], 2))
+                    energy_hours['use'].append(max(0, round(energy_hours['production'][-1] - energy_hours['export'][-1], 2)))
                     energy_hours['store'].append(round(energy_hours['export'][-1] * 0.8  - energy_hours['import'][-1], 2))
                     energy_hours['consumption'].append(round(energy_hours['use'][-1] + energy_hours['import'][-1], 2))
                 else:
@@ -418,7 +418,7 @@ def init_energy_routes(app):
                     aggregated_import[idx] = round((x.import_offset - previous_data.import_offset) / 1000, 2)
                     aggregated_export[idx] = round((x.export_offset - previous_data.export_offset) / 1000, 2)
 
-                aggregated_use[idx] = round(aggregated_production[idx] - aggregated_export[idx], 2)
+                aggregated_use[idx] = max(0, round(aggregated_production[idx] - aggregated_export[idx], 2))
                 aggregated_consumption[idx] = round(aggregated_import[idx] + aggregated_use[idx], 2)
                 aggregated_store[idx] = round(aggregated_export[idx] * 0.8 - aggregated_import[idx], 2)
                 previous_data = x
