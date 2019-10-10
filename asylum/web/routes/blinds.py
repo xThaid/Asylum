@@ -46,8 +46,39 @@ def init_blinds_routes(app):
             .filter(BlindsTask.device.in_(blinds_id_list))\
             .join(User)\
             .add_column(User.name)\
+            .all()
+        
+        scheduled_task_query_result = BlindsTask\
+            .query \
+            .filter(BlindsTask.device.in_(blinds_id_list))\
+            .filter(BlindsTask.user_id == None)\
             .order_by(BlindsTask.time)\
             .all()
+
+        tasks = []
+        for x in task_query_result:
+            tasks.append({
+                'device': x.BlindsTask.device,
+                'action': x.BlindsTask.action,
+                'time': x.BlindsTask.time,
+                'user': x.name,
+                'task_id': x.BlindsTask.id
+            })
+        
+        SHOW_SCHEDULED_TASKS = True
+        if SHOW_SCHEDULED_TASKS:
+            for x in scheduled_task_query_result:
+                tasks.append({
+                    'device': x.device,
+                    'action': x.action,
+                    'time': x.time,
+                    'user': 'Automat',
+                    'task_id': x.id
+                })
+
+        tasks = sorted(tasks, key=lambda k : k['time'])
+        for x in tasks:
+            x['time'] = unixtime_to_strftime(x['time'], '%d-%m-%Y %H:%M')
 
         schedule_query_result = BlindsSchedule\
             .query\
@@ -56,14 +87,6 @@ def init_blinds_routes(app):
             .add_column(User.name) \
             .order_by(BlindsSchedule.id) \
             .all()
-
-        user_tasks = [{
-                'device': x.BlindsTask.device,
-                'action': x.BlindsTask.action,
-                'time': unixtime_to_strftime(x.BlindsTask.time, '%d-%m-%Y %H:%M'),
-                'user': x.name,
-                'task_id': x.BlindsTask.id
-            } for x in task_query_result]
 
         schedule = [{
             'id': x.BlindsSchedule.id,
@@ -86,7 +109,7 @@ def init_blinds_routes(app):
             .to_dict()
 
         data_model = {
-            'user_tasks': user_tasks,
+            'user_tasks': tasks,
             'schedule': schedule,
             'devices': blinds_id_list,
             'names': names

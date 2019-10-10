@@ -50,26 +50,6 @@ $(document).ready( function () {
         }
     });
 
-    $(".choose-time").click(function(evt){
-        let target = $(evt.target);
-        if(target.data('timer')){
-            clearInterval(target.data('timer'));
-            target.html(target.data('datetime'));
-            target.css({cursor: 'zoom-in'});
-            target.removeData('timer');
-        }else {
-            target.data('datetime', target.html());
-            let m = moment(target.data('datetime'), "DD-MM-YYYY HH:mm");
-            m.locale('pl');
-            target.html(m.fromNow());
-            target.css({cursor: 'zoom-out'});
-            target.data('timer', setInterval(function () {
-                target.html(m.fromNow());
-            }, 1000));
-        }
-    });
-
-
     $('#form-add-task').submit(function () {
         const form =   $('#form-add-task').serializeArray();
         const data = JSON.stringify(
@@ -142,7 +122,37 @@ $(document).ready( function () {
              $('#change-sign').show();
          }
      });
+
+     updateActionCountdowns();
+     setInterval(updateActionCountdowns, 1000);
 });
+
+function formatRemainingTime(time) {
+    if(time < 0) {
+        time = 0;
+    }
+    let days = Math.floor(time / (60 * 60 * 24));
+    let hours = Math.floor(time / (60 * 60));
+    let minutes = Math.floor(time / 60);
+    let seconds = Math.floor(time);
+
+    let res = "";
+    if(days > 0) res += days + "d ";
+    if(hours > 0) res += (hours % 24) + "h ";
+    if(minutes > 0) res += (minutes % 60) + "m ";
+    res += (seconds % 60) + "s";
+
+    return res;
+}
+
+function updateActionCountdowns() {
+    $(".action-entry").each(function(i) {
+        let actionTime = moment($(this).find(".action-time").text(), 'DD-MM-YYYY HH:mm').unix();
+        let currTime = moment().unix();
+        let diff = actionTime - currTime;
+        $(this).find(".countdown").text(formatRemainingTime(diff));
+    }); 
+ }
 
 function show_front_form(id){
     $('#' + id).css({display: 'flex'}).animate({

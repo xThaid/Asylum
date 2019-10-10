@@ -106,19 +106,21 @@
                                  {% endif %}
                                  <th scope="col">Akcja</th>
                                  <th scope="col">Czas</th>
-                                 <th scope="col">Zleceniodawca</th>
+                                 <th scope="col">Pozostały czas</th>
+                                 <th scope="col">Zaplanowane przez</th>
                                  <th scope="col">Usuń</th>
                               </tr>
                              </thead>
                              <tbody>
                              {% for x in data_model['user_tasks'] %}
-                             <tr>
+                             <tr class="action-entry">
                                  <th scope="row">{{ loop.index }}</th>
                                  {% if data_model['devices']|length > 1 %}
                                  <td>{{ data_model['names'].devices.get(x.device) }}</td>
                                  {% endif %}
                                  <td>{{ data_model['names'].actions.get(x.action) }}</td>
-                                 <td class="choose-time">{{ x.time }}</td>
+                                 <td class="action-time">{{ x.time }}</td>
+                                 <td class="countdown">0s</td>
                                  <td>{{ x.user }}</td>
                                  <td style="padding: auto;"><div id="task" class="button delete-button" onclick="delete_task({{ x.task_id }})"><i class="mdi mdi-minus-circle-outline"></i></div></td>
                              </tr>
@@ -145,7 +147,7 @@
                                  <th scope="col">Akcja</th>
                                  <th scope="col">Pora dnia</th>
                                  <th scope="col">Czas</th>
-                                 <th scope="col">Zleceniodawca</th>
+                                 <th scope="col">Zaplanowane przez</th>
                                  <th scope="col">Usuń</th>
                               </tr>
                              </thead>
