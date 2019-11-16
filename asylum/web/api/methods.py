@@ -62,12 +62,12 @@ def get_power_data(context):
     if current_data is None:
         return make_response('Urządzenia pomiarowe nie odpowiadają', 500)
 
-    return jsonify({
+    return make_response(jsonify({
         'production': current_data['power_production'],
         'consumption': current_data['power_consumption'],
         'use': current_data['power_use'],
         'import': current_data['power_import'],
         'export': current_data['power_export'],
         'store': current_data['power_store']
-    }, 200)
+    }), 200)
 
