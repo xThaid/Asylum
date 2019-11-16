@@ -3,6 +3,7 @@ from flask import jsonify, make_response
 from .api import bp, require_api_key, ok_request, msg_response
 
 from asylum.asylumd import asylumd_client
+from asylum.energy import energy_data
 
 
 @bp.route('/ping', methods=['GET', 'POST'])
@@ -51,4 +52,22 @@ def blind_action_all(context, action_id):
     for x in range(9):
         asylumd_client.shutterAction(x, action_id)
     return ok_request()
+
+
+@bp.route('/getCurrentPowerData', methods=['GET', 'POST'])
+@require_api_key
+def get_power_data(context):
+    current_data = energy_data.get_data()
+
+    if current_data is None:
+        return make_response('Urządzenia pomiarowe nie odpowiadają', 500)
+
+    return jsonify({
+        'production': current_data['power_production'],
+        'consumption': current_data['power_consumption'],
+        'use': current_data['power_use'],
+        'import': current_data['power_import'],
+        'export': current_data['power_export'],
+        'store': current_data['power_store']
+    }, 200)
 
