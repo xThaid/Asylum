@@ -31,7 +31,6 @@ def init_energy_routes(app):
         }
         return render_template('energy/now.html', page_model=page_model, data_model=data_model)
 
-
     @app.route('/energy/day', defaults={'date': None, 'page': 'energy'})
     @app.route('/energy/day_<string:page>', defaults={'date': None})
     @app.route('/energy/day/<string:date>', defaults={'page': 'energy'})

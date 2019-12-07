@@ -6,6 +6,7 @@ from asylum.web.models.user import User
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
+
 def require_api_key(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -28,6 +29,7 @@ def require_api_key(f):
         return f(context, *args, **kwargs)
     return decorated_function
 
+
 def msg_response(msg, code):
     return make_response(jsonify(
         {
@@ -35,11 +37,12 @@ def msg_response(msg, code):
         }
     ), code)
 
+
 def ok_request():
     return msg_response("success", 200)
 
+
 def auth_fail():
     return msg_response("authorization failed", 401)
-
 
 from . import methods
