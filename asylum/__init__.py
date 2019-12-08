@@ -1,7 +1,7 @@
 import configparser
 import sqlite3
 
-CONFIG_LOCATION = "C:/Users/Shasarel/Desktop/config.ini"
+CONFIG_LOCATION = "/home/thaid/Dev/repos/Asylum/config.ini"
 
 config = configparser.ConfigParser()
 config.read(CONFIG_LOCATION)
