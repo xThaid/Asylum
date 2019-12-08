@@ -1,4 +1,5 @@
 import datetime
+from math import ceil
 
 from asylum.web.models.energy import EnergyDaily, Energy
 from asylum.web.routes.energy import MIN_DATE
@@ -181,7 +182,7 @@ def aggregate_energy_data(from_date, to_date, group_span):
             return None
 
         grouped_data = []
-        group_count = int(((to_date - from_date).total_seconds() / 60) / time_separation)
+        group_count = ceil(((to_date - from_date).total_seconds() / 60) / time_separation)
 
         for x in range(group_count):
             grouped_data.append([])
@@ -189,10 +190,13 @@ def aggregate_energy_data(from_date, to_date, group_span):
         curr_time = 0
         next_time = from_date + datetime.timedelta(minutes=time_separation)
 
+        grouped_data.append([])
         for entry in data:
             while entry.time >= next_time.timestamp():
                 curr_time += 1
+                grouped_data.append([])
                 next_time = next_time + datetime.timedelta(minutes=time_separation)
+
             grouped_data[curr_time].append(entry)
 
         aggregated_production = []
