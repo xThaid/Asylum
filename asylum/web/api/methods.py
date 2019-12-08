@@ -78,15 +78,18 @@ def get_power_data(context):
 @require_api_key
 def get_history_energy_data(context):
     post_data = request.get_json()
+    if post_data is None:
+        return make_response('Missing params - ERR1', 400)
+
+    if 'from_date' not in post_data or 'to_date' not in post_data or 'group_span' not in post_data:
+        return make_response('Missing params - ERR2', 400)
+
     post_from_date = post_data['from_date']
     post_to_date = post_data['to_date']
     post_group_span = post_data['group_span']
 
-    if post_data is None:
-        return make_response('Missing params', 400)
-
     if post_from_date is None or post_to_date is None or post_group_span is None:
-        return make_response('Missing params', 400)
+        return make_response('Missing params - ERR3', 400)
 
     if post_group_span not in data_grouper.GROUP_SPANS:
         return make_response('Wrong group_span', 400)
