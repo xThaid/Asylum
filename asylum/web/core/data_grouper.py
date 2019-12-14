@@ -207,12 +207,20 @@ def aggregate_energy_data(from_date, to_date, group_span):
         aggregated_store = []
 
         for x in grouped_data:
-            production_max = -10000
-            import_max = -10000
-            export_max = -10000
-            consumption_max = -10000
-            use_max = -10000
-            store_max = -10000
+            if len(x) == 0:
+                production_max = 0
+                import_max = 0
+                export_max = 0
+                consumption_max = 0
+                use_max = 0
+                store_max = 0
+            else:
+                production_max = -10000
+                import_max = -10000
+                export_max = -10000
+                consumption_max = -10000
+                use_max = -10000
+                store_max = -10000
 
             for y in x:
                 production_max = max(production_max, y.power_production)
