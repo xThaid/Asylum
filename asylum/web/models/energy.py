@@ -1,5 +1,6 @@
 import datetime
 
+from sqlalchemy.sql import func
 from sqlalchemy import and_
 
 from . import db
@@ -55,3 +56,17 @@ class EnergyDaily(db.Model):
     def __repr__(self):
         return ('EnergyDaily<id:%i ,day: %s, production: %i' %
                 (int(self.id), str(datetime.date.fromordinal(self.day_ordinal)), int(self.production))) + '>'
+
+class EnergyCorrection(db.Model):
+    __tablename__ = 'energy_corrections'
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Text, nullable=False)
+    correction = db.Column(db.Integer, nullable=False)
+
+    @staticmethod
+    def get_total_correction():
+        return __class__.query.with_entities(func.sum(EnergyCorrection.correction).label("total_correction")).first()
+
+    def __repr__(self):
+        return ('EnergyCorrection<id:%i, day: %s, correction: %f' %
+                (int(self.id), self.date, self.correction / 1000.0)) + '>'

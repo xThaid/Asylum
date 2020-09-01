@@ -29,11 +29,29 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-                <div style="display: flex; flex-flow: row nowrap; margin-bottom: 30px">
-                    <div id="gate_action_open" class="panel panel-big">
-                        <div class="panel-title">Otwórz bramę</div>
+                <fieldset class="card-peity-fieldset" style="margin-top: -20px;">
+                    <legend class="card-peity-legend">Energia</legend>
+                    <div class="card-peity-row" style="width: 700px;">
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Dzienna produkcja</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-number">{{ '%0.2f'| format(data_model['energy']['daily_prod']|float) }} kWh</div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Dzienne zużycie</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-number">{{ '%0.2f'| format(data_model['energy']['daily_cons']|float) }} kWh</div>
+                            </div>
+                        </div>
+                        <div class="card card-peity">
+                            <div class="card-peity-title">Całkowity bilans</div>
+                            <div class="card-peity-body">
+                                <div class="card-peity-number">{{ '%0.2f'| format(data_model['energy']['total_balance']|float) }} kWh</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </fieldset>
             </div>
             {% include 'shared/footer.html' %}
         </div>

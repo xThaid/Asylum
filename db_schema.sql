@@ -126,4 +126,10 @@ CREATE TABLE meteo_daily(
   is_data_correct BOOLEAN NOT NULL
 );
 
+CREATE TABLE energy_corrections(
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT NOT NULL,
+  correction INTEGER NOT NULL
+);
+
 COMMIT;
