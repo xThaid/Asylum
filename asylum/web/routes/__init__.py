@@ -6,7 +6,7 @@ from . import locks
 from . import admin
 from . import users
 from . import meteo
-
+from . import stream
 
 def init_routes(app):
     energy.init_energy_routes(app)
@@ -17,3 +17,4 @@ def init_routes(app):
     admin.init_auth_routes(app)
     users.init_users_routes(app)
     meteo.init_meteo_routes(app)
+    stream.init_stream_routes(app)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="pl">
+
+<head>
+    {%  include 'shared/head.html' %}
+    <link href="https://vjs.zencdn.net/7.10.2/video-js.css" rel="stylesheet" />
+</head>
+<body>
+    {#%  include 'shared/preloader.html' %#}
+    <div id="main-wrapper">
+        {% include 'shared/sidebar.html' %}
+        <div id="page-wrapper">
+            {% include 'shared/topbar.html' %}
+            {% include 'shared/breadcrumb.html' %}
+            <div id="page-container">
+                <video id=example-video width=960 height=540 class="video-js vjs-default-skin" controls>
+                <source
+                    src="{{ data_model['url'] }}"
+                    type="application/x-mpegURL">
+                </video>
+            </div>
+            {% include 'shared/footer.html' %}
+        </div>
+    </div>
+    <script src="https://vjs.zencdn.net/7.10.2/video.js"></script>
+    <script>
+      var player = videojs('example-video');
+       player.play();
+    </script>
+</body>
+</html>
