@@ -12,7 +12,13 @@
             {% include 'shared/topbar.html' %}
             {% include 'shared/breadcrumb.html' %}
             <div id="page-container">
-
+                {% for x in data_model['streams'] %}
+                <div class="panel panel-small" style="width: 180px; background: #2255A4;">
+                    <a href="streams/{{ x }}">
+                        <div class="panel-title">{{ x }}</div>
+                    </a>
+                </div>
+                {% endfor %}
             </div>
             {% include 'shared/footer.html' %}
         </div>

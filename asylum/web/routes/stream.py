@@ -9,6 +9,22 @@ from asylum import config
 
 
 def init_stream_routes(app):
+
+    @app.route('/streams', methods=['GET'])
+    @authorize('user', 'admin')
+    def streams(context):
+        resp = requests.get('http://localhost:8002/streams').json()
+        
+        strs = [x['id'] for x in resp]
+
+        data_model = {
+            'streams': strs
+        }
+        page_model = PageModel('Kamery', context['user'])\
+            .add_breadcrumb_page('Kamery', '/streams')\
+            .to_dict()
+        return render_template('streams.html', data_model=data_model, page_model=page_model)
+
     @app.route('/streams/<string:stream_id>', methods=['GET'])
     @authorize('user', 'admin')
     def stream(context, stream_id):
@@ -17,12 +33,11 @@ def init_stream_routes(app):
         for x in resp:
             if x['id'] == stream_id:
                 url = x['url']
-        print(url)
 
         data_model = {
             'url': "https://asylum.zapto.org" + url
         }
-        page_model = PageModel('Strumienie', context['user'])\
-            .add_breadcrumb_page('Strumienie', '/stream')\
+        page_model = PageModel('Kamery', context['user'])\
+            .add_breadcrumb_page('Kamery', '/streams')\
             .to_dict()
         return render_template('stream.html', data_model=data_model, page_model=page_model)
