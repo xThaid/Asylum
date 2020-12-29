@@ -41,3 +41,20 @@ def init_stream_routes(app):
             .add_breadcrumb_page('Kamery', '/streams')\
             .to_dict()
         return render_template('stream.html', data_model=data_model, page_model=page_model)
+
+    @app.route('/recording/<string:recording_id>/<string:date>/<string:hour>', methods=['GET'])
+    @authorize('user', 'admin')
+    def recording(context, recording_id, date, hour):
+        resp = requests.get('http://192.168.1.100:8002/recordings/' + recording_id + '/' + date).json()
+        url = ""
+        for x in resp:
+            if x['hour'] == hour:
+                url = x['url']
+
+        data_model = {
+            'url': "https://asylum.zapto.org" + url
+        }
+        page_model = PageModel('Nagrania', context['user'])\
+            .add_breadcrumb_page('Nagrania', '/recording')\
+            .to_dict()
+        return render_template('stream.html', data_model=data_model, page_model=page_model)
