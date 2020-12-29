@@ -42,10 +42,11 @@ def init_stream_routes(app):
             .to_dict()
         return render_template('stream.html', data_model=data_model, page_model=page_model)
 
-    @app.route('/recording/<string:recording_id>/<string:date>/<string:hour>', methods=['GET'])
+    @app.route('/recording/<recording_id>/<date>/<hour>', methods=['GET'])
     @authorize('user', 'admin')
     def recording(context, recording_id, date, hour):
-        resp = requests.get('http://192.168.1.100:8002/recordings/' + recording_id + '/' + date).json()
+        print(recording_id, hour, date)
+        resp = requests.get('http://localhost:8002/recordings/' + recording_id + '/' + date).json()
         url = ""
         for x in resp:
             if x['hour'] == hour:
