@@ -3,18 +3,38 @@
 
 <head>
     {%  include 'shared/head.html' %}
+    <script src="/static/assets/libs/toastr/toastr.min.js"></script>
     <script type="text/javascript">
         $(document).ready( function () {
-            $("#gate_action_open" ).click(function() {
+            toastr.options =
+            {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "10000",
+                "extendedTimeOut": "2000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+            $("#gate-open" ).click(function() {
                 $.ajax({
                     url: "gateOpen",
                     type: "POST",
                     contentType: 'application/json',
                     dataType: 'json',
                     success: function (response) {
+                        toastr[response.status](response.message, "Brama się otwiera!");
                     },
                     error: function (response) {
-                        toastr[response.responseJSON.status](response.responseJSON.message, "Nie wykonano zadania");
+                        toastr[response.responseJSON.status](response.responseJSON.message, "Nie wykonano zadania!");
                     }
                 });
             });
@@ -52,6 +72,10 @@
                         </div>
                     </div>
                 </fieldset>
+                <div class="panel" id="gate-open" style="width: 180px; background: #2255A4;">
+                    <div class="panel-icon" style="padding-left: 7px"><i class="mdi mdi-gate"></i></div>
+                    <div class="panel-title">Otwórz bramę</div>
+                </div>
             </div>
             {% include 'shared/footer.html' %}
         </div>

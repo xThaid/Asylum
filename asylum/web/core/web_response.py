@@ -23,6 +23,14 @@ def ok_request():
     ), 201)
 
 
+def internal_error():
+    return make_response(jsonify(
+        {
+            'status': 'error',
+            'message': 'Internal server error!'
+        }
+    ), 500)
+
 def bad_request():
     return make_response(jsonify(
         {

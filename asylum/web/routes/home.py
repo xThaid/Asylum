@@ -1,6 +1,7 @@
 from flask import render_template
 
 from asylum.asylumd import asylumd_client
+from asylum.gate import gate_controller
 
 from asylum.web.core import web_response
 
@@ -40,6 +41,7 @@ def init_home_routes(app):
     @app.route('/gateOpen', methods=['POST'])
     @authorize('user', 'admin')
     def gate_open(context):
-        # asylumd_client.gateAction(0)
-        
-        return web_response.ok_request()
+        if gate_controller.open_gate() == True:
+            return web_response.ok_request()
+
+        return web_response.internal_error()
