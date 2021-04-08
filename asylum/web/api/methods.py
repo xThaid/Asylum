@@ -22,15 +22,13 @@ def check_login(context):
         'role': context['role']}), 200)
 
 
-@bp.route('/gateOpen/<int:gate_id>', methods=['GET', 'POST'])
+@bp.route('/gateOpen', methods=['POST'])
 @require_api_key
-def gate_open(context, gate_id):
-    if gate_id < 0 or gate_id > 3:
-        return msg_response("wrong gate id", 400)
+def gate_open(context):
+    if gate_controller.open_gate() == True:
+        return ok_request()
 
-    asylumd_client.gateAction(gate_id)
-
-    return ok_request()
+    return msg_response("gate controller is not responding", 500)
 
 
 @bp.route('/blindAction/<int:blind_id>/<int:action_id>', methods=['GET', 'POST'])
