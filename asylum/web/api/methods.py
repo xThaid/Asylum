@@ -4,6 +4,7 @@ import datetime
 from .api import bp, require_api_key, ok_request, msg_response
 
 from asylum.asylumd import asylumd_client
+from asylum.gate import gate_controller
 from asylum.energy import energy_data
 from asylum.web.core import data_grouper
 
