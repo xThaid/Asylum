@@ -28,7 +28,7 @@ def gate_open(context):
     if gate_controller.open_gate() == True:
         return ok_request()
 
-    return msg_response("gate controller is not responding", 500)
+    return msg_response("gate controller is not responding", 200)
 
 
 @bp.route('/blindAction/<int:blind_id>/<int:action_id>', methods=['GET', 'POST'])
